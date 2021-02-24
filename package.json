@@ -1,0 +1,43 @@
+{
+  "name": "react-haru",
+  "version": "0.0.0",
+  "description": "Declarative animations with spring",
+  "author": "Alec Larson",
+  "license": "SEE LICENSE IN LICENSE.md",
+  "repository": "alloc/react-haru",
+  "main": "dist/react-haru.js",
+  "module": "dist/react-haru.mjs",
+  "types": "dist/react-haru.d.ts",
+  "files": [
+    "src",
+    "dist"
+  ],
+  "scripts": {
+    "build": "rollup -c",
+    "prepare": "yarn build"
+  },
+  "devDependencies": {
+    "@alloc/prettier-config": "^1.0.0",
+    "esbuild": "^0.8.51",
+    "esbuild-jest": "npm:@alloc/esbuild-jest",
+    "jest": "^26.6.3",
+    "prettier": "^2.0.5",
+    "react": "^17.0.1",
+    "rollup": "^2.39.1",
+    "rollup-plugin-dts": "^2.0.1",
+    "rollup-plugin-esbuild": "^2.6.1",
+    "typescript": "^4.0.0"
+  },
+  "prettier": "@alloc/prettier-config",
+  "keywords": [
+    "react",
+    "react-native",
+    "spring",
+    "animated",
+    "animation",
+    "hooks",
+    "motion",
+    "typescript",
+    "velocity"
+  ]
+}

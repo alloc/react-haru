@@ -8,4 +8,7 @@ module.exports = {
   transform: {
     '\\.tsx?$': ['esbuild-jest'],
   },
+  timers: 'fake',
+  setupFilesAfterEnv: ['<rootDir>/jest/setup.ts'],
+  testPathIgnorePatterns: ['.+/(types|__snapshots__)/.+'],
 }

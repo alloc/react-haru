@@ -1,0 +1,11 @@
+.github
+docs
+jest
+node_modules
+tsconfig.json
+jest.config.js
+rollup.config.js
+pnpm-lock.yaml
+*.test.*
+__tests__
+__snapshots__

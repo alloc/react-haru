@@ -1,11 +1,11 @@
 import React, { useCallback, useState, useEffect } from 'react'
-import { Search, Select } from '@alifd/next'
+// import { Search, Select } from '@alifd/next'
 import s from './style.module.css'
-import type { PagesStaticData } from 'vite-plugin-react-pages'
+import type { IPagesStaticData } from 'vite-plugin-react-pages'
 import { useHistory } from 'react-router-dom'
 
 interface Props {
-  readonly pagesStaticData: PagesStaticData
+  readonly pagesStaticData: IPagesStaticData
 }
 
 interface FilteredData {
@@ -44,8 +44,7 @@ const SiteSearch = ({ pagesStaticData }: Props) => {
       className={s.search}
       value={searchVal}
       // @ts-expect-error
-      onChange={onChange}
-    >
+      onChange={onChange}>
       {filteredData.map(({ label, path }) => (
         <Select.Option value={path} key={path}>
           {label}
@@ -62,7 +61,7 @@ function containString(whole: string, part: string) {
 }
 
 function search(
-  pagesStaticData: PagesStaticData,
+  pagesStaticData: IPagesStaticData,
   value: string
 ): FilteredData[] {
   return Object.entries(pagesStaticData)

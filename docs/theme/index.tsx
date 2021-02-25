@@ -1,184 +1,111 @@
-import React, { useMemo } from 'react'
-import type { Theme, PagesStaticData } from 'vite-plugin-react-pages'
+import React, { ReactNode, useMemo } from 'react'
+import { ITheme, IPagesStaticData } from 'vite-plugin-react-pages'
 import Layout from './layout'
-import type { SideMenuData, TopNavData } from './layout'
-import MD from './layout/MDX'
+import MD from './layout/mdx'
+import { ThemeConfig, PageView, PathConfig, resolvePathConfig } from './config'
 
-interface Option {
-  /**
-   * Take fully control of side nav menu.
-   */
-  readonly sideMenuData?: ReadonlyArray<SideMenuData>
-  /**
-   * Navigation menu at top bar.
-   */
-  readonly topNavs?: ReadonlyArray<TopNavData>
-  /**
-   * Logo area at top bar.
-   */
-  readonly logo?: React.ReactNode
-  /**
-   * Operation area at top bar.
-   */
-  readonly topbarOperations?: React.ReactNode
-  /**
-   * Footer area.
-   */
-  readonly footer?: React.ReactNode
-  /**
-   * Enable search.
-   * @default true
-   */
-  readonly search?: boolean
-}
+export const createTheme = (config: ThemeConfig): ITheme => ({
+  staticData,
+  loadedData,
+  loadState,
+}) => {
+  const path = loadState.routePath
+  config = resolvePathConfig(path, config)
 
-export function createTheme({
-  topNavs,
-  logo,
-  sideMenuData,
-  footer,
-  topbarOperations,
-  search = true,
-}: Option = {}): Theme {
-  const Theme: Theme = ({ staticData, loadedData, loadState }) => {
-    console.log('#Theme', staticData, loadedData, loadState)
+  console.log('#Theme', config, staticData, loadedData, loadState)
 
-    const menu = useMemo(() => {
-      return sideMenuData ?? defaultMenu(staticData)
-    }, [sideMenuData, staticData])
+  const renderPage = getPageView(loadState.type, config)
+  const page = renderPage({
+    data: (loadState as any).error || loadedData[path],
+    page: staticData[path],
+    pages: staticData,
+    config,
+  })
 
-    if (loadState.type === 'loading') {
-      return (
-        <Layout
-          sideMenuData={menu}
-          topNavs={topNavs ?? []}
-          logo={logo}
-          path={loadState.routePath}
-          footer={footer}
-          topbarOperations={topbarOperations}
-          pagesStaticData={staticData}
-          search={search}
-        >
-          <p>initial Loading...</p>
-        </Layout>
-      )
-    }
-    if (loadState.type === 'load-error') {
-      return (
-        <Layout
-          sideMenuData={menu}
-          topNavs={topNavs ?? []}
-          logo={logo}
-          path={loadState.routePath}
-          footer={footer}
-          topbarOperations={topbarOperations}
-          pagesStaticData={staticData}
-          search={search}
-        >
-          <p>Load error</p>
-        </Layout>
-      )
-    }
-
-    if (loadState.type === '404') {
-      const Comp404 = loadedData['/404']?.main?.default
-      return (
-        <Layout
-          sideMenuData={menu}
-          topNavs={topNavs ?? []}
-          logo={logo}
-          path={loadState.routePath}
-          footer={footer}
-          topbarOperations={topbarOperations}
-          pagesStaticData={staticData}
-          search={search}
-        >
-          {Comp404 ? <Comp404 /> : <p>Page not found.</p>}
-        </Layout>
-      )
-    }
-
-    if (loadState.type !== 'loaded') {
-      return <p>Unknown load loadState: {loadState.type}</p>
-    }
-
-    const pageData = loadedData[loadState.routePath]
-    const pageStaticData = staticData[loadState.routePath]
-    const isComposedPage = Object.keys(pageData).length > 1
-    return (
-      <Layout
-        sideMenuData={menu}
-        topNavs={topNavs ?? []}
-        logo={logo}
-        path={loadState.routePath}
-        footer={footer}
-        topbarOperations={topbarOperations}
-        pagesStaticData={staticData}
-        search={search}
-      >
-        {Object.entries(pageData).map(([key, dataPart], idx) => {
-          const ContentComp = (dataPart as any).default
-          const pageStaticDataPart = pageStaticData[key]
-          const MdWrap =
-            pageStaticDataPart.sourceType === 'md' ? MD : React.Fragment
-          const content = (
-            <MdWrap>
-              <ContentComp />
-            </MdWrap>
-          )
-          if (isComposedPage) {
-            return (
-              <section style={{ marginBottom: '40px' }} key={idx}>
-                <h2>{pageStaticDataPart.title}</h2>
-                {pageStaticDataPart.description && (
-                  <p>{pageStaticDataPart.description}</p>
-                )}
-                {content}
-              </section>
-            )
-          }
-          return <div key={idx}>{content}</div>
-        })}
-      </Layout>
-    )
-  }
-
-  return Theme
+  return (
+    <Layout path={path} config={config} pages={staticData}>
+      {page}
+    </Layout>
+  )
 }
 
 export { Layout }
 
-export function defaultMenu(pages: PagesStaticData): SideMenuData[] {
-  return (
-    Object.entries(pages)
-      // These special pages should not be showed in side menu
-      .filter(
-        ([path, staticData]) =>
-          path !== '/404' && !path.match(/\/:[^/]+/) && !staticData.hideInMenu
+function getPageView(status: string, config: PathConfig): PageView {
+  switch (status) {
+    case 'loaded':
+      return ({ data, page }) => {
+        const dataParts = Object.entries(data) as [string, any][]
+        return (
+          <>
+            {dataParts.map(([id, { default: Content }], i) => {
+              const Container =
+                data[id].sourceType === 'md' ? MD : React.Fragment
+              const content = (
+                <Container>
+                  <Content />
+                </Container>
+              )
+              if (dataParts.length > 1) {
+                return (
+                  <section style={{ marginBottom: '40px' }} key={i}>
+                    <h2>{page.title}</h2>
+                    {page.description && <p>{page.description}</p>}
+                    {content}
+                  </section>
+                )
+              }
+              return <div key={i}>{content}</div>
+            })}
+          </>
+        )
+      }
+    case 'loading':
+      return config.renderLoading
+    case 'load-error':
+      return config.renderError
+    default:
+      return (
+        config.renderNotFound ||
+        (props => {
+          const NotFound = props.pages['/404']?.main?.default
+          return NotFound ? <NotFound {...props} /> : <p>Page not found.</p>
+        })
       )
-      .sort((a, b) => {
-        const [pathA, staticDataA] = a
-        const [pathB, staticDataB] = b
-
-        let ASort: number
-        let BSort: number
-        if (staticDataA.sort !== undefined) ASort = Number(staticDataA.sort)
-        else if (staticDataA.main?.sort !== undefined)
-          ASort = Number(staticDataA.main.sort)
-        else ASort = 1
-        if (staticDataB.sort !== undefined) BSort = Number(staticDataB.sort)
-        else if (staticDataB.main?.sort !== undefined)
-          BSort = Number(staticDataB.main.sort)
-        else BSort = 1
-
-        if (ASort !== BSort) return ASort - BSort
-        return pathA.localeCompare(pathB)
-      })
-      .map(([path, staticData]) => {
-        return {
-          path,
-          text: staticData.title ?? staticData.main?.title ?? path,
-        }
-      })
-  )
+  }
 }
+
+// export function defaultMenu(pages: PagesStaticData): SideMenuData[] {
+//   return (
+//     Object.entries(pages)
+//       // These special pages should not be showed in side menu
+//       .filter(
+//         ([path, staticData]) =>
+//           path !== '/404' && !path.match(/\/:[^/]+/) && !staticData.hideInMenu
+//       )
+//       .sort((a, b) => {
+//         const [pathA, staticDataA] = a
+//         const [pathB, staticDataB] = b
+
+//         let ASort: number
+//         let BSort: number
+//         if (staticDataA.sort !== undefined) ASort = Number(staticDataA.sort)
+//         else if (staticDataA.main?.sort !== undefined)
+//           ASort = Number(staticDataA.main.sort)
+//         else ASort = 1
+//         if (staticDataB.sort !== undefined) BSort = Number(staticDataB.sort)
+//         else if (staticDataB.main?.sort !== undefined)
+//           BSort = Number(staticDataB.main.sort)
+//         else BSort = 1
+
+//         if (ASort !== BSort) return ASort - BSort
+//         return pathA.localeCompare(pathB)
+//       })
+//       .map(([path, staticData]) => {
+//         return {
+//           path,
+//           text: staticData.title ?? staticData.main?.title ?? path,
+//         }
+//       })
+//   )
+// }

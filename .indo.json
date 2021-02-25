@@ -2,7 +2,7 @@
   "repos": {
     "docs/dist": {
       "url": "https://github.com/alloc/react-haru",
-      "branch": "gh-pages"
+      "head": "gh-pages"
     }
   }
 }

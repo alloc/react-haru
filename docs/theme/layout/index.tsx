@@ -1,22 +1,15 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { Nav, Shell, ConfigProvider } from '@alifd/next'
-import 'github-markdown-css/github-markdown.css'
-import type { PagesStaticData } from 'vite-plugin-react-pages'
+import type { IPagesStaticData } from 'vite-plugin-react-pages'
+import { ThemeConfig } from '../config'
 
-import s from './style.module.css'
-import './global.css'
-import SiteSearch from './search'
+import css from './style.module.sass'
+import './global.sass'
 
 interface Props {
-  readonly sideMenuData: ReadonlyArray<SideMenuData>
-  readonly topNavs: ReadonlyArray<TopNavData>
-  readonly logo: React.ReactNode
-  readonly path?: string
-  readonly footer?: React.ReactNode
-  readonly pagesStaticData?: PagesStaticData
-  readonly topbarOperations?: React.ReactNode
-  readonly search?: boolean
+  path: string
+  pages: IPagesStaticData
+  config: ThemeConfig
 }
 
 const Layout: React.FC<Props> = ({
@@ -27,120 +20,16 @@ const Layout: React.FC<Props> = ({
   children,
   footer,
   pagesStaticData,
-  topbarOperations,
   search,
 }) => {
   return (
-    <ConfigProvider prefix="vp-theme-">
-      <Shell className={s.layout}>
-        <Shell.Branding>{logo} </Shell.Branding>
-        <Shell.Action>
-          {topbarOperations}
-          {search && pagesStaticData && (
-            <SiteSearch pagesStaticData={pagesStaticData} />
-          )}
-          {topNavs && (
-            <Nav direction="hoz" embeddable>
-              {renderNav(topNavs)}
-            </Nav>
-          )}
-        </Shell.Action>
-
-        <Shell.Navigation trigger={null}>
-          <Nav embeddable>{renderNav(sideMenuData)}</Nav>
-        </Shell.Navigation>
-
-        <Shell.Content className={s.content} key={path}>
-          {/* reset prefix setting for user content */}
-          <ConfigProvider prefix="next-">
-            <>{children}</>
-          </ConfigProvider>
-        </Shell.Content>
-
-        {footer && <Shell.Footer>{footer}</Shell.Footer>}
-      </Shell>
-    </ConfigProvider>
+    <div>
+      <div className={css.logo}>{logo}</div>
+      <div className={css.content} key={path}>
+        {children}
+      </div>
+    </div>
   )
 }
 
 export default Layout
-
-export type SideMenuData = { readonly text: string; readonly path: string }
-
-export type TopNavData =
-  | {
-      readonly text: string
-      /**
-       * The url.
-       * @example 'https://www.google.com/'
-       */
-      readonly href: string
-    }
-  | {
-      readonly text: string
-      /**
-       * The path in the current webapp.
-       * @example '/posts/hello-world'
-       */
-      readonly path: string
-    }
-  | {
-      /**
-       * The label of the subnav
-       */
-      readonly subNav: string
-      readonly children: ReadonlyArray<TopNavData>
-    }
-  | {
-      /**
-       * The label of the nav group
-       */
-      readonly group: string
-      readonly children: ReadonlyArray<TopNavData>
-    }
-
-export function renderNav(navs: ReadonlyArray<TopNavData>) {
-  return navs.map((item, idx) => {
-    if ('path' in item) {
-      return (
-        <Nav.Item key={idx}>
-          <Link
-            to={(location) => {
-              if (location.search) {
-                // preserve query
-                return `${item.path}${location.search}`
-              }
-              return item.path
-            }}
-          >
-            {item.text}
-          </Link>
-        </Nav.Item>
-      )
-    }
-    if ('href' in item) {
-      return (
-        <Nav.Item key={idx}>
-          <a href={item.href} target="_blank">
-            {item.text}
-          </a>
-        </Nav.Item>
-      )
-    }
-    if ('group' in item) {
-      return (
-        <Nav.Group label={item.group} key={idx}>
-          {renderNav(item.children)}
-        </Nav.Group>
-      )
-    }
-    if ('subNav' in item) {
-      return (
-        <Nav.SubNav label={item.subNav} key={idx}>
-          {renderNav(item.children)}
-        </Nav.SubNav>
-      )
-    }
-    throw new Error(`unexpected nav`)
-  })
-}

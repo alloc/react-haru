@@ -1,31 +1,28 @@
 {
-  "name": "website",
+  "name": "@react-haru/docs",
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "vite serve",
-    "build": "rm -rf dist && vite build --outDir dist && serve -s dist",
-    "ssr": "rm -rf dist && vite-pages ssr && serve dist"
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "sirv dist"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "@mdx-js/react": "^1.6.16",
-    "@pika/react": "^16.13.1",
-    "@pika/react-dom": "^16.13.1",
-    "react-router-dom": "^5.2.0"
+    "@mdx-js/react": "^1.6.22",
+    "react": "^17.0.0",
+    "react-dom": "^17.0.0",
+    "react-router-dom": "^5.2.0",
+    "vite-pages-theme-basic": "^2.0.0"
   },
   "devDependencies": {
-    "@types/react": "^16.9.48",
-    "@types/react-router-dom": "^5.1.5",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
-    "serve": "^11.3.2",
-    "vite": "^1.0.0-rc.4",
-    "vite-pages-theme-basic": "^0.9.0",
-    "vite-plugin-mdx": "^0.4.0",
-    "vite-plugin-react": "^3.0.2",
-    "vite-plugin-react-pages": "^0.8.0"
+    "@types/node": "^14.14.31",
+    "@types/react": "^17.0.0",
+    "@types/react-router-dom": "^5.1.7",
+    "@vitejs/plugin-react-refresh": "^1.0.0",
+    "sass": "^1.32.8",
+    "sirv": "^1.0.11",
+    "vite": "^2.0.0",
+    "vite-plugin-mdx": "^2.0.0",
+    "vite-plugin-react-pages": "^2.0.0"
   }
 }

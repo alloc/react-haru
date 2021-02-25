@@ -1,4 +1,5 @@
 import { createTheme } from 'vite-pages-theme-basic'
+import * as React from 'react'
 
 export default createTheme({
   topNavs: [
@@ -9,5 +10,5 @@ export default createTheme({
       href: 'https://github.com/vitejs/vite-plugin-react-pages',
     },
   ],
-  logo: 'Vite Pages',
+  logo: <img src="/logo.svg" />,
 })

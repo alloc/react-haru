@@ -2,6 +2,7 @@
   "name": "@react-haru/docs",
   "version": "1.0.0",
   "private": true,
+  "prettier": "@alloc/prettier-config",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -9,18 +10,20 @@
   },
   "dependencies": {
     "@mdx-js/react": "^1.6.22",
+    "github-markdown-css": "^4.0.0",
     "react": "^17.0.0",
     "react-dom": "^17.0.0",
-    "react-router-dom": "^5.2.0",
-    "vite-pages-theme-basic": "^2.0.0"
+    "react-router-dom": "^5.2.0"
   },
   "devDependencies": {
+    "@alloc/prettier-config": "^1.0.0",
     "@types/node": "^14.14.31",
     "@types/react": "^17.0.0",
     "@types/react-router-dom": "^5.1.7",
     "@vitejs/plugin-react-refresh": "^1.0.0",
+    "prettier": "^2.2.1",
     "sass": "^1.32.8",
-    "sirv": "^1.0.11",
+    "sirv-cli": "^1.0.11",
     "vite": "^2.0.0",
     "vite-plugin-mdx": "^2.0.0",
     "vite-plugin-react-pages": "^2.0.0"

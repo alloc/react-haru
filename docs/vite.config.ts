@@ -6,8 +6,9 @@ import path from 'path'
 
 export default defineConfig({
   build: {
-    minify: false,
+    outDir: 'dist',
     emptyOutDir: false,
+    minify: false,
   },
   plugins: [
     reactRefresh(),

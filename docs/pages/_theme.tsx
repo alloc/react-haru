@@ -1,14 +1,7 @@
-import { createTheme } from 'vite-pages-theme-basic'
+import { createTheme } from '../theme'
 import * as React from 'react'
 
 export default createTheme({
-  topNavs: [
-    { text: 'index', path: '/' },
-    { text: 'Vite', href: 'https://github.com/vitejs/vite' },
-    {
-      text: 'Vite Pages',
-      href: 'https://github.com/vitejs/vite-plugin-react-pages',
-    },
-  ],
+  topNavs: [{ text: 'GitHub', href: 'https://github.com/alloc/react-haru' }],
   logo: <img src="/logo.svg" />,
 })

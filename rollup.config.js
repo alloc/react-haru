@@ -33,6 +33,6 @@ const bundles = (input, name) => [
 
 export default [
   ...bundles('src/index.ts', name),
-  ...bundles('src/targets/web/index.ts', 'web'),
-  ...bundles('src/targets/native/index.ts', 'native'),
+  ...bundles('src/targets/web/index.ts', 'web/index'),
+  ...bundles('src/targets/native/index.ts', 'native/index'),
 ]

@@ -4,6 +4,7 @@ export { Globals }
 export * from './FrameLoop'
 export * from './colors'
 export * from './colorToRgba'
+export * from './isAnimatedString'
 export * from './createInterpolator'
 export * from './stringInterpolation'
 export * from './deprecations'

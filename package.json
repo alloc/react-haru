@@ -9,6 +9,7 @@
   "module": "dist/react-haru.mjs",
   "types": "dist/react-haru.d.ts",
   "scripts": {
+    "dev": "yarn build -w",
     "build": "rollup -c",
     "prepare": "yarn build",
     "test": "jest"

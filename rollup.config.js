@@ -1,6 +1,5 @@
 import dts from 'rollup-plugin-dts'
 import esbuild from 'rollup-plugin-esbuild'
-import resolve from '@rollup/plugin-node-resolve'
 
 const { name } = require('./package.json')
 

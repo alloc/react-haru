@@ -19,10 +19,9 @@ const bundle = (input, name, format) => ({
     format == 'dts'
       ? [dts()]
       : [
-          // resolve({
-          //   extensions: ['.ts', '.tsx', '.d.ts'],
-          // }),
-          esbuild(),
+          esbuild({
+            sourceMap: true,
+          }),
         ],
   external: id => !/^[./]/.test(id),
 })

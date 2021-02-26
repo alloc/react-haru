@@ -1,11 +1,11 @@
 import { ReactNode } from 'react'
 import makePathRegex from 'regexparam'
-import { IPagesStaticData } from 'vite-plugin-react-pages'
+import { PagesStaticData } from 'vite-plugin-react-pages'
 
 export interface ThemeConfig {
   logo?: ReactNode
-  pathOverrides?: {
-    [path: string]: Partial<ThemeConfig>
+  overrides?: {
+    [path: string]: Omit<Partial<ThemeConfig>, 'pathOverrides'>
   }
   renderError: PageView
   renderLoading: PageView
@@ -14,9 +14,9 @@ export interface ThemeConfig {
 
 export interface PageView {
   (props: {
-    data: any
-    page: any
-    pages: IPagesStaticData
+    data: Record<string, any>
+    page: Record<string, any> & { title?: string }
+    pages: PagesStaticData
     config: PathConfig
   }): ReactNode
 }
@@ -32,13 +32,12 @@ const pathConfigCache: { [path: string]: PathConfig } = {}
 
 export function resolvePathConfig(
   path: string,
-  { pathOverrides, ...config }: ThemeConfig
+  { overrides: pathOverrides, ...config }: ThemeConfig
 ): PathConfig {
   if (pathConfigCache[path]) {
     return pathConfigCache[path]
   }
 
-  let overrides: Partial<ThemeConfig> | undefined
   if (pathOverrides) {
     pathRegexCache ??= Object.keys(pathOverrides).reduce((cache, route) => {
       cache[path] = makePathRegex(route).pattern
@@ -47,7 +46,7 @@ export function resolvePathConfig(
 
     for (const route in pathRegexCache) {
       if (pathRegexCache[route].test(path)) {
-        overrides = pathOverrides[route]
+        Object.assign(config, pathOverrides[route])
         break
       }
     }
@@ -56,6 +55,5 @@ export function resolvePathConfig(
   return {
     path,
     ...config,
-    ...overrides,
   }
 }

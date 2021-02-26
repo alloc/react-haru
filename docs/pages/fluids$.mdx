@@ -1,0 +1,54 @@
+---
+title: Introducing fluids
+---
+
+Fluid values are objects which represent a value that changes over time.
+When these objects are passed to animated components, props can be updated without
+having to rerender.
+
+Fluid values can be observed via the `addFluidObserver` function. Observers receive
+events sent via the `callFluidObservers` function.
+
+# Create a fluid value
+
+**Any object can be made into a fluid value.** If you want observers to be type-checked,
+your object should extend the `FluidValue` class. See the [Type-checking](#type-checking)
+section for more details.
+
+First, you need to install the [`fluids`][1] package. This package provides basic utilities
+for making any object an _observable value_ (basically a glorified event emitter with a memoized value).
+It aims to be small without sacrificing convenience. It currently weighs about ~550 bytes.
+
+Once `fluids` is installed, all you need is the `setFluidGetter` function and `callFluidObservers`
+function, but keep in mind there's also a `getFluidObservers` function if you need to call observers
+manually.
+
+The `setFluidGetter` function helps the `getFluidValue` function (used by consumers) find
+the underlying value that your object represents.
+
+```ts
+import { setFluidGetter, callFluidObservers } from 'fluids'
+
+let myObject = {}
+let itsValue = 1
+
+// Call this right after creation.
+setFluidGetter(myObject, () => itsValue)
+
+// Call this when your value changes or for any other event.
+callFluidObservers(myObject, {
+  type: 'change',
+  value: itsValue,
+  parent: myObject,
+})
+```
+
+The `type` and `parent` properties are **required** by the `callFluidObservers` function.
+
+With this approach, observers won't know which events are sent by your fluid value,
+and the `getFluidValue` function will return `any`. For type safety, read the next section.
+
+[1]: https://github.com/alloc/fluids
+[2]: https://en.wikipedia.org/wiki/Waterfall_model
+
+# Type-checking

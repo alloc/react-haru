@@ -1,11 +1,10 @@
 import React, { useCallback, useState, useEffect } from 'react'
-// import { Search, Select } from '@alifd/next'
 import s from './style.module.css'
-import type { IPagesStaticData } from 'vite-plugin-react-pages'
+import type { PagesStaticData } from 'vite-plugin-react-pages'
 import { useHistory } from 'react-router-dom'
 
 interface Props {
-  readonly pagesStaticData: IPagesStaticData
+  readonly pagesStaticData: PagesStaticData
 }
 
 interface FilteredData {

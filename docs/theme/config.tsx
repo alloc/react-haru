@@ -4,21 +4,13 @@ import { PagesStaticData } from 'vite-plugin-react-pages'
 
 export interface ThemeConfig {
   logo?: ReactNode
+  topRight?: (ReactNode | { text: string; href: string })[]
+  renderError: (error: Error) => ReactNode
+  renderLoading: () => ReactNode
+  renderNotFound?: (data: any) => ReactNode
   overrides?: {
     [path: string]: Omit<Partial<ThemeConfig>, 'pathOverrides'>
   }
-  renderError: PageView
-  renderLoading: PageView
-  renderNotFound?: PageView
-}
-
-export interface PageView {
-  (props: {
-    data: Record<string, any>
-    page: Record<string, any> & { title?: string }
-    pages: PagesStaticData
-    config: PathConfig
-  }): ReactNode
 }
 
 export interface PathConfig extends Omit<ThemeConfig, 'pathOverrides'> {

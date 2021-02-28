@@ -1,0 +1,23 @@
+.title
+  z-index: 1
+  overflow: hidden
+  @apply h-60px my-7.2 text-lg font-600 font-h
+
+  svg
+    transform: translate(-45%, -45%) scale(0.1)
+    @apply h-600px
+
+  h1, text
+    @apply text-deepPink tracking-tighter
+
+  // Safari only
+  h1
+    font-weight: inherit
+    @apply p-0 pt-2.5
+
+@screen xl
+  .title
+    @apply h-72px
+
+    svg
+      @apply h-720px

@@ -7,9 +7,30 @@ import pages from 'vite-plugin-react-pages'
 import windi from 'vite-plugin-windicss'
 import path from 'path'
 
+const defaultFont = `-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif`
+
+const colors = {
+  red: '#F53657',
+  rose1: '#FFFAFB', // 348, 2, 100
+  rose2: '#F2DFE3', // 348, 8, 95
+  rose3: '#EBC9D0', // 349, 14, 92
+  maroon: '#730015',
+  deepPink: '#EB0071',
+}
+
 const theme: Theme = {
+  colors,
   backgroundColor: {
-    red: '#F53657',
+    ...colors,
+    code: '#F7EBED',
+    code2: '#FFEBEE',
+  },
+  letterSpacing: {
+    tighter: '-.03em',
+    normal: '0',
+  },
+  fontFamily: {
+    h: `AcehSoft, ${defaultFont}`,
   },
 }
 

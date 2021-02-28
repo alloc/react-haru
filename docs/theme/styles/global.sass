@@ -1,0 +1,26 @@
+@import ./variables
+@import ../fonts/AcehSoft
+
+*
+  position: relative
+  font-family: inherit
+
+html
+  font-family: Inter, $defaultFont
+  font-size: 16px
+
+@supports (font-variation-settings: normal)
+  html
+    font-family: Inter var, $defaultFont
+
+@screen xl
+  html
+    font-size: 20px
+
+::selection
+  background: #F7E4E8
+
+.no-scroll
+  overflow: hidden !important
+
+@import ./markdown

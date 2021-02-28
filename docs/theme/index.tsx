@@ -1,45 +1,49 @@
 import React from 'react'
 import { Theme } from 'vite-plugin-react-pages'
-import Layout from './layout'
-import MD from './layout/mdx'
-import { ThemeConfig, PageView, PathConfig, resolvePathConfig } from './config'
+import { Layout } from './layout'
+import { Markdown } from './layout/mdx'
+import { ThemeConfig, PathConfig, resolvePathConfig } from './config'
+import './styles/global.sass'
+import { PageContext, usePage } from './utils/PageContext'
 
-export const createTheme = (config: ThemeConfig): Theme => ({
-  staticData,
-  loadedData,
-  loadState,
-}) => {
-  const path = loadState.routePath
-  const pathConfig = resolvePathConfig(path, config)
-  const renderPage = getPageView(loadState.type, pathConfig)
-
-  const pageData = staticData[path]
-  const pageElement = renderPage({
-    data: (loadState as any).error || loadedData[path],
-    page: staticData[path],
-    pages: staticData,
-    config: pathConfig,
-  })
-
-  return (
-    <Layout path={path} page={pageData} config={config} pages={staticData}>
-      {pageElement}
-    </Layout>
-  )
+export function createTheme(config: ThemeConfig): Theme {
+  const Page = ({ status, data }: { status: string; data: any }) => {
+    const renderPage = getPageView(status, usePage().config)
+    return <Layout>{renderPage(data)}</Layout>
+  }
+  return ({ staticData, loadedData, loadState }) => {
+    const path = loadState.routePath
+    const { Provider } = PageContext
+    return (
+      <Provider
+        value={{
+          path,
+          page: staticData[path],
+          pages: staticData,
+          config: resolvePathConfig(path, config),
+        }}>
+        <Page
+          status={loadState.type}
+          data={(loadState as any).error || loadedData[path]}
+        />
+      </Provider>
+    )
+  }
 }
 
 export { Layout }
 
-function getPageView(status: string, config: PathConfig): PageView {
+function getPageView(status: string, config: PathConfig) {
   switch (status) {
     case 'loaded':
-      return ({ data, page }) => {
+      return (data: { [id: string]: { default: React.ComponentType } }) => {
+        const { page } = usePage()
         const sections = Object.entries(data)
         return (
           <>
             {sections.map(([id, { default: Content }], i) => {
               const Container =
-                page[id].sourceType === 'md' ? MD : React.Fragment
+                page[id].sourceType === 'md' ? Markdown : React.Fragment
 
               const content = (
                 <Container>
@@ -67,9 +71,10 @@ function getPageView(status: string, config: PathConfig): PageView {
     default:
       return (
         config.renderNotFound ||
-        (props => {
-          const NotFound = props.pages['/404']?.main?.default
-          return NotFound ? <NotFound {...props} /> : <p>Page not found.</p>
+        (() => {
+          const page = usePage('/404')
+          const NotFound = page?.main?.default
+          return NotFound ? <NotFound /> : <p>Page not found.</p>
         })
       )
   }

@@ -1,0 +1,68 @@
+//
+// Markdown only
+//
+
+.markdown-body
+  font-family: inherit
+  font-size: inherit
+
+  h1, h2
+    border-bottom: none
+    @apply font-600 tracking-tighter
+
+  h1
+    @apply text-4xl border-rose3 mb-6 mt-16
+
+  p
+    @apply font-460
+
+  strong
+    @apply font-670
+
+  code, pre
+    font-variation-settings: 'MONO' 1, 'CASL' 0
+    letter-spacing: 0.005em
+    @apply text-deepPink
+
+  code
+    @apply rounded-md bg-code2
+
+  a
+    @apply text-deepPink
+
+    span
+      transition: opacity 0.25s ease-out
+
+    code
+      box-shadow: 0 0 0 1.5px #FFCCE5
+      background: none
+      transition: all 0.25s ease-out
+      @apply font-400
+
+    &:hover
+      text-decoration: none
+      span
+        opacity: 0.45
+      code
+        box-shadow: 0 0 0 1.5px #F50076
+
+  pre
+    box-shadow: 0 0 0 1.5px #FFCCE5
+    background: rgba(white, 0.6)
+    @apply rounded-0.6rem
+
+  p, pre, blockquote, ol, ul
+    @apply mb-4.8
+
+//
+// Global overrides
+//
+
+*, .markdown-body
+  // @apply text-maroon
+
+  h1, h2, h3, h4
+    @apply m-0 text-deepPink
+
+  h1, h2
+    @apply font-h text-5xl font-500

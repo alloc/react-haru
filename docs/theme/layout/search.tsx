@@ -1,5 +1,4 @@
 import React, { useCallback, useState, useEffect } from 'react'
-import s from './style.module.css'
 import type { PagesStaticData } from 'vite-plugin-react-pages'
 import { useHistory } from 'react-router-dom'
 

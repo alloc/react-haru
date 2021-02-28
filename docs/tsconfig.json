@@ -4,6 +4,7 @@
     "jsx": "react",
     "moduleResolution": "node",
     "esModuleInterop": true,
-    "strict": true
+    "strict": true,
+    "types": ["vite/client"]
   }
 }

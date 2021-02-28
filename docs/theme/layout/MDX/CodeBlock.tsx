@@ -3,24 +3,16 @@ import Highlight, { defaultProps } from 'prism-react-renderer'
 import theme from 'prism-react-renderer/themes/github'
 import type { Language } from 'prism-react-renderer'
 
-// copied from https://mdxjs.com/guides/syntax-highlighting
-
-interface Props {
-  readonly className?: string
-  readonly children?: string
-}
-
-const CodeBlock = ({ children = '', className = '' }: Props) => {
-  const language = className?.replace(/language-/, '') as Language
+export function CodeBlock({ children = '', className = '' }: any) {
+  const language = className.replace(/language-/, '') as Language
   return (
     <Highlight
       {...defaultProps}
       theme={theme}
       code={children.trim()}
-      language={language}
-    >
-      {({ className, style, tokens, getLineProps, getTokenProps }) => (
-        <pre className={className} style={style}>
+      language={language}>
+      {({ className, tokens, getLineProps, getTokenProps }) => (
+        <pre className={className}>
           {tokens.map((line, i) => (
             <div key={i} {...getLineProps({ line, key: i })}>
               {line.map((token, key) => (
@@ -33,5 +25,3 @@ const CodeBlock = ({ children = '', className = '' }: Props) => {
     </Highlight>
   )
 }
-
-export default CodeBlock

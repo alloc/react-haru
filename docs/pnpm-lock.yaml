@@ -1,17 +1,29 @@
 dependencies:
+  '@alloc/types': 1.3.0
   '@mdx-js/react': 1.6.22_react@17.0.1
+  classnames: 2.2.6
+  fontfaceobserver-es: 3.3.3
+  github-slugger: 1.3.0
   prism-react-renderer: 1.2.0_react@17.0.1
   react: 17.0.1
   react-dom: 17.0.1_react@17.0.1
   react-haru: 0.1.0_react@17.0.1
+  react-intersection-observer: 8.31.0_react@17.0.1
+  react-is: 17.0.1
+  react-responsive: 8.2.0_react@17.0.1
   react-router-dom: 5.2.0_react@17.0.1
   regexparam: 1.3.0
-  windicss: 2.2.0
+  use-element-size: 1.2.1_react-dom@17.0.1+react@17.0.1
 devDependencies:
   '@alloc/prettier-config': 1.0.0
+  '@types/classnames': 2.2.11
+  '@types/github-slugger': 1.3.0
+  '@types/mdx-js__react': 1.5.3
   '@types/node': 14.14.31
   '@types/react': 17.0.2
+  '@types/react-is': 17.0.0
   '@types/react-router-dom': 5.1.7
+  '@types/react-router-hash-link': 1.2.1
   '@vitejs/plugin-react-refresh': 1.3.1
   prettier: 2.2.1
   sass: 1.32.8
@@ -391,6 +403,12 @@ packages:
     dev: false
     resolution:
       integrity: sha512-h+ilqoX998mRVM5FtB5ijRuHUDVt5l3yfoOi2uh18Z/O3hvyaHQ39NpxVkCIG5yFs+mLq/ewFp8Bss6zmWv6ZA==
+  /@babel/runtime/7.13.8:
+    dependencies:
+      regenerator-runtime: 0.13.7
+    dev: false
+    resolution:
+      integrity: sha512-CwQljpw6qSayc0fRG1soxHAKs1CnQMOChm4mlQP6My0kf9upVGizj/KhlTTgyUnETmHpcUXjaluNAkteRFuafg==
   /@babel/template/7.12.13:
     dependencies:
       '@babel/code-frame': 7.12.13
@@ -518,10 +536,18 @@ packages:
       rollup: ^1.20.0||^2.0.0
     resolution:
       integrity: sha512-GksZ6pr6TpIjHm8h9lSQ8pi8BE9VeubNT0OMJ3B5uZJ8pz73NPiqOtCog/x2/QzM1ENChPKxMDhiQuRHsqc+lg==
+  /@types/classnames/2.2.11:
+    dev: true
+    resolution:
+      integrity: sha512-2koNhpWm3DgWRp5tpkiJ8JGc1xTn2q0l+jUNUE7oMKXUf5NpI9AIdC4kbjGNFBdHtcxBD18LAksoudAVhFKCjw==
   /@types/estree/0.0.39:
     dev: true
     resolution:
       integrity: sha512-EYNwp3bU+98cpU4lAWYYL7Zz+2gryWH1qbdDTidVd6hkiR6weksdbMadyXKXNPEkQFhXM+hVO9ZygomHXp+AIw==
+  /@types/github-slugger/1.3.0:
+    dev: true
+    resolution:
+      integrity: sha512-J/rMZa7RqiH/rT29TEVZO4nBoDP9XJOjnbbIofg7GQKs4JIduEO3WLpte+6WeUz/TcrXKlY+bM7FYrp8yFB+3g==
   /@types/hast/2.3.1:
     dependencies:
       '@types/unist': 2.0.3
@@ -538,6 +564,12 @@ packages:
     dev: true
     resolution:
       integrity: sha512-SXPBMnFVQg1s00dlMCc/jCdvPqdE4mXaMMCeRlxLDmTAEoegHT53xKtkDnzDTOcmMHUfcjyf36/YYZ6SxRdnsw==
+  /@types/mdx-js__react/1.5.3:
+    dependencies:
+      '@types/react': 17.0.2
+    dev: true
+    resolution:
+      integrity: sha512-flP0BpS5rXnEbkU5ih79ARaI/+rK10Iee+zxTaWYtoiyc2+f1EJ8EnYgMmXHdAuI7OX4J9/hdoXfrfrri0AT+Q==
   /@types/node/14.14.31:
     dev: true
     resolution:
@@ -562,6 +594,12 @@ packages:
     dev: true
     resolution:
       integrity: sha512-1HcDas8SEj4z1Wc696tH56G8OlRaH/sqZOynNNB+HF0WOeXPaxTtbYzJY2oEfiUxjSKjhCKr+MvR7dCHcEelug==
+  /@types/react-is/17.0.0:
+    dependencies:
+      '@types/react': 17.0.2
+    dev: true
+    resolution:
+      integrity: sha512-A0DQ1YWZ0RG2+PV7neAotNCIh8gZ3z7tQnDJyS2xRPDNtAtSPcJ9YyfMP8be36Ha0kQRzbZCrrTMznA4blqO5g==
   /@types/react-router-dom/5.1.7:
     dependencies:
       '@types/history': 4.7.8
@@ -570,6 +608,13 @@ packages:
     dev: true
     resolution:
       integrity: sha512-D5mHD6TbdV/DNHYsnwBTv+y73ei+mMjrkGrla86HthE4/PVvL1J94Bu3qABU+COXzpL23T1EZapVVpwHuBXiUg==
+  /@types/react-router-hash-link/1.2.1:
+    dependencies:
+      '@types/react': 17.0.2
+      '@types/react-router-dom': 5.1.7
+    dev: true
+    resolution:
+      integrity: sha512-jdzPGE8jFGq7fHUpPaKrJvLW1Yhoe5MQCrmgeesC+eSLseMj3cGCTYMDA4BNWG8JQmwO8NTYt/oT3uBZ77pmBA==
   /@types/react-router/5.1.11:
     dependencies:
       '@types/history': 4.7.8
@@ -888,6 +933,10 @@ packages:
       fsevents: 2.3.2
     resolution:
       integrity: sha512-9+s+Od+W0VJJzawDma/gvBNQqkTiqYTWLuZoyAsivsI4AaWTCzHG06/TMjsf1cYe9Cb97UCEhjz7HvnPk2p/tw==
+  /classnames/2.2.6:
+    dev: false
+    resolution:
+      integrity: sha512-JR/iSQOSt+LQIWwrwEzJ9uk0xfN3mTVYMwt1Ir5mUcSN6pU+V4zQFFaJsclJbPuAUQH+yfWef6tm7l1quW3C8Q==
   /cli-cursor/3.1.0:
     dependencies:
       restore-cursor: 3.1.0
@@ -1024,6 +1073,10 @@ packages:
       node: '>4'
     resolution:
       integrity: sha512-BcxQSKTSEEQUftYpBVnsH4SF05NTuBokb19/sBt6asXGKZ/6VP7PLG1CBCkFDYOnhXhPh0jMhO6xZ71oYHXHBA==
+  /css-mediaquery/0.1.2:
+    dev: false
+    resolution:
+      integrity: sha1-aiw3NEkoYYYxxUvTPO3TAdoYvqA=
   /css-select-base-adapter/0.1.1:
     dev: true
     resolution:
@@ -1280,6 +1333,10 @@ packages:
     dev: true
     resolution:
       integrity: sha512-ms+QR2ckfrrpEAjXweLx6kNCbpAl66DcW//3BZD4BV5KhUgr0RZRce1ON/9J3QyA3JO28nzgb5Xv8DnPr05ILg==
+  /emoji-regex/6.1.1:
+    dev: false
+    resolution:
+      integrity: sha1-xs0OwbBkLio8Z6ETfvxeeW2k+I4=
   /emojis-list/3.0.0:
     dev: true
     engines:
@@ -1486,6 +1543,10 @@ packages:
     dev: false
     resolution:
       integrity: sha512-ArBYNkGWGTB0UksCVb8ckPBF6XACkwjYl5aCd2W25z+NB3IlWdIXy6mi0Z15NzfkqTH1BkSv1WOZxmwry/O9LQ==
+  /fontfaceobserver-es/3.3.3:
+    dev: false
+    resolution:
+      integrity: sha512-1EyweL1ryy0koZWk80Kr0UgWq9KhbOl2cD6x1O8BtFu0gNqCWIXK1lVFSUb37DI5FMn1m86I6X7N1JRBy8wVfw==
   /format/0.2.2:
     dev: true
     engines:
@@ -1546,6 +1607,12 @@ packages:
       node: '>=4'
     resolution:
       integrity: sha1-3Xzn3hh8Bsi/NTeWrHHgmfCYDrw=
+  /github-slugger/1.3.0:
+    dependencies:
+      emoji-regex: 6.1.1
+    dev: false
+    resolution:
+      integrity: sha512-gwJScWVNhFYSRDvURk/8yhcFBee6aFjye2a7Lhb2bUyRulpIoek9p0I9Kt7PT67d/nUlZbFu8L9RLiA0woQN8Q==
   /glob-parent/5.1.1:
     dependencies:
       is-glob: 4.0.1
@@ -1693,7 +1760,7 @@ packages:
       integrity: sha512-l9sfDFsuqtOqKDsQdqrMRk0U85RZc0RtOR9yPI7mRVOa4FsR/BVnZ0shmQRM96Ji99kYZP/7hn1cedc1+ApsTQ==
   /history/4.10.1:
     dependencies:
-      '@babel/runtime': 7.13.7
+      '@babel/runtime': 7.13.8
       loose-envify: 1.4.0
       resolve-pathname: 3.0.0
       tiny-invariant: 1.1.0
@@ -1737,6 +1804,10 @@ packages:
     dev: true
     resolution:
       integrity: sha512-numTQtDZMoh78zJpaNdJ9MXb2cv5G3jwUoe3dMQODubZvLoGvTE/Ofp6sHvH8OGKcN/8A47pGLi/k58xHP/Tfw==
+  /hyphenate-style-name/1.0.4:
+    dev: false
+    resolution:
+      integrity: sha512-ygGZLjmXfPHj+ZWh6LwbC37l43MhfztxetbFCoYTM2VjkIUpeHgSNn7QIyVFj7YQ1Wl9Cbw5sholVJPzWvC2MQ==
   /icss-replace-symbols/1.1.0:
     dev: true
     resolution:
@@ -2138,6 +2209,12 @@ packages:
     dev: true
     resolution:
       integrity: sha512-8z4efJYk43E0upd0NbVXwgSTQs6cT3T06etieCMEg7dRbzCbxUCK/GHlX8mhHRDcp+OLlHkPKsvqQTCvsRl2cg==
+  /matchmediaquery/0.3.1:
+    dependencies:
+      css-mediaquery: 0.1.2
+    dev: false
+    resolution:
+      integrity: sha512-Hlk20WQHRIm9EE9luN1kjRjYXAQToHOIAHPJn9buxBwuhfTHoKUcX+lXBbxc85DVQfXYbEQ4HcwQdd128E3qHQ==
   /mdast-squeeze-paragraphs/4.0.0:
     dependencies:
       unist-util-remove: 2.0.1
@@ -3003,10 +3080,22 @@ packages:
       react: '*'
     resolution:
       integrity: sha512-MZayiEp8HThE1+QjF7cIuzqB2wAdfaPs7e2gfg7H17H23lt98LDkFxvf+1I4VFXThlHj1BjnOZXQeSGrNhT0tw==
+  /react-intersection-observer/8.31.0_react@17.0.1:
+    dependencies:
+      react: 17.0.1
+    dev: false
+    peerDependencies:
+      react: ^15.0.0 || ^16.0.0 || ^17.0.0|| ^18.0.0
+    resolution:
+      integrity: sha512-XraIC/tkrD9JtrmVA7ypEN1QIpKc52mXBH1u/bz/aicRLo8QQEJQAMUTb8mz4B6dqpPwyzgjrr7Ljv/2ACDtqw==
   /react-is/16.13.1:
     dev: false
     resolution:
       integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==
+  /react-is/17.0.1:
+    dev: false
+    resolution:
+      integrity: sha512-NAnt2iGDXohE5LI7uBnLnqvLQMtzhkiAOLXTmv+qnF9Ky7xAPcX8Up/xWIhxvLVGJvuLiNc4xQLtuqDRzb4fSA==
   /react-layout-effect/1.0.5_react@17.0.1:
     dependencies:
       react: 17.0.1
@@ -3021,6 +3110,20 @@ packages:
       node: '>=0.10.0'
     resolution:
       integrity: sha512-Gvzk7OZpiqKSkxsQvO/mbTN1poglhmAV7gR/DdIrRrSMXraRQQlfikRJOr3Nb9GTMPC5kof948Zy6jJZIFtDvQ==
+  /react-responsive/8.2.0_react@17.0.1:
+    dependencies:
+      hyphenate-style-name: 1.0.4
+      matchmediaquery: 0.3.1
+      prop-types: 15.7.2
+      react: 17.0.1
+      shallow-equal: 1.2.1
+    dev: false
+    engines:
+      node: '>= 0.10'
+    peerDependencies:
+      react: '>=16.8.0'
+    resolution:
+      integrity: sha512-iagCqVrw4QSjhxKp3I/YK6+ODkWY6G+YPElvdYKiUUbywwh9Ds0M7r26Fj2/7dWFFbOpcGnJE6uE7aMck8j5Qg==
   /react-router-dom/5.2.0_react@17.0.1:
     dependencies:
       '@babel/runtime': 7.13.7
@@ -3329,6 +3432,10 @@ packages:
     hasBin: true
     resolution:
       integrity: sha512-+GB6zVA9LWh6zovYQLALHwv5rb2PHGlJi3lfiqIHxR0uuwCgefcOJc59v9fv1w8GbStwxuuqqAjI9NMAOOgq1A==
+  /shallow-equal/1.2.1:
+    dev: false
+    resolution:
+      integrity: sha512-S4vJDjHHMBaiZuT9NPb616CSmLf618jawtv3sufLl6ivK8WocjAo58cXwbRV1cgqxH0Qbv+iUt6m05eqEa2IRA==
   /signal-exit/3.0.3:
     dev: true
     resolution:
@@ -3705,6 +3812,17 @@ packages:
     dev: true
     resolution:
       integrity: sha1-j97XMk7G6IoP+LkF58CYzcCG1UQ=
+  /use-element-size/1.2.1_react-dom@17.0.1+react@17.0.1:
+    dependencies:
+      rafz: 0.1.14
+      react: 17.0.1
+      react-dom: 17.0.1_react@17.0.1
+    dev: false
+    peerDependencies:
+      react: '>=16.9'
+      react-dom: '>=16.9'
+    resolution:
+      integrity: sha512-JiBYTMJsbGzGpHbIkv4Til36zsHXTOxy5WfBxx+/BNn0SVcmJcdQD9oe8CesOq+6E37hbRhJiZrFe5xf5d0pPg==
   /util-deprecate/1.0.2:
     dev: true
     resolution:
@@ -3843,6 +3961,7 @@ packages:
     resolution:
       integrity: sha512-wYxSGajtmoP4WxfejAPIr4l0fVh+jeMXZb08wNc0tMg6xsfZXj3cECqIK0G7ZAqUq0PP8WlMDtaOGVBTAWztNw==
   /windicss/2.2.0:
+    dev: true
     engines:
       node: '>= 12'
     hasBin: true
@@ -3876,23 +3995,35 @@ packages:
       integrity: sha512-V50KMwwzqJV0NpZIZFwfOD5/lyny3WlSzRiXgA0G7VUnRlqttta1L6UQIHzd6EuBY/cHGfwTIck7w1yH6Q5zUw==
 specifiers:
   '@alloc/prettier-config': ^1.0.0
+  '@alloc/types': ^1.3.0
   '@mdx-js/react': ^1.6.22
+  '@types/classnames': ^2.2.11
+  '@types/github-slugger': ^1.3.0
+  '@types/mdx-js__react': ^1.5.3
   '@types/node': ^14.14.31
   '@types/react': ^17.0.0
+  '@types/react-is': ^17.0.0
   '@types/react-router-dom': ^5.1.7
+  '@types/react-router-hash-link': ^1.2.1
   '@vitejs/plugin-react-refresh': ^1.0.0
+  classnames: ^2.2.6
+  fontfaceobserver-es: ^3.3.3
+  github-slugger: ^1.3.0
   prettier: ^2.2.1
   prism-react-renderer: ^1.2.0
   react: ^17.0.0
   react-dom: ^17.0.0
   react-haru: latest
+  react-intersection-observer: ^8.31.0
+  react-is: ^17.0.1
+  react-responsive: ^8.2.0
   react-router-dom: ^5.2.0
   regexparam: ^1.3.0
   sass: ^1.32.8
   sirv-cli: ^1.0.11
+  use-element-size: ^1.2.1
   vite: ^2.0.0
   vite-plugin-mdx: ^2.0.0
   vite-plugin-react-pages: ^2.0.0
   vite-plugin-rehost: ^2.0.5
   vite-plugin-windicss: ^0.5.0
-  windicss: ^2.2.0

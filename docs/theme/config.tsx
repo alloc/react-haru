@@ -1,6 +1,5 @@
 import { ReactNode } from 'react'
 import makePathRegex from 'regexparam'
-import { PagesStaticData } from 'vite-plugin-react-pages'
 
 export interface ThemeConfig {
   logo?: ReactNode

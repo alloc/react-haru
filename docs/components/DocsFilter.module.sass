@@ -1,0 +1,50 @@
+.menu
+  top: 100%
+  left: calc(50% + 5rem)
+  background: white
+  border-radius: 0.9rem
+  box-shadow: 0 2px 8px rgba(#F2EBED, 0.8)
+  will-change: height
+
+  .menuBorder
+    box-shadow: 0 0 0 0.6px #F4DEE3
+    border-radius: inherit
+
+  input
+    color: black
+    font-size: inherit
+    background: none
+    border: none
+    border-bottom: 1px solid #F2EAEC
+
+    &:focus
+      outline: none
+
+    ::placeholder
+      color: black // #C3C5CB
+
+  .content
+    overflow-y: scroll
+
+  .currentPage
+    color: #CFB8BE
+
+  .selectedResult
+    background: #FEF0F4
+    border-radius: 0.3rem
+    transition: font-weight 0.06s ease-out
+    @apply font-600 text-deepPink
+
+  .notFound
+    position: absolute
+    width: 100%
+    transition: opacity 0.15s ease-out
+    @apply flex flex-col pt-2.8 pb-9.6 mx-auto
+
+    a
+      box-shadow: 0 0 0 1.5px #FFCCE5
+      transition: box-shadow 0.25s ease-out
+      @apply block rounded-full font-620 text-center text-deepPink mx-auto mt-6.2 px-4.8 py-1.8
+
+      &:hover
+        box-shadow: 0 0 0 1.5px #F50076

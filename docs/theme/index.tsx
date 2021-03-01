@@ -23,6 +23,7 @@ export function createTheme(config: ThemeConfig): Theme {
           config: resolvePathConfig(path, config),
         }}>
         <Page
+          key={path + ':' + loadState.type}
           status={loadState.type}
           data={(loadState as any).error || loadedData[path]}
         />

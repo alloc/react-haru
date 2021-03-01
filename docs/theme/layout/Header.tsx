@@ -1,17 +1,19 @@
+import { Lookup } from '@alloc/types'
 import cn from 'classnames'
 import React from 'react'
 import { a, useSpring } from 'react-haru/web'
 import { useInView } from 'react-intersection-observer'
-import { PathConfig } from '../config'
+import { Attraction } from '../utils/Attraction'
+import { usePage } from '../utils/PageContext'
 import css from './Header.module.sass'
+import { Anchor } from './mdx/Anchor'
 
 interface Props {
-  page: any
-  config: PathConfig
+  page?: Lookup & { title?: string }
 }
 
 export const Header = React.forwardRef<HTMLDivElement, Props>(
-  ({ page, config }, ref) => {
+  ({ page = {} }, ref) => {
     const [hideRef, hideTitle] = useInView({
       initialInView: true,
       threshold: 0.5,
@@ -22,22 +24,24 @@ export const Header = React.forwardRef<HTMLDivElement, Props>(
       translateX: hideTitle ? undefined : 0,
       from: { translateX: -10 },
       reset: !hideTitle ? 'translateX' : [],
+      cancel: !page.title,
       delay: key => (key == 'scaleY' || hideTitle ? 0 : 400),
       config: key => ({
         frequency: key !== 'scaleY' && !hideTitle ? 0.9 : 0.4,
         damping: key == 'scaleY' && !hideTitle ? 0.4 : 1,
       }),
     })
+    const { config } = usePage()
     return (
       <>
-        <div className="absolute top-0 h-24.5" ref={hideRef} />
-        <div
+        <div className="absolute top-0 h-22.5" ref={hideRef} />
+        <header
           ref={ref}
-          className="sticky top-0 z-100 h-24.5 bg-rose1 flex flex-row"
+          className="sticky top-0 z-100 h-22.5 bg-rose1 flex flex-row"
           style={{
-            borderBottom: '1px solid #F2DFE3',
             boxShadow: '0 2px 4px #F9F2F3',
           }}>
+          <div className={cn(css.line, 'fill')} />
           <div className={css.logo} role="logo">
             {config.logo}
           </div>
@@ -50,8 +54,24 @@ export const Header = React.forwardRef<HTMLDivElement, Props>(
             style={{ opacity, translateX, rotateZ: '0.01deg' }}>
             {page.title}
           </a.div>
-          <FlexEnd className="mx-9.6 my-4.4 bg-red"></FlexEnd>
-        </div>
+          {config.topRight && (
+            <FlexEnd
+              className={cn(
+                css.topRight,
+                'mx-6.4 my-4.4 text-maroon text-6.0'
+              )}>
+              {config.topRight.map(item =>
+                item instanceof Object && 'href' in item ? (
+                  <Anchor href={item.href} className="flex items-center">
+                    <Attraction>{item.text}</Attraction>
+                  </Anchor>
+                ) : (
+                  item
+                )
+              )}
+            </FlexEnd>
+          )}
+        </header>
       </>
     )
   }

@@ -11,32 +11,59 @@ const scrolls = [
   document.body,
 ]
 
-export const scrollTop = new SpringValue(0, {
+const scrollTop = new SpringValue(0, {
   config: { frequency: 1, precision: 1 },
-  onChange(scrollTop) {
-    nextScrollTop = scrollTop
-    raf.write(updateScrollTop)
-  },
 })
-
-let nextScrollTop = scrollTop.get()
-
-function updateScrollTop() {
-  scrolls.forEach(elem => (elem.scrollTop = nextScrollTop))
-}
 
 // Stop scroll animation on mouse scroll.
 window.addEventListener('mousewheel', () => {
   scrollTop.stop()
 })
 
+// Track if `getScrollTop` result is memoized for this frame.
+let stale = true
+function clearScrollTop() {
+  stale = true
+}
+
+export function getScrollTop() {
+  if (stale) {
+    stale = false
+    scrollTop.set(Math.max(...scrolls.map(elem => elem.scrollTop)))
+    raf.onFinish(clearScrollTop)
+  }
+  return scrollTop.get()
+}
+
+let nextScrollTop = getScrollTop()
+
+/**
+ * Set the document's scroll position on next frame.
+ */
+export function setScrollTop(scrollTop: number) {
+  nextScrollTop = scrollTop
+  raf.write(updateScrollTop)
+}
+
+function updateScrollTop() {
+  scrolls.forEach(elem => (elem.scrollTop = nextScrollTop))
+}
+
 export function scrollTo(elem: HTMLElement, config?: SpringConfig) {
-  config = { frequency: 3, ...config }
-  scrollTop.start(getOffsetTop(elem), { config })
+  raf.onStart(() => {
+    scrollTop.start({
+      to: getOffsetTop(elem),
+      from: getScrollTop(),
+      config: {
+        frequency: 3,
+        ...config,
+      },
+    })
+  })
 }
 
 function getOffsetTop(elem: HTMLElement) {
-  return elem.getBoundingClientRect().top + scrollTop.get()
+  return elem.getBoundingClientRect().top + getScrollTop()
 }
 
 /**

@@ -10,7 +10,8 @@ import path from 'path'
 const defaultFont = `-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif`
 
 const colors = {
-  red: '#F53657',
+  red: '#F10F57',
+  black: '#000',
   rose1: '#FFFAFB', // 348, 2, 100
   rose2: '#F2DFE3', // 348, 8, 95
   rose3: '#EBC9D0', // 349, 14, 92
@@ -22,11 +23,11 @@ const theme: Theme = {
   colors,
   backgroundColor: {
     ...colors,
-    code: '#F7EBED',
-    code2: '#FFEBEE',
+    code: '#FFEBEE',
   },
   letterSpacing: {
     tighter: '-.03em',
+    tight: '-.015em',
     normal: '0',
   },
   fontFamily: {

@@ -2,17 +2,23 @@ dependencies:
   '@alloc/types': 1.3.0
   '@mdx-js/react': 1.6.22_react@17.0.1
   classnames: 2.2.6
+  dequal: 2.0.2
   fontfaceobserver-es: 3.3.3
+  fuse.js: 6.4.6
   github-slugger: 1.3.0
   prism-react-renderer: 1.2.0_react@17.0.1
   react: 17.0.1
+  react-ch: 1.1.5_react@17.0.1
   react-dom: 17.0.1_react@17.0.1
   react-haru: 0.1.0_react@17.0.1
+  react-hotkeys-hook: 3.1.0_react-dom@17.0.1+react@17.0.1
   react-intersection-observer: 8.31.0_react@17.0.1
   react-is: 17.0.1
   react-responsive: 8.2.0_react@17.0.1
   react-router-dom: 5.2.0_react@17.0.1
   regexparam: 1.3.0
+  to-px: 1.1.0
+  use-click-outside: 2.0.0_react-dom@17.0.1+react@17.0.1
   use-element-size: 1.2.1_react-dom@17.0.1+react@17.0.1
 devDependencies:
   '@alloc/prettier-config': 1.0.0
@@ -24,6 +30,7 @@ devDependencies:
   '@types/react-is': 17.0.0
   '@types/react-router-dom': 5.1.7
   '@types/react-router-hash-link': 1.2.1
+  '@types/to-px': 1.1.0
   '@vitejs/plugin-react-refresh': 1.3.1
   prettier: 2.2.1
   sass: 1.32.8
@@ -33,8 +40,13 @@ devDependencies:
   vite-plugin-react-pages: 2.1.0_vite@2.0.3
   vite-plugin-rehost: 2.0.5_vite@2.0.3
   vite-plugin-windicss: 0.5.0_vite@2.0.3
+  windicss: 2.2.1
 lockfileVersion: 5.2
 packages:
+  /@alloc/is/2.1.2:
+    dev: false
+    resolution:
+      integrity: sha512-/qJui7XCIMEDOzpMPZUXYTy4hHdBKsx6sQnSDIOw8cFW/BL4AqZSt0B/DkB+eW9PDa0zD27zp7jyziQfeaYycQ==
   /@alloc/is/3.0.0:
     dev: false
     resolution:
@@ -636,6 +648,10 @@ packages:
     dev: true
     resolution:
       integrity: sha512-Xt40xQsrkdvjn1EyWe1Bc0dJLcil/9x2vAuW7ya+PuQip4UYUaXyhzWmAbwRsdMgwOFHpfp7/FFZebDU6Y8VHA==
+  /@types/to-px/1.1.0:
+    dev: true
+    resolution:
+      integrity: sha512-g+ZzCBzTuKbW43Ct7kIBecLVNAjau/Tcf+6eS/oy7HLB02CJKdlzaEhxMPLKXkzTSnUBGvvd5YEjlw6oB+2dkw==
   /@types/unist/2.0.3:
     dev: true
     resolution:
@@ -1255,6 +1271,12 @@ packages:
       node: '>= 0.4'
     resolution:
       integrity: sha512-3MqfYKj2lLzdMSf8ZIZE/V+Zuy+BgD6f164e8K2w7dgnpKArBDerGYpM46IYYcjnkdPNMjPk9A6VFB8+3SKlXQ==
+  /dequal/2.0.2:
+    dev: false
+    engines:
+      node: '>=6'
+    resolution:
+      integrity: sha512-q9K8BlJVxK7hQYqa6XISGmBZbtQQWVXSrRrWreHC94rMt1QL/Impruc+7p2CYSYuVIUr+YCt6hjrs1kkdJRTug==
   /detab/2.0.4:
     dependencies:
       repeat-string: 1.6.1
@@ -1581,6 +1603,12 @@ packages:
     dev: true
     resolution:
       integrity: sha512-yIovAzMX49sF8Yl58fSCWJ5svSLuaibPxXQJFLmBObTuCr0Mf1KiPopGM9NiFjiYBCbfaa2Fh6breQ6ANVTI0A==
+  /fuse.js/6.4.6:
+    dev: false
+    engines:
+      node: '>=10'
+    resolution:
+      integrity: sha512-/gYxR/0VpXmWSfZOIPS3rWwU8SHgsRTwWuXhyb2O6s7aRuVtHtxCkR33bNYu3wyLyNx/Wpv0vU7FZy8Vj53VNw==
   /generic-names/2.0.1:
     dependencies:
       loader-utils: 1.4.0
@@ -1779,6 +1807,10 @@ packages:
     dev: true
     resolution:
       integrity: sha512-f/wzC2QaWBs7t9IYqB4T3sR1xviIViXJRJTWBlx2Gf3g0Xi5vI7Yy4koXQ1c9OYDGHN9sBy1DQ2AB8fqZBWhUg==
+  /hotkeys-js/3.8.2:
+    dev: false
+    resolution:
+      integrity: sha512-HZZ9RVNr3nBbs2nW968o4rp3xXSdPjJ4B7GTXE375WwboltDJMsP9mcHfAAv+igsTeVxetr10mEbnoac/1U+oQ==
   /hsl-regex/1.0.0:
     dev: true
     resolution:
@@ -2552,6 +2584,10 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-ayCKvm/phCGxOkYRSCM82iDwct8/EonSEgCSxWxD7ve6jHggsFl4fZVQBPRNgQoKiuV/odhFrGzQXZwbifC8Rg==
+  /parse-unit/1.0.1:
+    dev: false
+    resolution:
+      integrity: sha1-fhu21b7zh0wo45JSaiVBFwKR7s8=
   /parse5-htmlparser2-tree-adapter/6.0.1:
     dependencies:
       parse5: 6.0.1
@@ -3056,6 +3092,16 @@ packages:
     dev: false
     resolution:
       integrity: sha512-YiQkedSt1urYtYbvHhTQR3l67M8SZbUvga5eJFM/v4vx/GmDdtXlE2hjJIyRjhhO/PjcdGC+CXCYOUA4onit8w==
+  /react-ch/1.1.5_react@17.0.1:
+    dependencies:
+      '@alloc/is': 2.1.2
+      react: 17.0.1
+      react-layout-effect: 1.0.5_react@17.0.1
+    dev: false
+    peerDependencies:
+      react: '*'
+    resolution:
+      integrity: sha512-wAwpl4iavoI5PuNx1NVVKY9MNbKi0xbZHVjDHohBOLSW65+fmta7ywJc3rDQRPkPi6AV6wTGtSXcpeSEZZJY7w==
   /react-dom/17.0.1_react@17.0.1:
     dependencies:
       loose-envify: 1.4.0
@@ -3080,6 +3126,17 @@ packages:
       react: '*'
     resolution:
       integrity: sha512-MZayiEp8HThE1+QjF7cIuzqB2wAdfaPs7e2gfg7H17H23lt98LDkFxvf+1I4VFXThlHj1BjnOZXQeSGrNhT0tw==
+  /react-hotkeys-hook/3.1.0_react-dom@17.0.1+react@17.0.1:
+    dependencies:
+      hotkeys-js: 3.8.2
+      react: 17.0.1
+      react-dom: 17.0.1_react@17.0.1
+    dev: false
+    peerDependencies:
+      react: '>=16.8.1'
+      react-dom: '>=16.8.1'
+    resolution:
+      integrity: sha512-czZxVyQR21AXrkHXgx1GwIoyc72vtRpDHMKM4oEI/At+7urrYDZyHSw+tDjVQR5r8BYZZ/++4wwq6BF30SXdlw==
   /react-intersection-observer/8.31.0_react@17.0.1:
     dependencies:
       react: 17.0.1
@@ -3689,6 +3746,12 @@ packages:
       node: '>=4'
     resolution:
       integrity: sha1-3F5pjL0HkmW8c+A3doGk5Og/YW4=
+  /to-px/1.1.0:
+    dependencies:
+      parse-unit: 1.0.1
+    dev: false
+    resolution:
+      integrity: sha512-bfg3GLYrGoEzrGoE05TAL/Uw+H/qrf2ptr9V3W7U0lkjjyYnIfgxmVLUfhQ1hZpIQwin81uxhDjvUkDYsC0xWw==
   /to-regex-range/5.0.1:
     dependencies:
       is-number: 7.0.0
@@ -3812,6 +3875,16 @@ packages:
     dev: true
     resolution:
       integrity: sha1-j97XMk7G6IoP+LkF58CYzcCG1UQ=
+  /use-click-outside/2.0.0_react-dom@17.0.1+react@17.0.1:
+    dependencies:
+      react: 17.0.1
+      react-dom: 17.0.1_react@17.0.1
+    dev: false
+    peerDependencies:
+      react: ^16.8.6
+      react-dom: ^16.8.6
+    resolution:
+      integrity: sha512-sUDWeFbpzFrjtSX0NfBk8EsDs+qWbI/fW5RfSnQl1nX6RIiHC48/JZtEdlgCyszBqRUPdkIBBP7zD3K/9sg5PQ==
   /use-element-size/1.2.1_react-dom@17.0.1+react@17.0.1:
     dependencies:
       rafz: 0.1.14
@@ -3967,6 +4040,13 @@ packages:
     hasBin: true
     resolution:
       integrity: sha512-UuPhwe/NMgGOmUMnaTR+64eMeoiRCYb/zKJfo4pm9XUb4BRFlaFMm1x0KF1RF8EtK/8jKvDlXMc/J6UPBj8/OA==
+  /windicss/2.2.1:
+    dev: true
+    engines:
+      node: '>= 12'
+    hasBin: true
+    resolution:
+      integrity: sha512-eMwRN0YQZ2ipL9IsS6YgA2D564BiyHr5c6jDbND6ZwmMl1DmhLDfC5cr5Tbfp7vUceUxFonLM/1tx8pyPdLEZQ==
   /wrappy/1.0.2:
     dev: true
     resolution:
@@ -4005,15 +4085,20 @@ specifiers:
   '@types/react-is': ^17.0.0
   '@types/react-router-dom': ^5.1.7
   '@types/react-router-hash-link': ^1.2.1
+  '@types/to-px': ^1.1.0
   '@vitejs/plugin-react-refresh': ^1.0.0
   classnames: ^2.2.6
+  dequal: ^2.0.2
   fontfaceobserver-es: ^3.3.3
+  fuse.js: ^6.4.6
   github-slugger: ^1.3.0
   prettier: ^2.2.1
   prism-react-renderer: ^1.2.0
   react: ^17.0.0
+  react-ch: ^1.1.5
   react-dom: ^17.0.0
   react-haru: latest
+  react-hotkeys-hook: ^3.1.0
   react-intersection-observer: ^8.31.0
   react-is: ^17.0.1
   react-responsive: ^8.2.0
@@ -4021,9 +4106,12 @@ specifiers:
   regexparam: ^1.3.0
   sass: ^1.32.8
   sirv-cli: ^1.0.11
+  to-px: ^1.1.0
+  use-click-outside: ^2.0.0
   use-element-size: ^1.2.1
   vite: ^2.0.0
   vite-plugin-mdx: ^2.0.0
   vite-plugin-react-pages: ^2.0.0
   vite-plugin-rehost: ^2.0.5
   vite-plugin-windicss: ^0.5.0
+  windicss: ^2.2.1

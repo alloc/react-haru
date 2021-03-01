@@ -10,19 +10,17 @@ import { useHeight } from '../utils/useHeight'
 import { useLayoutEffect } from 'react'
 import { useScrollToHash } from '../utils/useScrollToHash'
 import { useQueue } from '../utils/queue'
+import { usePage } from '../utils/PageContext'
 
 interface Props {
-  path: string
-  page: any
-  pages: PagesStaticData
-  config: PathConfig
   children: ReactNode
 }
 
 // Disable scrolling until page is loaded.
 setScrollEnabled(false)
 
-export function Layout({ path, page, config, children }: Props) {
+export function Layout({ children }: Props) {
+  const { path, page } = usePage()
   const { title } = page.main!
 
   useEffect(() => {
@@ -62,10 +60,11 @@ export function Layout({ path, page, config, children }: Props) {
 
   const wiper = !wiperHidden && (
     <div
-      className="absolute top-0 h-1/1 overflow-hidden"
+      className="absolute top-0 overflow-hidden"
       style={{
         left: -20, // Ensure code blocks are covered.
         right: -20,
+        height: '110%',
       }}>
       <a.div
         className="absolute w-1/1 bg-rose1"
@@ -87,7 +86,7 @@ export function Layout({ path, page, config, children }: Props) {
 
   return (
     <div className="min-h-100vh bg-rose1">
-      <Header ref={headerRef} page={page.main} config={config} />
+      <Header ref={headerRef} page={page.main} />
       <div className="-sm:w-95/100 w-8/10 max-w-920px mx-auto" key={path}>
         {title && <Title ref={titleRef} text={title} />}
         <div>

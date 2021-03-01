@@ -2,21 +2,35 @@ import { createTheme } from '../theme'
 import * as React from 'react'
 import 'windi.css'
 
-import ErrorPage from './error'
-import LoadingPage from './loading'
+import ErrorPage from '../components/Error'
+import LoadingPage from '../components/Loading'
+import { DocsFilter } from '../components/DocsFilter'
+import { Attraction } from '../theme/utils/Attraction'
 
-export default createTheme({
+const Theme = createTheme({
   logo: <img src="/logo.svg" />,
+  renderError: () => <ErrorPage />,
+  renderLoading: () => <LoadingPage />,
+  topRight: [
+    <DocsFilter />,
+    { text: 'Bounties', href: 'https://issuehunt.io/r/alloc/react-haru' },
+    { text: 'Free Tier', href: '/free' },
+    { text: 'Pricing', href: '/pricing' },
+    { text: 'Help', href: 'https://github.com/alloc/react-haru/issues/new' },
+    <a
+      href="https://github.com/alloc/react-haru"
+      target="_blank"
+      className="flex font-700">
+      <Attraction className="flex items-center">
+        <img src="/github.svg" className="w-6.4" />
+      </Attraction>
+    </a>,
+  ],
   overrides: {
     '/': {
       logo: null,
     },
   },
-  renderError: () => <ErrorPage />,
-  renderLoading: () => <LoadingPage />,
-  // renderNotFound: () => <a href="/">Go home</a>,
-  // navRight: [
-  //   { text: 'Search', path: '/search' },
-  //   { text: 'GitHub', href: 'https://github.com/alloc/react-haru' },
-  // ],
 })
+
+export default (props: any) => <Theme {...props} />

@@ -1,12 +1,15 @@
 import { Lookup } from '@alloc/types'
 import cn from 'classnames'
 import React from 'react'
-import { a, useSpring } from 'react-haru/web'
+import { a, SpringValue, useSpring } from 'react-haru/web'
 import { useInView } from 'react-intersection-observer'
 import { Attraction } from '../utils/Attraction'
+import { FlexEnd } from '../utils/FlexEnd'
 import { usePage } from '../utils/PageContext'
-import css from './Header.module.sass'
+import { ScaledText } from '../utils/ScaledText'
 import { Anchor } from './mdx/Anchor'
+import css from './Header.module.sass'
+import { useValue } from '../utils/useValue'
 
 interface Props {
   page?: Lookup & { title?: string }
@@ -37,10 +40,11 @@ export const Header = React.forwardRef<HTMLDivElement, Props>(
         <div className="absolute top-0 h-22.5" ref={hideRef} />
         <header
           ref={ref}
-          className="sticky top-0 z-100 h-22.5 bg-rose1 flex flex-row"
+          className="sticky top-0 z-100 h-22.5 bg-rose1 flex flex-row select-none"
           style={{
             boxShadow: '0 2px 4px #F9F2F3',
           }}>
+          <LinkCopied />
           <div className={cn(css.line, 'fill')} />
           <div className={css.logo} role="logo">
             {config.logo}
@@ -50,9 +54,11 @@ export const Header = React.forwardRef<HTMLDivElement, Props>(
             style={{ scaleY }}
           />
           <a.div
-            className="text-maroon tracking-tighter self-center font-500 font-h text-2rem mt-1.25 ml-4.8"
+            className="flex flex-1 text-maroon tracking-tighter self-center font-500 font-h text-2rem mt-1.25 ml-4.8 mr-8.4"
             style={{ opacity, translateX, rotateZ: '0.01deg' }}>
-            {page.title}
+            <ScaledText className="self-center max-h-6.4">
+              {page.title}
+            </ScaledText>
           </a.div>
           {config.topRight && (
             <FlexEnd
@@ -77,11 +83,26 @@ export const Header = React.forwardRef<HTMLDivElement, Props>(
   }
 )
 
-function FlexEnd(props: React.ComponentProps<'div'>) {
+export function copyLink(link: string) {
+  navigator.clipboard.writeText(link)
+  linkCopied.set(true).start(false, { delay: 800 })
+}
+
+// When true, the LinkCopied element is visible.
+const linkCopied = new SpringValue(false)
+
+function LinkCopied() {
+  const visible = useValue(linkCopied)
+  const style = useSpring({
+    opacity: visible ? 1 : 0,
+    scale: visible ? 1 : 0.3,
+    config: { frequency: 0.3 },
+  })
   return (
-    <div
-      {...props}
-      className={cn('flex flex-inherit flex-1 justify-end', props.className)}
-    />
+    <div className={css.linkCopied}>
+      <a.div style={style}>
+        <strong>Copied</strong> link to clipboard
+      </a.div>
+    </div>
   )
 }

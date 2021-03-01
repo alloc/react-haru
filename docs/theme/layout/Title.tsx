@@ -44,11 +44,11 @@ export const Title = React.forwardRef<HTMLDivElement, Props>(
               />
               <feColorMatrix
                 in="blur"
-                mode="matrix"
+                type="matrix"
                 values="1 0 0 0 0
-                0 1 0 0 0
-                1 0 1 0 0
-                0 0 0 15 -8"
+                        0 1 0 0 0
+                        1 0 1 0 0
+                        0 0 0 15 -8"
                 result="goo"
               />
               <feComposite in="SourceGraphic" in2="goo" operator="atop" />

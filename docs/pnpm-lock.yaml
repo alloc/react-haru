@@ -3,6 +3,7 @@ dependencies:
   '@mdx-js/react': 1.6.22_react@17.0.1
   classnames: 2.2.6
   dequal: 2.0.2
+  fluids: 0.2.6
   fontfaceobserver-es: 3.3.3
   fuse.js: 6.4.6
   github-slugger: 1.3.0
@@ -1565,6 +1566,10 @@ packages:
     dev: false
     resolution:
       integrity: sha512-ArBYNkGWGTB0UksCVb8ckPBF6XACkwjYl5aCd2W25z+NB3IlWdIXy6mi0Z15NzfkqTH1BkSv1WOZxmwry/O9LQ==
+  /fluids/0.2.6:
+    dev: false
+    resolution:
+      integrity: sha512-xs1Wg9xm4zSHHtQTuM7rsMN5Ajzn3DXqmAfzeH5GdcHvJC4B47Rh65x9RRp60T9UQRG0n5nFiQuLM98FdwkKuA==
   /fontfaceobserver-es/3.3.3:
     dev: false
     resolution:
@@ -4089,6 +4094,7 @@ specifiers:
   '@vitejs/plugin-react-refresh': ^1.0.0
   classnames: ^2.2.6
   dequal: ^2.0.2
+  fluids: ^0.2.6
   fontfaceobserver-es: ^3.3.3
   fuse.js: ^6.4.6
   github-slugger: ^1.3.0

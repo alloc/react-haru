@@ -14,9 +14,9 @@ const Theme = createTheme({
   topRight: [
     <DocsFilter />,
     { text: 'Bounties', href: 'https://issuehunt.io/r/alloc/react-haru' },
-    { text: 'Free Tier', href: '/free' },
+    { text: 'Free Tier', href: '/pricing?free' },
     { text: 'Pricing', href: '/pricing' },
-    { text: 'Help', href: 'https://github.com/alloc/react-haru/issues/new' },
+    // { text: 'Help', href: 'https://github.com/alloc/react-haru/issues/new' },
     <a
       href="https://github.com/alloc/react-haru"
       target="_blank"

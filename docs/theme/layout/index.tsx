@@ -1,7 +1,5 @@
-import React, { ReactNode, useEffect, useRef, useState } from 'react'
+import React, { ReactNode, useEffect, useState } from 'react'
 import { a, useSpring } from 'react-haru/web'
-import type { PagesStaticData } from 'vite-plugin-react-pages'
-import { PathConfig } from '../config'
 import { setScrollEnabled } from '../utils/scroll'
 import { useFontLoaded } from '../utils/useFontLoaded'
 import { Header } from './Header'
@@ -11,6 +9,7 @@ import { useLayoutEffect } from 'react'
 import { useScrollToHash } from '../utils/useScrollToHash'
 import { useQueue } from '../utils/queue'
 import { usePage } from '../utils/PageContext'
+import { Footer } from './Footer'
 
 interface Props {
   children: ReactNode
@@ -85,15 +84,18 @@ export function Layout({ children }: Props) {
   )
 
   return (
-    <div className="min-h-100vh bg-rose1">
+    <div className="flex flex-col min-h-100vh bg-rose1">
       <Header ref={headerRef} page={page.main} />
-      <div className="-sm:w-95/100 w-8/10 max-w-920px mx-auto" key={path}>
+      <div
+        key={path}
+        className="flex-1 -sm:w-95/100 w-8/10 max-w-920px mx-auto">
         {title && <Title ref={titleRef} text={title} />}
         <div>
           {children}
           {wiper}
         </div>
       </div>
+      <Footer />
     </div>
   )
 }

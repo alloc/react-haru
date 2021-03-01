@@ -1,5 +1,6 @@
 .logo
   height: 100%
+  flex-shrink: 0
   @apply py-4.2 pl-6 pr-9.2 select-none
 
   & img
@@ -27,3 +28,16 @@
 @screen xl
   .topRight
     font-size: 1.2rem
+
+.linkCopied
+  top: calc(100% + 0.9rem)
+  width: 100%
+  @apply absolute pointer-events-none flex justify-center
+
+  & > div
+    color: white
+    width: auto
+    @apply font-450 text-0.9rem bg-black rounded-full px-7.2 py-2.8
+
+  strong
+    @apply font-700

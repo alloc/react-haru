@@ -22,22 +22,35 @@ import { usePrev } from '../theme/utils/usePrev'
 import { useHeight } from '../theme/utils/useHeight'
 import css from './DocsFilter.module.sass'
 import { limitCalls } from '../theme/utils/limitCalls'
+import { useCancellableDelay } from '../theme/utils/useCancellableDelay'
 
 // Note: This assumes only one DocsFilter ever exists.
 const global = { animating: 0 }
 
 export function DocsFilter() {
   const [menuVisible, setMenuVisible] = useState(false)
+
   useHotkeys('cmd+k', () => setMenuVisible(visible => !visible), {
     enableOnTags: ['INPUT'],
   })
+
   const menuRef = useRef<HTMLDivElement>(null)
   useClickOutside(menuRef, () => setMenuVisible(false))
+
+  const leaveTimeout = useCancellableDelay()
   return (
     <div
       className="flex items-center cursor-default"
-      onMouseEnter={() => setMenuVisible(true)}
-      onMouseLeave={() => !global.animating && setMenuVisible(false)}>
+      onMouseEnter={() => {
+        leaveTimeout.cancel()
+        setMenuVisible(true)
+      }}
+      onMouseLeave={() =>
+        !global.animating &&
+        leaveTimeout(() => {
+          setMenuVisible(false)
+        }, 300)
+      }>
       <Attraction className="flex items-center">
         Docs
         <img src="/down.svg" className="w-2.4 ml-1.2 mt-0.6" />
@@ -105,12 +118,11 @@ const Menu = React.forwardRef<HTMLDivElement, MenuProps>(
       []
     )
 
-    console.log('Menu.render')
     const onSearch = useChannel<string>()
     return (
       <a.div
         ref={menuRef}
-        className={cn(css.menu, 'absolute flex flex-col w-96.0')}
+        className={css.menu}
         style={{
           ...menuStyle,
           pointerEvents: visible ? 'auto' : 'none',
@@ -175,7 +187,6 @@ const Results = React.memo(
     const resultCount = searchResults.length
     const prevResultCount = usePrev(resultCount)
 
-    console.log({ resultCount, immediate: !props.visible })
     const [renderPages] = useTransition(
       searchResults,
       {
@@ -185,15 +196,9 @@ const Results = React.memo(
           pointerEvents: 'unset' as CSS.Properties['pointerEvents'],
           opacity: 1,
           delay: key => (key == 'opacity' ? 200 : 0),
-          onProps: {
-            translateY: props => console.log('enter:', props, result),
-          },
         }),
         update: result => ({
           translateY: getResultY(result),
-          onProps: {
-            translateY: props => console.log('update:', props, result),
-          },
         }),
         leave: {
           pointerEvents: 'none' as CSS.Properties['pointerEvents'],
@@ -262,7 +267,7 @@ const Results = React.memo(
     return (
       <div className="flex flex-1 flex-col" style={{ height: contentHeight }}>
         <a.div ref={notFoundRef} className={css.notFound} style={notFoundStyle}>
-          <div className="text-1.5rem font-560 text-center leading-normal tracking-tight">
+          <div className="text-1.5rem font-520 text-black text-center leading-normal tracking-tight">
             Can't find what you're <br />
             looking for?
           </div>

@@ -1,10 +1,21 @@
+@mixin placeholder
+  &::-webkit-input-placeholder
+    @content
+  &:-moz-placeholder
+    @content
+  &::-moz-placeholder
+    @content
+  &:-ms-input-placeholder
+    @content
+
 .menu
   top: 100%
   left: calc(50% + 5rem)
-  background: white
+  background: #FFFCFD
   border-radius: 0.9rem
   box-shadow: 0 2px 8px rgba(#F2EBED, 0.8)
   will-change: height
+  @apply absolute flex flex-col w-96.0
 
   .menuBorder
     box-shadow: 0 0 0 0.6px #F4DEE3
@@ -20,8 +31,8 @@
     &:focus
       outline: none
 
-    ::placeholder
-      color: black // #C3C5CB
+    @include placeholder
+      color: #C3C5CB
 
   .content
     overflow-y: scroll
@@ -30,10 +41,10 @@
     color: #CFB8BE
 
   .selectedResult
-    background: #FEF0F4
+    background: #FEF1F5
     border-radius: 0.3rem
     transition: font-weight 0.06s ease-out
-    @apply font-600 text-deepPink
+    @apply font-560 text-deepPink
 
   .notFound
     position: absolute
@@ -44,7 +55,7 @@
     a
       box-shadow: 0 0 0 1.5px #FFCCE5
       transition: box-shadow 0.25s ease-out
-      @apply block rounded-full font-620 text-center text-deepPink mx-auto mt-6.2 px-4.8 py-1.8
+      @apply block rounded-full font-540 text-1rem text-center text-deepPink mx-auto mt-6.2 px-3.8 py-1.9
 
       &:hover
         box-shadow: 0 0 0 1.5px #F50076

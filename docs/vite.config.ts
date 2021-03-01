@@ -42,8 +42,7 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     emptyOutDir: false,
-    sourcemap: false,
-    minify: false,
+    sourcemap: true,
   },
   plugins: [
     reactRefresh(),
@@ -57,7 +56,7 @@ export default defineConfig({
         includeBase: false,
       },
       scan: {
-        dirs: ['pages', 'theme'],
+        dirs: ['pages', 'theme', 'components'],
       },
     }),
     pages({

@@ -3,6 +3,7 @@ import { a, SpringValue } from 'react-haru/web'
 import { isElement } from 'react-is'
 import Slugger from 'github-slugger'
 import css from './Heading.module.sass'
+import { copyLink } from '../Header'
 
 const slugger = new Slugger()
 
@@ -16,6 +17,7 @@ export const makeHeading = (Tag: keyof ReactHTML) => (props: any) => {
         scale.start({ from: 0.6, to: 1 })
         rotateZ.start({ from: -25, to: 0 })
       }}>
+      <div className="w-20px h-20px bg-red" />
       <a href={'#' + slug} {...anchorEvents}>
         <a.span style={{ scale, rotateZ }}>§</a.span>
       </a>
@@ -41,10 +43,10 @@ const anchorEvents = {
   },
   onClick(event: React.MouseEvent<HTMLAnchorElement>) {
     event.preventDefault()
-    navigator.clipboard.writeText(event.currentTarget.href)
     rotateZ.start(360, {
-      onRest: () => rotateZ.set(0),
+      onRest: ({ finished }) => finished && rotateZ.set(0),
     })
+    copyLink(event.currentTarget.href)
   },
 }
 
@@ -55,4 +57,10 @@ function stringifyChildren(children: ReactNode): string {
     }
     return text + (child == null ? '' : child)
   }, '')
+}
+
+if (import.meta.hot) {
+  import.meta.hot!.accept(mod => {
+    console.log(mod)
+  })
 }

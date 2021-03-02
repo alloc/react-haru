@@ -64,6 +64,11 @@ export type UseTransitionProps<Item = any> = Merge<
     sort?: (a: Item, b: Item) => number
     trail?: number
     /**
+     * When true, existing items have their transitions recreated,
+     * and leaving items are unmounted.
+     */
+    reset?: boolean
+    /**
      * Skipped items are never rendered.
      */
     skip?: (item: Item, key: Key) => boolean

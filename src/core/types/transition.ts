@@ -118,9 +118,15 @@ export type TransitionComponentProps<
     children: TransitionRenderFn<NoInfer<Item>, PickAnimated<Props>>
   }
 
-type Key = string | number
-
-export type ItemKeys<T = any> = OneOrMore<Key> | ((item: T) => Key) | null
+export type ItemKeys<T = any> =
+  | string
+  | number
+  | symbol
+  | boolean
+  | object
+  | readonly any[]
+  | ((item: T) => any)
+  | null
 
 /** The function returned by `useTransition` */
 export interface TransitionFn<Item = any, State extends Lookup = Lookup> {

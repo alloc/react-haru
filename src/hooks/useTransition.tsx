@@ -147,7 +147,7 @@ export function useTransition(
       if (~keyIndex) {
         i = transitions.indexOf(t)
         transitions[i] = { ...t, item: items[keyIndex] }
-      } else if (props.leave) {
+      } else if (props.leave && t.phase != MOUNT) {
         transitions.splice(++i, 0, t)
       }
     })

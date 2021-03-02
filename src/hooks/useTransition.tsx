@@ -59,7 +59,14 @@ export function useTransition(
   props: UseTransitionProps,
   deps?: any[]
 ): any {
-  const { reset, sort, trail = 0, expires = true, onDestroyed } = props
+  const {
+    reset,
+    skip = () => false,
+    sort,
+    trail = 0,
+    expires = true,
+    onDestroyed,
+  } = props
 
   // Return a `SpringRef` if a deps array was passed.
   const ref = useMemo(
@@ -120,9 +127,11 @@ export function useTransition(
 
   // Mount new items with fresh transitions.
   each(items, (item, i) => {
-    transitions[i] ||
+    const key = keys[i]
+    skip(item, key) ||
+      transitions[i] ||
       (transitions[i] = {
-        key: keys[i],
+        key,
         item,
         phase: MOUNT,
         ctrl: new Controller(),

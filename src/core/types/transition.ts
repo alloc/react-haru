@@ -64,6 +64,10 @@ export type UseTransitionProps<Item = any> = Merge<
     sort?: (a: Item, b: Item) => number
     trail?: number
     /**
+     * Skipped items are never rendered.
+     */
+    skip?: (item: Item, key: Key) => boolean
+    /**
      * Leading animations must end before other animations can start.
      *
      * This prop __must__ be constant.

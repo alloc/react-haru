@@ -28,7 +28,6 @@ export const Title = React.forwardRef<HTMLDivElement, Props>(
           precision: 0.1,
           velocity: key == 'color' ? 0 : -0.0075,
         }),
-        delay: 1000,
         cancel,
       })
 

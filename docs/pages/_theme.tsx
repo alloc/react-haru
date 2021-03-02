@@ -33,4 +33,5 @@ const Theme = createTheme({
   },
 })
 
+// Enable react-refresh by exporting a component.
 export default (props: any) => <Theme {...props} />

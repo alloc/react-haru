@@ -1,28 +1,38 @@
 import React from 'react'
+import { a, useSpring } from 'react-haru/web'
 import { Attraction } from '../utils/Attraction'
 import { FlexEnd } from '../utils/FlexEnd'
 import { Anchor } from './mdx/Anchor'
 import css from './Footer.module.sass'
 
 export function Footer() {
+  const rootStyle = useSpring({
+    to: { opacity: 1, translateY: 0 },
+    from: { opacity: 0, translateY: 20 },
+    config: key => ({
+      frequency: key == 'opacity' ? 1.5 : 0.7,
+    }),
+  })
   return (
-    <>
-      <Background />
-      <div className={css.footer}>
-        <div>© Haru {new Date().getFullYear()}</div>
-        <FlexEnd className={css.links}>
-          <Anchor href="/privacy">
-            <Attraction>Privacy</Attraction>
-          </Anchor>
-          <Anchor href="https://github.com/alloc/react-haru/blob/v1/LICENSE.md">
-            <Attraction>License</Attraction>
-          </Anchor>
-          <div>
-            Designed by <strong>Airlock Studios</strong>
-          </div>
-        </FlexEnd>
-      </div>
-    </>
+    <div className="w-1/1">
+      <a.div className="w-1/1 transform-gpu" style={rootStyle}>
+        <Background />
+        <div className={css.footer}>
+          <div>© Haru {new Date().getFullYear()}</div>
+          <FlexEnd className={css.links}>
+            <Anchor href="/privacy">
+              <Attraction>Privacy</Attraction>
+            </Anchor>
+            <Anchor href="https://github.com/alloc/react-haru/blob/v1/LICENSE.md">
+              <Attraction>License</Attraction>
+            </Anchor>
+            <div>
+              Designed by <strong>Airlock Studios</strong>
+            </div>
+          </FlexEnd>
+        </div>
+      </a.div>
+    </div>
   )
 }
 

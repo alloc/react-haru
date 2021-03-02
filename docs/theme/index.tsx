@@ -1,18 +1,22 @@
-import React from 'react'
+import React, { ReactNode } from 'react'
 import { Theme } from 'vite-plugin-react-pages'
 import { Layout } from './layout'
 import { Markdown } from './layout/mdx'
+import { PageContext, usePage } from './utils/PageContext'
 import { ThemeConfig, PathConfig, resolvePathConfig } from './config'
 import './styles/global.sass'
-import { PageContext, usePage } from './utils/PageContext'
 
 export function createTheme(config: ThemeConfig): Theme {
-  const Page = ({ status, data }: { status: string; data: any }) => {
-    const renderPage = getPageView(status, usePage().config)
-    return <Layout>{renderPage(data)}</Layout>
+  const Page = (props: { status: string; data: any }) => {
+    const page = usePage()
+    const renderPage = getPageView(props.status, page.config)
+    return <>{renderPage(props.data)}</>
   }
   return ({ staticData, loadedData, loadState }) => {
     const path = loadState.routePath
+    const pageKey = path + ':' + loadState.type
+    console.log('Theme.render:', pageKey)
+
     const { Provider } = PageContext
     return (
       <Provider
@@ -22,11 +26,13 @@ export function createTheme(config: ThemeConfig): Theme {
           pages: staticData,
           config: resolvePathConfig(path, config),
         }}>
-        <Page
-          key={path + ':' + loadState.type}
-          status={loadState.type}
-          data={(loadState as any).error || loadedData[path]}
-        />
+        <Layout>
+          <Page
+            key={pageKey}
+            status={loadState.type}
+            data={(loadState as any).error || loadedData[path]}
+          />
+        </Layout>
       </Provider>
     )
   }
@@ -34,7 +40,10 @@ export function createTheme(config: ThemeConfig): Theme {
 
 export { Layout }
 
-function getPageView(status: string, config: PathConfig) {
+function getPageView(
+  status: string,
+  config: PathConfig
+): (data: any) => ReactNode {
   switch (status) {
     case 'loaded':
       return (data: { [id: string]: { default: React.ComponentType } }) => {
@@ -55,7 +64,7 @@ function getPageView(status: string, config: PathConfig) {
               )
 
               return sections.length > 1 ? (
-                <section className="m-40px" key={i}>
+                <section key={i} className="m-40px">
                   {content}
                 </section>
               ) : (

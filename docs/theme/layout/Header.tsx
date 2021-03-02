@@ -1,7 +1,7 @@
 import { Lookup } from '@alloc/types'
 import cn from 'classnames'
 import React from 'react'
-import { a, SpringValue, useSpring } from 'react-haru/web'
+import { a, SpringValue, useSpring, useTransition } from 'react-haru/web'
 import { useInView } from 'react-intersection-observer'
 import { Attraction } from '../utils/Attraction'
 import { FlexEnd } from '../utils/FlexEnd'
@@ -21,13 +21,22 @@ export const Header = React.forwardRef<HTMLDivElement, Props>(
       initialInView: true,
       threshold: 0.5,
     })
-    const { scaleY, opacity, translateX } = useSpring({
-      scaleY: hideTitle ? 0 : 1,
-      opacity: hideTitle ? 0 : 1,
-      translateX: hideTitle ? undefined : 0,
-      from: { translateX: -10 },
+    const title = hideTitle ? null : page.title
+    const renderTitle = useTransition(title, {
+      from: {
+        translateX: -10,
+      },
+      enter: {
+        scaleY: 1,
+        opacity: 1,
+        translateX: 0,
+      },
+      leave: {
+        scaleY: 0,
+        opacity: 0,
+      },
+      lead: 'leave',
       reset: !hideTitle ? 'translateX' : [],
-      cancel: !page.title,
       delay: key => (key == 'scaleY' || hideTitle ? 0 : 400),
       config: key => ({
         frequency: key !== 'scaleY' && !hideTitle ? 0.9 : 0.4,
@@ -49,17 +58,21 @@ export const Header = React.forwardRef<HTMLDivElement, Props>(
           <div className={css.logo} role="logo">
             {config.logo}
           </div>
-          <a.div
-            className="w-4px h-44/100 bg-rose3 self-center rounded-lg"
-            style={{ scaleY }}
-          />
-          <a.div
-            className="flex flex-1 text-maroon tracking-tighter self-center font-500 font-h text-2rem mt-1.25 ml-4.8 mr-8.4"
-            style={{ opacity, translateX, rotateZ: '0.01deg' }}>
-            <ScaledText className="self-center max-h-6.4">
-              {page.title}
-            </ScaledText>
-          </a.div>
+          {renderTitle(({ scaleY, opacity, translateX }, title) => (
+            <>
+              <a.div
+                className="w-4px h-44/100 bg-rose3 self-center rounded-lg"
+                style={{ scaleY }}
+              />
+              <a.div
+                className="flex flex-1 text-maroon tracking-tighter self-center font-500 font-h text-2rem mt-1.25 ml-4.8 mr-8.4"
+                style={{ opacity, translateX, rotateZ: '0.01deg' }}>
+                <ScaledText className="self-center max-h-6.4">
+                  {title}
+                </ScaledText>
+              </a.div>
+            </>
+          ))}
           {config.topRight && (
             <FlexEnd
               className={cn(
@@ -85,7 +98,8 @@ export const Header = React.forwardRef<HTMLDivElement, Props>(
 
 export function copyLink(link: string) {
   navigator.clipboard.writeText(link)
-  linkCopied.set(true).start(false, { delay: 800 })
+  linkCopied.start(true)
+  linkCopied.start(false, { delay: 1400 })
 }
 
 // When true, the LinkCopied element is visible.
@@ -94,6 +108,7 @@ const linkCopied = new SpringValue(false)
 function LinkCopied() {
   const visible = useValue(linkCopied)
   const style = useSpring({
+    from: { rotateZ: 0.01 },
     opacity: visible ? 1 : 0,
     scale: visible ? 1 : 0.3,
     config: { frequency: 0.3 },

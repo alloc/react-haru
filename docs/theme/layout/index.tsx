@@ -1,5 +1,5 @@
 import React, { ReactNode, useEffect, useState } from 'react'
-import { a, useSpring } from 'react-haru/web'
+import { a, useSpring, useTransition } from 'react-haru/web'
 import { setScrollEnabled } from '../utils/scroll'
 import { useFontLoaded } from '../utils/useFontLoaded'
 import { Header } from './Header'
@@ -26,29 +26,72 @@ export function Layout({ children }: Props) {
     document.title = title + ' | react-haru'
   }, [title])
 
-  // Postpone scrolling to url hash until animation is done.
-  const queue = useQueue((fn: Function) => fn())
-  useScrollToHash(queue)
+  console.log('Layout.render:', path)
+  const currentState = { path, title, children }
+  const renderContent = useTransition(currentState, {
+    key: state => state.path,
+    config: { frequency: 0.3 },
+    from: { opacity: 1, immediate: true },
+    enter: { opacity: 1 },
+    leave: { opacity: 0 },
+    lead: 'leave',
+  })
 
-  const isFontLoaded = useFontLoaded()
+  const [headerRef, headerHeight] = useHeight()
+  return (
+    <div className="flex flex-col min-h-100vh bg-rose1">
+      <Header ref={headerRef} page={page.main} />
+      {renderContent((style, state) => {
+        return (
+          <a.div className="flex flex-col flex-1" style={style}>
+            <Content title={state.title} headerHeight={headerHeight}>
+              {state.children}
+            </Content>
+          </a.div>
+        )
+      })}
+    </div>
+  )
+}
+
+interface ContentProps {
+  title?: string
+  headerHeight: number
+  children: any
+}
+
+function Content({ title, headerHeight, children }: ContentProps) {
+  const [titleRef, titleHeight] = useHeight()
+  const [contentRef, contentHeight] = useHeight()
 
   const [wiperHidden, setWiperHidden] = useState(false)
   const [wiperHeight, setWiperHeight] = useState(0)
   const wiperBlendHeight = 120
 
-  const [headerRef, headerHeight] = useHeight()
-  const [titleRef, titleHeight] = useHeight()
-
   useLayoutEffect(() => {
-    if (headerHeight >= 0 && (!title || titleHeight >= 0))
-      setWiperHeight(window.innerHeight - headerHeight - titleHeight)
-  }, [headerHeight, title, titleHeight])
+    if (headerHeight >= 0 && contentHeight >= 0 && (!title || titleHeight >= 0))
+      setWiperHeight(
+        Math.min(contentHeight, window.innerHeight - headerHeight - titleHeight)
+      )
+  }, [headerHeight, contentHeight, title, titleHeight])
 
+  // Postpone scrolling to url hash until animation is done.
+  const queue = useQueue((fn: Function) => fn())
+  useScrollToHash(queue)
+
+  const isFontLoaded = useFontLoaded()
   const { translateY } = useSpring({
     translateY: wiperHeight + wiperBlendHeight,
     from: { translateY: 0 },
-    config: { clamp: true, frequency: 8, velocity: 2 },
-    delay: 1400,
+    config: {
+      frequency: 2,
+      damping: 1.004,
+      velocity: 2.2,
+      // Jump to end once within 20 pixels,
+      // since damping > 1 leads to slow ending.
+      precision: 20,
+    },
+    delay: 420,
     cancel: !isFontLoaded || !wiperHeight,
     onRest() {
       setWiperHidden(true)
@@ -58,17 +101,11 @@ export function Layout({ children }: Props) {
   })
 
   const wiper = !wiperHidden && (
-    <div
-      className="absolute top-0 overflow-hidden"
-      style={{
-        left: -20, // Ensure code blocks are covered.
-        right: -20,
-        height: '110%',
-      }}>
+    <div className="absolute -inset-20px overflow-hidden">
       <a.div
-        className="absolute w-1/1 bg-rose1"
+        className="absolute top-20px w-1/1 bg-rose1"
         style={{
-          height: wiperHeight,
+          height: wiperHeight + 20,
           translateY,
         }}>
         <div
@@ -84,18 +121,15 @@ export function Layout({ children }: Props) {
   )
 
   return (
-    <div className="flex flex-col min-h-100vh bg-rose1">
-      <Header ref={headerRef} page={page.main} />
-      <div
-        key={path}
-        className="flex-1 -sm:w-95/100 w-8/10 max-w-920px mx-auto">
+    <>
+      <div className="-sm:w-95/100 w-8/10 max-w-920px flex-1 mx-auto">
         {title && <Title ref={titleRef} text={title} />}
-        <div>
+        <div ref={contentRef} style={{ opacity: wiperHeight ? 1 : 0 }}>
           {children}
           {wiper}
         </div>
       </div>
-      <Footer />
-    </div>
+      {wiperHidden && <Footer />}
+    </>
   )
 }

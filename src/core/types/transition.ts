@@ -64,6 +64,15 @@ export type UseTransitionProps<Item = any> = Merge<
     sort?: (a: Item, b: Item) => number
     trail?: number
     /**
+     * Leading animations must end before other animations can start.
+     *
+     * This prop __must__ be constant.
+     *
+     * For example, use `lead: "leave"` to have items exit before
+     * other items can enter.
+     */
+    lead?: 'leave' | Falsy
+    /**
      * When `true` or `<= 0`, each item is unmounted immediately after its
      * `leave` animation is finished.
      *

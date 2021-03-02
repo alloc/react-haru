@@ -163,6 +163,14 @@ export function useTransition(
       }
     })
 
+  // The # of leads still animating.
+  const leadCountRef = useRef(0)
+  // The # of leads after the next commit.
+  let leadCount = leadCountRef.current
+
+  // Changes may be skipped until leads are done.
+  const skipCountRef = useRef(0)
+
   // Generate changes to apply in useEffect.
   const changes = new Map<TransitionState, Change>()
   each(transitions, (t, i) => {
@@ -221,9 +229,22 @@ export function useTransition(
       payload.from = callProp(from, t.item, i)
     }
 
+    const isLead = phase == props.lead
+    if (isLead) {
+      leadCount += 1
+    }
+
     const { onResolve } = payload
     payload.onResolve = result => {
       callProp(onResolve, result)
+
+      if (isLead) {
+        leadCount = --leadCountRef.current
+        if (!leadCount && skipCountRef.current) {
+          skipCountRef.current = 0
+          forceUpdate()
+        }
+      }
 
       const transitions = usedTransitions.current!
       const t = transitions.find(t => t.key === key)
@@ -279,7 +300,13 @@ export function useTransition(
 
   useLayoutEffect(
     () => {
+      leadCountRef.current = leadCount
       each(changes, ({ phase, springs, payload }, t) => {
+        // When leave transitions are leading, new items are skipped.
+        if (props.lead == 'leave' && leadCount && t.phase == MOUNT) {
+          return skipCountRef.current++
+        }
+
         const { ctrl } = t
         t.phase = phase
 
@@ -304,9 +331,15 @@ export function useTransition(
     reset ? void 0 : deps
   )
 
+  // Mounting is postponed when leave transitions are leading.
+  const activeTransitions =
+    props.lead == 'leave' && leadCount > 0
+      ? transitions.filter(t => t.phase != MOUNT)
+      : transitions
+
   const renderTransitions: TransitionFn = render => (
     <>
-      {transitions.map((t, i) => {
+      {activeTransitions.map((t, i) => {
         const { springs } = changes.get(t) || t.ctrl
         const elem: any = render({ ...springs }, t.item, t, i)
         return elem && elem.type ? (

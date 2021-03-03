@@ -6,6 +6,11 @@
     "moduleResolution": "node",
     "esModuleInterop": true,
     "strict": true,
-    "types": ["vite/client"]
+    "types": ["vite/client"],
+    "baseUrl": ".",
+    "paths": {
+      "components/*": ["components/*"],
+      "theme/*": ["theme/*"]
+    }
   }
 }

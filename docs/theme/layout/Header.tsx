@@ -7,9 +7,9 @@ import { Attraction } from '../utils/Attraction'
 import { FlexEnd } from '../utils/FlexEnd'
 import { usePage } from '../utils/PageContext'
 import { ScaledText } from '../utils/ScaledText'
+import { useValue } from '../utils/useValue'
 import { Anchor } from './mdx/Anchor'
 import css from './Header.module.sass'
-import { useValue } from '../utils/useValue'
 
 interface Props {
   page?: Lookup & { title?: string }
@@ -21,27 +21,34 @@ export const Header = React.forwardRef<HTMLDivElement, Props>(
       initialInView: true,
       threshold: 0.5,
     })
-    const title = hideTitle ? null : page.title
-    const renderTitle = useTransition(title, {
+    const currentTitle = hideTitle ? null : page.title
+    const renderTitle = useTransition(currentTitle, {
       from: {
+        scaleY: 0,
+        opacity: 0,
         translateX: -10,
       },
       enter: {
         scaleY: 1,
         opacity: 1,
         translateX: 0,
+        delay: key => (key == 'scaleY' ? 0 : 400),
+        config: key => ({
+          frequency: key !== 'scaleY' ? 0.9 : 0.4,
+          damping: key == 'scaleY' ? 0.4 : 1,
+        }),
       },
       leave: {
         scaleY: 0,
         opacity: 0,
+        config: {
+          frequency: 0.4,
+          damping: 1,
+        },
       },
       lead: 'leave',
-      reset: !hideTitle ? 'translateX' : [],
-      delay: key => (key == 'scaleY' || hideTitle ? 0 : 400),
-      config: key => ({
-        frequency: key !== 'scaleY' && !hideTitle ? 0.9 : 0.4,
-        damping: key == 'scaleY' && !hideTitle ? 0.4 : 1,
-      }),
+      skip: title => title == null,
+      expires: title => title !== currentTitle,
     })
     const { config } = usePage()
     return (
@@ -58,34 +65,39 @@ export const Header = React.forwardRef<HTMLDivElement, Props>(
           <div className={css.logo} role="logo">
             {config.logo}
           </div>
-          {renderTitle(({ scaleY, opacity, translateX }, title) => (
-            <>
-              <a.div
-                className="w-4px h-44/100 bg-rose3 self-center rounded-lg"
-                style={{ scaleY }}
-              />
-              <a.div
-                className="flex flex-1 text-maroon tracking-tighter self-center font-500 font-h text-2rem mt-1.25 ml-4.8 mr-8.4"
-                style={{ opacity, translateX, rotateZ: '0.01deg' }}>
-                <ScaledText className="self-center max-h-6.4">
-                  {title}
-                </ScaledText>
-              </a.div>
-            </>
-          ))}
+          <div className="flex flex-1">
+            {renderTitle(({ scaleY, opacity, translateX }, title) => (
+              <>
+                <a.div
+                  className="w-4px h-44/100 bg-rose3 self-center rounded-lg"
+                  style={{ scaleY }}
+                />
+                <a.div
+                  className="flex flex-1 text-maroon tracking-tighter self-center font-500 font-h text-2rem mt-1.25 ml-4.8 mr-8.4"
+                  style={{ opacity, translateX, rotateZ: '0.01deg' }}>
+                  <ScaledText className="self-center max-h-6.4">
+                    {title}
+                  </ScaledText>
+                </a.div>
+              </>
+            ))}
+          </div>
           {config.topRight && (
             <FlexEnd
               className={cn(
                 css.topRight,
                 'mx-6.4 my-4.4 text-maroon text-6.0'
               )}>
-              {config.topRight.map(item =>
+              {config.topRight.map((item, i) =>
                 item instanceof Object && 'href' in item ? (
-                  <Anchor href={item.href} className="flex items-center">
+                  <Anchor
+                    key={i}
+                    href={item.href}
+                    className="flex items-center">
                     <Attraction>{item.text}</Attraction>
                   </Anchor>
                 ) : (
-                  item
+                  <React.Fragment key={i}>{item}</React.Fragment>
                 )
               )}
             </FlexEnd>

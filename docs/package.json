@@ -50,8 +50,10 @@
     "vite": "^2.0.0",
     "vite-plugin-mdx": "^2.0.0",
     "vite-plugin-react-pages": "^2.0.0",
+    "vite-plugin-react-svg": "^0.2.0",
     "vite-plugin-rehost": "^2.0.5",
-    "vite-plugin-windicss": "^0.5.0",
+    "vite-plugin-windicss": "^0.6.4",
+    "vite-tsconfig-paths": "^2.1.0",
     "windicss": "^2.2.1"
   }
 }

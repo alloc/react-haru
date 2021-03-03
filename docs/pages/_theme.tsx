@@ -1,14 +1,15 @@
-import { createTheme } from '../theme'
-import * as React from 'react'
-import 'windi.css'
+import React from 'react'
+import { createTheme } from 'theme'
 
-import ErrorPage from '../components/Error'
-import LoadingPage from '../components/Loading'
-import { DocsFilter } from '../components/DocsFilter'
-import { Attraction } from '../theme/utils/Attraction'
+import { Logo } from 'components/Logo'
+import GitHubIcon from 'components/GitHubIcon.svg'
+import { ErrorPage } from 'components/ErrorPage'
+import { LoadingPage } from 'components/LoadingPage'
+import { DocsFilter } from 'components/DocsFilter'
+import { Attraction } from 'theme/utils/Attraction'
 
 const Theme = createTheme({
-  logo: <img src="/logo.svg" />,
+  logo: <Logo />,
   renderError: () => <ErrorPage />,
   renderLoading: () => <LoadingPage />,
   topRight: [
@@ -22,7 +23,7 @@ const Theme = createTheme({
       target="_blank"
       className="flex font-700">
       <Attraction className="flex items-center">
-        <img src="/github.svg" className="w-6.4" />
+        <GitHubIcon className="w-6.4" />
       </Attraction>
     </a>,
   ],

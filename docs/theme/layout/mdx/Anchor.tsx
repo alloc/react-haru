@@ -1,10 +1,12 @@
 import React, { Children } from 'react'
 import { useHistory } from 'react-router-dom'
 
-export const Anchor = React.forwardRef<HTMLAnchorElement, any>(
+type Props = React.ComponentProps<'a'>
+
+export const Anchor = React.forwardRef<HTMLAnchorElement, Props>(
   ({ children, ...props }, ref) => {
     const history = useHistory()
-    if (/^https?:\/\//.test(props.href)) {
+    if (/^https?:\/\//.test(props.href!)) {
       props.target = '_blank'
     }
     return (
@@ -12,7 +14,8 @@ export const Anchor = React.forwardRef<HTMLAnchorElement, any>(
         {...props}
         ref={ref}
         onClick={e => {
-          if (!props.target) {
+          props.onClick?.(e)
+          if (!props.target && props.href) {
             e.preventDefault()
             history.push(props.href)
           }

@@ -1,0 +1,36 @@
+@import ../theme/styles/variables
+
+.topRight
+  @apply text-maroon text-4.4 font-420
+
+  a
+    color: inherit
+
+  .items
+    @apply flex px-6.4
+
+  .items > *:not(.border)
+    @apply p-3.2 ml-4.4 whitespace-nowrap flex-shrink-0 select-none
+
+  .border
+    position: absolute
+    top: 100%
+    right: 0
+    width: 110%
+    height: 0.6px
+    background: linear-gradient(to right, rgba(#EBC9D0, 0), #EBC9D0)
+
+.bubble
+  background: white
+  @apply z-1 rounded-full w-179.2 py-4.4 px-12.6
+  @apply text-center tracking-tighter
+  @apply border-solid border-deepPink3 border-0.1rem
+
+  .title
+    font-family: AcehSoft, $defaultFont
+    @apply text-black text-2.25rem font-600
+
+  .subtitle
+    color: #747883
+    font-family: Aceh, $defaultFont
+    @apply text-1.35rem font-500 pt-2.4 pb-0.4

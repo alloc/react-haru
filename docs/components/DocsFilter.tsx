@@ -14,15 +14,15 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import toPixels from 'to-px'
 import useClickOutside from 'use-click-outside'
 import type { PagesStaticData } from 'vite-plugin-react-pages'
-import { Attraction } from '../theme/utils/Attraction'
-import { usePage } from '../theme/utils/PageContext'
-import { useFuse } from '../theme/utils/useFuse'
-import { Anchor } from '../theme/layout/mdx/Anchor'
-import { usePrev } from '../theme/utils/usePrev'
-import { useHeight } from '../theme/utils/useHeight'
+import { Anchor } from 'theme/layout/mdx/Anchor'
+import { Attraction } from 'theme/utils/Attraction'
+import { usePage } from 'theme/utils/PageContext'
+import { limitCalls } from 'theme/utils/limitCalls'
+import { useFuse } from 'theme/utils/useFuse'
+import { useHeight } from 'theme/utils/useHeight'
+import { usePrev } from 'theme/utils/usePrev'
+import { useCancellableDelay } from 'theme/utils/useCancellableDelay'
 import css from './DocsFilter.module.sass'
-import { limitCalls } from '../theme/utils/limitCalls'
-import { useCancellableDelay } from '../theme/utils/useCancellableDelay'
 
 // Note: This assumes only one DocsFilter ever exists.
 const global = { animating: 0 }
@@ -55,7 +55,13 @@ export function DocsFilter() {
         Docs
         <img src="/down.svg" className="w-2.4 ml-1.2 mt-0.6" />
       </Attraction>
-      <Menu ref={menuRef} visible={menuVisible} />
+      <Menu
+        ref={menuRef}
+        visible={menuVisible}
+        onClick={() => {
+          setMenuVisible(false)
+        }}
+      />
     </div>
   )
 }
@@ -69,10 +75,11 @@ const getContentHeight = (count: number, padding = 0) =>
 
 interface MenuProps {
   visible: boolean
+  onClick: () => void
 }
 
 const Menu = React.forwardRef<HTMLDivElement, MenuProps>(
-  ({ visible }, menuRef) => {
+  ({ visible, onClick }, menuRef) => {
     const menuStyle = useSpring({
       translateX: visible ? '-50%' : '-52%',
       translateY: visible ? 0 : -8,
@@ -151,6 +158,7 @@ const Menu = React.forwardRef<HTMLDivElement, MenuProps>(
         <a.div className={css.content} style={scrollStyle}>
           <Results
             visible={visible}
+            onClick={onClick}
             onSearch={onSearch}
             setScrollHeight={setScrollHeight}
           />
@@ -166,6 +174,7 @@ const getFindablePages = (pages: PagesStaticData) =>
 const Results = React.memo(
   (props: {
     visible: boolean
+    onClick: () => void
     onSearch: Channel<string>
     setScrollHeight: (height: number, immediate?: boolean) => void
   }) => {
@@ -291,7 +300,8 @@ const Results = React.memo(
               <Anchor
                 ref={elem => elem && (anchors[index] = elem)}
                 href={path}
-                className="block w-1/1 h-9.6 mb-1.0 px-4.8">
+                className="block w-1/1 h-9.6 mb-1.0 px-4.8"
+                onClick={props.onClick}>
                 <span
                   className={cn(
                     'flex items-center pl-2.4 w-1/1 h-1/1 text-1.04rem text-black font-460 overflow-hidden',

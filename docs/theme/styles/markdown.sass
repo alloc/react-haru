@@ -1,3 +1,5 @@
+@import ./github
+
 //
 // Markdown only
 //
@@ -57,6 +59,9 @@
   p, pre, blockquote, ol, ul
     @apply mb-4.8
 
+  img
+    background: none
+
 //
 // Global overrides
 //
@@ -70,3 +75,6 @@
 
   h1
     @apply text-5xl
+
+  a, a:hover
+    text-decoration: none

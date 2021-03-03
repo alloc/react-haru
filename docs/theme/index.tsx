@@ -4,7 +4,9 @@ import { Layout } from './layout'
 import { Markdown } from './layout/mdx'
 import { PageContext, usePage } from './utils/PageContext'
 import { ThemeConfig, PathConfig, resolvePathConfig } from './config'
+
 import './styles/global.sass'
+import 'windi.css'
 
 export function createTheme(config: ThemeConfig): Theme {
   const Page = (props: { status: string; data: any }) => {
@@ -15,7 +17,6 @@ export function createTheme(config: ThemeConfig): Theme {
   return ({ staticData, loadedData, loadState }) => {
     const path = loadState.routePath
     const pageKey = path + ':' + loadState.type
-    console.log('Theme.render:', pageKey)
 
     const { Provider } = PageContext
     return (

@@ -92,7 +92,7 @@ export function useTransition(
         clearTimeout(t.expirationId!)
       }
       detachRefs(t.ctrl, ref)
-      t.ctrl.stop(true)
+      t.ctrl.destroy()
     })
   )
 

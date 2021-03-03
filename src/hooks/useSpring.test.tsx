@@ -12,7 +12,7 @@ describe('useSpring', () => {
   let ref: SpringRef
 
   // Call the "useSpring" hook and update local variables.
-  const [update, context] = createUpdater(({ args }) => {
+  const [update, context, unmount] = createUpdater(({ args }) => {
     const result = useSpring(...args)
     if (is.function(args[0]) || args.length == 2) {
       springs = result[0] as any
@@ -108,6 +108,27 @@ describe('useSpring', () => {
       expect(ref).toBeInstanceOf(SpringRef)
     })
   })
+
+  // TODO: test with async animation
+  it('avoids calling onRest after unmount', async () => {
+    const onRest = jest.fn()
+    update({ from: { x: 0 }, x: 100, onRest })
+
+    await advanceByTime(30)
+    unmount()
+
+    await advance()
+    expect(onRest).not.toBeCalled()
+
+    // Try again with value-specific onRest handler.
+    update({ from: { x: 0 }, x: 100, onRest: { x: onRest } })
+
+    await advanceByTime(30)
+    unmount()
+
+    await advance()
+    expect(onRest).not.toBeCalled()
+  })
 })
 
 interface TestContext extends SpringContext {
@@ -150,5 +171,5 @@ function createUpdater(Component: React.ComponentType<{ args: [any, any?] }>) {
   const update = (...args: [Args[0], Args[1]?]) =>
     renderWithContext((prevElem = <Component args={args} />))
 
-  return [update, context] as const
+  return [update, context, () => result?.unmount()] as const
 }

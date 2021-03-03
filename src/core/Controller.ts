@@ -260,6 +260,17 @@ export class Controller<State extends Lookup = Lookup> {
     else return
     raf.onFrame(this._onFrame)
   }
+
+  /** @internal */
+  destroy() {
+    if (!this.idle) {
+      // Prevent onRest calls.
+      this.start({ onRest: noop, default: true })
+
+      // Cancel active animations.
+      this.stop(true)
+    }
+  }
 }
 
 /**

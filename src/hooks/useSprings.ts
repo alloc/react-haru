@@ -208,9 +208,8 @@ export function useSprings(
     })
   })
 
-  // Cancel the animations of all controllers on unmount.
   useOnce(() => () => {
-    each(state.ctrls, ctrl => ctrl.stop(true))
+    each(state.ctrls, ctrl => ctrl.destroy())
   })
 
   // Return a deep copy of the `springs` array so the caller can

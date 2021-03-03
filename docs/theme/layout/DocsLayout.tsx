@@ -1,28 +1,34 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useLayoutEffect, useState } from 'react'
 import { a, useSpring, useTransition } from 'react-haru/web'
-import { setScrollEnabled, setScrollTop } from '../utils/scroll'
-import { useFontLoaded } from '../utils/useFontLoaded'
-import { Header } from './Header'
-import { Title } from './Title'
-import { useHeight } from '../utils/useHeight'
-import { useLayoutEffect } from 'react'
-import { useScrollToHash } from '../utils/useScrollToHash'
+import { setScrollTop } from '../utils/scroll'
 import { useQueue } from '../utils/queue'
-import { usePage } from '../utils/PageContext'
+import { useFontLoaded } from '../utils/useFontLoaded'
+import { useHeight } from '../utils/useHeight'
+import { useScrollLock } from '../utils/useScrollLock'
+import { useScrollToHash } from '../utils/useScrollToHash'
+import { PageProvider, usePage } from '../utils/PageContext'
+import { Header } from './Header'
 import { Footer } from './Footer'
+import { Title } from './Title'
 
-export function DocsLayout({ children }: any) {
-  const { path, page } = usePage()
+export const DocsLayout = React.memo((props: any) => {
+  const context = usePage()
+  const { path, page } = context
   const { title } = page.main!
 
   useEffect(() => {
     document.title = title + ' | react-haru'
   }, [title])
 
-  // Disable scrolling until content is loaded.
-  useEffect(() => setScrollEnabled(false), [])
+  const currentState = {
+    path,
+    title,
+    content: (
+      // Cache the page context during leave transition.
+      <PageProvider value={context}>{props.children}</PageProvider>
+    ),
+  }
 
-  const currentState = { path, title, children }
   const renderContent = useTransition(currentState, {
     key: state => state.path,
     config: { frequency: 0.3 },
@@ -41,18 +47,18 @@ export function DocsLayout({ children }: any) {
   return (
     <>
       <Header ref={headerRef} page={page.main} />
-      {renderContent((style, state) => {
+      {renderContent((style, { title, content }) => {
         return (
           <a.div className="flex flex-col flex-1" style={style}>
-            <Content title={state.title} headerHeight={headerHeight}>
-              {state.children}
+            <Content title={title} headerHeight={headerHeight}>
+              {content}
             </Content>
           </a.div>
         )
       })}
     </>
   )
-}
+})
 
 interface ContentProps {
   title?: string
@@ -79,6 +85,9 @@ function Content({ title, headerHeight, children }: ContentProps) {
   const queue = useQueue((fn: Function) => fn())
   useScrollToHash(queue)
 
+  // Disable scrolling while content is mounting.
+  const unlockScrolling = useScrollLock()
+
   const isFontLoaded = useFontLoaded()
   const { translateY } = useSpring({
     translateY: wiperHeight + wiperBlendHeight,
@@ -94,8 +103,9 @@ function Content({ title, headerHeight, children }: ContentProps) {
     delay: 420,
     cancel: !isFontLoaded || !wiperHeight,
     onRest() {
+      console.log('onRest')
       setWiperHidden(true)
-      setScrollEnabled(true)
+      unlockScrolling()
       queue.flush()
     },
   })

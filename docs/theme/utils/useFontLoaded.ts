@@ -5,7 +5,7 @@ const defaultFonts = ['AcehSoft', 'Inter var']
 const promiseCache: { [fontFamily: string]: Promise<void> } = {}
 
 export function useFontLoaded(fonts = defaultFonts) {
-  const [loaded, setLoaded] = useState(false)
+  let [loaded, setLoaded] = useState(false)
   useEffect(() => {
     let remaining = fonts.length
     const onLoad = () => --remaining || setLoaded(true)
@@ -16,6 +16,9 @@ export function useFontLoaded(fonts = defaultFonts) {
 
       promise.then(onLoad, console.error)
     })
+    return () => {
+      setLoaded = () => {}
+    }
   }, [])
   return loaded
 }

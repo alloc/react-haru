@@ -2,39 +2,34 @@ import React, { ReactNode } from 'react'
 import { Theme } from 'vite-plugin-react-pages'
 import { Layout } from './layout'
 import { Markdown } from './layout/mdx'
-import { PageContext, usePage } from './utils/PageContext'
+import { usePage } from './utils/PageContext'
 import { ThemeConfig, PathConfig, resolvePathConfig } from './config'
 
 import './styles/global.sass'
 import 'windi.css'
 
 export function createTheme(config: ThemeConfig): Theme {
-  const Page = (props: { status: string; data: any }) => {
-    const page = usePage()
-    const renderPage = getPageView(props.status, page.config)
+  function Page(props: { status: string; data: any }) {
+    const renderPage = getPageView(props.status, usePage().config)
     return <>{renderPage(props.data)}</>
   }
+
   return ({ staticData, loadedData, loadState }) => {
     const path = loadState.routePath
-    const pageKey = path + ':' + loadState.type
-
-    const { Provider } = PageContext
     return (
-      <Provider
-        value={{
+      <Layout
+        context={{
           path,
           page: staticData[path],
           pages: staticData,
           config: resolvePathConfig(path, config),
         }}>
-        <Layout>
-          <Page
-            key={pageKey}
-            status={loadState.type}
-            data={(loadState as any).error || loadedData[path]}
-          />
-        </Layout>
-      </Provider>
+        <Page
+          key={path + ':' + loadState.type}
+          status={loadState.type}
+          data={(loadState as any).error || loadedData[path]}
+        />
+      </Layout>
     )
   }
 }

@@ -1,14 +1,29 @@
 import React from 'react'
 import { a, useTransition } from 'react-haru/web'
-import { usePage } from '../utils/PageContext'
+import { PageContext, PageProvider } from '../utils/PageContext'
 import { DocsLayout } from './DocsLayout'
 
-export function Layout(props: any) {
-  const { path } = usePage()
+export function Layout({
+  context,
+  children,
+}: {
+  context: PageContext
+  children: any
+}) {
+  const Layout = context.path == '/' ? NoLayout : DocsLayout
 
-  const Layout = path == '/' ? NoLayout : DocsLayout
-  const renderLayout = useTransition(<Layout {...props} />, {
-    key: layout => layout.type,
+  const currentState = {
+    key: Layout,
+    layout: (
+      // Cache the page context during leave transition.
+      <PageProvider value={context}>
+        <Layout>{children}</Layout>
+      </PageProvider>
+    ),
+  }
+
+  const renderLayout = useTransition(currentState, {
+    key: state => state.key,
     config: { frequency: 0.3 },
     from: { opacity: 0 },
     enter: { opacity: 1 },
@@ -16,7 +31,7 @@ export function Layout(props: any) {
     lead: 'leave',
   })
 
-  return renderLayout((style, layout) => (
+  return renderLayout((style, { layout }) => (
     <a.div className="flex flex-col min-h-100vh bg-rose1" style={style}>
       {layout}
     </a.div>

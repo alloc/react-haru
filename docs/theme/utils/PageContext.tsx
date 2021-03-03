@@ -3,6 +3,8 @@ import React, { useContext } from 'react'
 import type { PagesStaticData } from 'vite-plugin-react-pages'
 import { PathConfig } from '../config'
 
+const PageContext = React.createContext(null as PageContext | null)
+
 export interface PageData extends Lookup {
   main?: { title?: string; sourceType?: string } & Lookup
 }
@@ -14,7 +16,7 @@ export interface PageContext<T = Lookup> {
   config: PathConfig
 }
 
-export const PageContext = React.createContext(null as PageContext | null)
+export const PageProvider = PageContext.Provider
 
 export function usePage<T = Lookup>(path: string): (T & PageData) | undefined
 export function usePage<T = Lookup>(): PageContext<T>

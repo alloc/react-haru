@@ -71,7 +71,7 @@ export type UseTransitionProps<Item = any> = Merge<
     /**
      * Skipped items are never rendered.
      */
-    skip?: (item: Item, key: Key) => boolean
+    skip?: (item: Item, key: unknown) => boolean
     /**
      * Leading animations must end before other animations can start.
      *
@@ -98,7 +98,7 @@ export type UseTransitionProps<Item = any> = Merge<
     /**
      * Called after a transition item is unmounted.
      */
-    onDestroyed?: (item: Item, key: Key) => void
+    onDestroyed?: (item: Item, key: unknown) => void
     /**
      * Used to access the imperative API.
      *

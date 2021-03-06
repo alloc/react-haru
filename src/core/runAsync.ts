@@ -85,7 +85,7 @@ export function runAsync<T extends AnimationTarget>(
       }
     }
 
-    const animate: any = (arg1: any, arg2?: any) => {
+    const animate = (arg1: any, arg2?: any): AsyncResult => {
       // Create the bail signal outside the returned promise,
       // so the generated stack trace is relevant.
       const bailSignal = new BailSignal()
@@ -125,18 +125,23 @@ export function runAsync<T extends AnimationTarget>(
       if (is.array(to)) {
         animating = (async (queue: any[]) => {
           for (const props of queue) {
-            await animate(props)
+            result = await animate(props)
+            if (!result.finished) {
+              break
+            }
           }
         })(to)
       }
 
       // Async script
       else {
-        animating = Promise.resolve(to(animate, target.stop.bind(target)))
+        animating = Promise.resolve(
+          to(animate as any, target.stop.bind(target))
+        )
       }
 
       await Promise.all([animating.then(preventBail), bailPromise])
-      result = getFinishedResult(target, true)
+      result ??= getFinishedResult(target, true)
 
       // Bail handling
     } catch (err) {

@@ -242,26 +242,28 @@ export function useTransition(
       payload.from = callProp(from, t.item, i)
     }
 
-    const isLead = phase == props.lead
+    const leadPhase = props.lead
+    const isLead = phase == leadPhase
     if (isLead) {
       leadCount += 1
+    } else if (prevPhase == leadPhase) {
+      leadCount -= 1
     }
 
     const { onResolve } = payload
     payload.onResolve = result => {
       callProp(onResolve, result)
 
-      if (isLead) {
-        leadCount = --leadCountRef.current
-        if (!leadCount && skipCountRef.current) {
-          skipCountRef.current = 0
-          forceUpdate()
-        }
-      }
-
       const transitions = usedTransitions.current!
       const t = transitions.find(t => t.key === key)
       if (!t) return
+
+      if (isLead && t.phase == leadPhase) {
+        leadCount = --leadCountRef.current
+        if (!leadCount && skipCountRef.current) {
+          forceUpdate()
+        }
+      }
 
       // Reset the phase of a cancelled enter/leave transition, so it can
       // retry the animation on the next render.
@@ -314,9 +316,12 @@ export function useTransition(
   useLayoutEffect(
     () => {
       leadCountRef.current = leadCount
+      if (!leadCount) {
+        skipCountRef.current = 0
+      }
       each(changes, ({ phase, springs, payload }, t) => {
         // When leave transitions are leading, new items are skipped.
-        if (props.lead == 'leave' && leadCount && t.phase == MOUNT) {
+        if (leadCount && props.lead == LEAVE && t.phase == MOUNT) {
           return skipCountRef.current++
         }
 
@@ -349,7 +354,7 @@ export function useTransition(
 
   // Mounting is postponed when leave transitions are leading.
   const activeTransitions =
-    props.lead == 'leave' && leadCount > 0
+    props.lead == LEAVE && leadCount > 0
       ? transitions.filter(t => t.phase != MOUNT)
       : transitions
 

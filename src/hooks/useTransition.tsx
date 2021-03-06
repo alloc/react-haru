@@ -66,7 +66,11 @@ export function useTransition(
     trail = 0,
     expires = true,
     onDestroyed,
+    onProps,
   } = props
+
+  // Call `onProps` for each item, instead of each spring.
+  props.onProps = undefined
 
   // Return a `SpringRef` if a deps array was passed.
   const ref = useMemo(
@@ -327,6 +331,9 @@ export function useTransition(
 
         // Save any springs created this render.
         setSprings(ctrl, springs)
+
+        // Inspect the props of each item.
+        onProps?.(payload, t.item, phase as any)
 
         // Merge the context into new items.
         if (hasContext && phase == ENTER) {

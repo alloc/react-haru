@@ -63,6 +63,11 @@ export type UseTransitionProps<Item = any> = Merge<
     key?: ItemKeys<Item>
     sort?: (a: Item, b: Item) => number
     trail?: number
+    onProps?: (
+      props: ControllerProps,
+      item: Item,
+      phase: Exclude<TransitionPhase, 'mount'>
+    ) => void
     /**
      * When true, existing items have their transitions recreated,
      * and leaving items are unmounted.

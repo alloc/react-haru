@@ -158,3 +158,8 @@ global.advanceUntilValue = (spring, value) => {
     return stop
   })
 }
+
+global.advanceUntilCalled = ({ mock }) => {
+  const initialCount = mock.calls.length
+  return advanceUntil(() => mock.calls.length > initialCount)
+}

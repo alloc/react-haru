@@ -9,6 +9,7 @@ declare global {
   let advanceUntil: (test: () => boolean) => Promise<void>
   let advanceUntilIdle: () => Promise<void>
   let advanceUntilValue: <T>(spring: FrameValue<T>, value: T) => Promise<void>
+  let advanceUntilCalled: (mock: jest.Mock) => Promise<void>
 
   /** Take an array of values (one per animation frame) from internal test storage  */
   let getFrames: <T>(
@@ -27,6 +28,7 @@ declare global {
       advanceUntil: typeof advanceUntil
       advanceUntilIdle: typeof advanceUntilIdle
       advanceUntilValue: typeof advanceUntilValue
+      advanceUntilCalled: typeof advanceUntilCalled
       countBounces: typeof countBounces
       getFrames: typeof getFrames
     }

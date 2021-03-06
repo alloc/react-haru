@@ -3,7 +3,7 @@ dependencies:
   '@mdx-js/react': 1.6.22_react@17.0.1
   classnames: 2.2.6
   dequal: 2.0.2
-  fluids: 0.2.6
+  fluids: 0.2.7
   fontfaceobserver-es: 3.3.3
   fuse.js: 6.4.6
   github-slugger: 1.3.0
@@ -11,6 +11,7 @@ dependencies:
   react: 17.0.1
   react-ch: 1.1.5_react@17.0.1
   react-dom: 17.0.1_react@17.0.1
+  react-error-overlay: /@alloc/react-error-overlay/6.0.10
   react-haru: 0.1.0_react@17.0.1
   react-hotkeys-hook: 3.1.0_react-dom@17.0.1+react@17.0.1
   react-intersection-observer: 8.31.0_react@17.0.1
@@ -58,6 +59,15 @@ packages:
     dev: true
     resolution:
       integrity: sha512-xm50V1qxSdTh1O1fKA+gqcU605YSnxfq6HwtYSFU3fRsKMFnUSuSOxqSAPI7y2sRxqPed2EIuGmNn107LVQM6g==
+  /@alloc/react-error-overlay/6.0.10:
+    dependencies:
+      anser: 1.4.10
+      html-entities: 1.3.1
+      settle-promise: 1.0.0
+      source-map: 0.5.7
+    dev: false
+    resolution:
+      integrity: sha512-QmLM5QREatCs1DW035txn2h/MiqDEKIyVy12l6HP9muJiQ1U2skoTy6bN7buaxyX8eg9PQvaTNBxGiFEBIaZFg==
   /@alloc/types/1.3.0:
     dev: false
     resolution:
@@ -844,6 +854,10 @@ packages:
     dev: true
     resolution:
       integrity: sha1-l6ERlkmyEa0zaR2fn0hqjsn74KM=
+  /anser/1.4.10:
+    dev: false
+    resolution:
+      integrity: sha512-hCv9AqTQ8ycjpSd3upOJd7vFwW1JaoYQ7tpham03GJ1ca8/65rqn0RpaWpItOAd6ylW9wAw6luXYPJIyPFVOww==
   /ansi-regex/5.0.0:
     dev: true
     engines:
@@ -1738,10 +1752,6 @@ packages:
       node: '>=10'
     resolution:
       integrity: sha512-78/PXT1wlLLDgTzDs7sjq9hzz0vXD+zn+7wypEe4fXQxCmdmqfGsEPQxmiCSQI3ajFV91bVSsvNtrJRiW6nGng==
-  /fluids/0.2.6:
-    dev: false
-    resolution:
-      integrity: sha512-xs1Wg9xm4zSHHtQTuM7rsMN5Ajzn3DXqmAfzeH5GdcHvJC4B47Rh65x9RRp60T9UQRG0n5nFiQuLM98FdwkKuA==
   /fluids/0.2.7:
     dev: false
     resolution:
@@ -2008,6 +2018,10 @@ packages:
     dev: true
     resolution:
       integrity: sha512-P+M65QY2JQ5Y0G9KKdlDpo0zK+/OHptU5AaBwUfAIDJZk1MYf32Frm84EcOytfJE0t5JvkAnKlmjsXDnWzCJmQ==
+  /html-entities/1.3.1:
+    dev: false
+    resolution:
+      integrity: sha512-rhE/4Z3hIhzHAUKbW8jVcCyuT5oJCXXqhN/6mXXVCpzTmvJnoH2HL/bt3EZ6p55jbFJBeAe1ZNpL5BugLujxNA==
   /html-void-elements/1.0.5:
     dev: true
     resolution:
@@ -3703,6 +3717,10 @@ packages:
     hasBin: true
     resolution:
       integrity: sha512-+GB6zVA9LWh6zovYQLALHwv5rb2PHGlJi3lfiqIHxR0uuwCgefcOJc59v9fv1w8GbStwxuuqqAjI9NMAOOgq1A==
+  /settle-promise/1.0.0:
+    dev: false
+    resolution:
+      integrity: sha1-aXrbWLgh84fOJ1fAbvyd5fDuM9g=
   /shallow-equal/1.2.1:
     dev: false
     resolution:
@@ -3757,7 +3775,6 @@ packages:
     resolution:
       integrity: sha512-Wonm7zOCIJzBGQdB+thsPar0kYuCIzYvxZwlBa87yi/Mdjv7Tip2cyVbLj5o0cFPN4EVkuTwb3GDDyUx2DGnGw==
   /source-map/0.5.7:
-    dev: true
     engines:
       node: '>=0.10.0'
     resolution:
@@ -4363,7 +4380,7 @@ specifiers:
   '@vitejs/plugin-react-refresh': ^1.0.0
   classnames: ^2.2.6
   dequal: ^2.0.2
-  fluids: ^0.2.6
+  fluids: ^0.2.7
   fontfaceobserver-es: ^3.3.3
   fuse.js: ^6.4.6
   github-slugger: ^1.3.0
@@ -4372,6 +4389,7 @@ specifiers:
   react: ^17.0.0
   react-ch: ^1.1.5
   react-dom: ^17.0.0
+  react-error-overlay: npm:@alloc/react-error-overlay@^6.0.10
   react-haru: latest
   react-hotkeys-hook: ^3.1.0
   react-intersection-observer: ^8.31.0

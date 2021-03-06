@@ -8,7 +8,6 @@ const components = {
   a: Anchor,
   h1: makeHeading('h1'),
   h2: makeHeading('h2'),
-  h3: makeHeading('h3'),
   pre: (props: any) => props.children,
   code: CodeBlock,
 }

@@ -1,0 +1,225 @@
+---
+title: SpringValue class
+---
+
+The `SpringValue` class manages the animation of its underlying value.
+
+The variables you pass to animated components are typically `SpringValue` objects, although they can also be [interpolated values](/interpolation) or [fluid values](/fluids).
+
+For example, the `useSpring` hook creates one `SpringValue` per custom key (eg: `opacity`).
+
+### Constructing your own
+
+You can create your own `SpringValue` objects for outside of React components and hooks. You can pass an initial value, or even a props object like you pass to `useSpring`.
+
+```ts
+const spring = new SpringValue(0)
+```
+
+## Animatable values
+
+While a `SpringValue` object's underlying value can be **any** type, only certain types can actually be animated. Non-animated types still have their values updated **on the next frame**, rather than synchronously (except when using the [`.set`] method).
+
+The following types can be animated:
+
+- number
+- string
+- array of numbers and/or strings
+
+# Properties
+
+Every property [`FrameValue`](/objects/FrameValue#properties) has plus the following properties.
+
+## `animation`
+
+The state of the current animation (which might not be animating this very moment).
+
+Usually, you don't need to touch this property.
+
+## `defaultProps`
+
+The current default values used in every update where the prop is `undefined`.
+
+Usually, you don't need to touch this property.
+
+Learn more about [default props](/props#default-props).
+
+## `goal`
+
+The current goal value. Our animation will finish (or has finished) here.
+
+You should prefer this over `.animation.to`, especially if you're animating to a [fluid value](/fluids).
+
+## `hasAnimated`
+
+When `true`, our value has been animated at least once in its lifetime.
+
+This is mainly for internal purposes.
+
+## `idle`
+
+When `true`, there is either no animation or it's paused.
+
+When an [async animation](/to#async-animation) is active, this property equals `true` unless paused.
+
+This is mainly for internal purposes, but it's also useful for unit tests. For example, you might use [mock-raf](https://www.npmjs.com/package/mock-raf) to continuously "step forward" until `idle` is true.
+
+## `isAnimating`
+
+When `true`, the active animation is unfinished, but may be paused.
+
+You can use this property to know if [resuming](#resume) would have any effect.
+
+## `isPaused`
+
+When `true`, the active animation is paused, as well as any future updates.
+
+## `key`
+
+The name used to identify this value in an update.
+
+This property is `undefined` unless this value was created by a [`Controller`](/objects/Controller) object.
+
+When `undefined`, the `to` and `from` props cannot be objects.
+
+## `queue`
+
+The queue of pending updates added with the [`.update`](#update) method.
+
+You can mutate this as you see fit. For example, the [`useChain`](/hooks/useChain) hook does!
+
+## `velocity`
+
+The current "units per millisecond" that our value is animating at.
+
+This property updates on every frame while `this.isAnimating && !this.idle` equals `true`.
+
+When our value is an array, this property will be an array of the same length.
+
+# Methods
+
+## `advance`
+
+Move the active animation forward in time by a given number of milliseconds.
+
+```ts
+spring.advance(16)
+```
+
+Usually, you don't need to call this manually.
+
+## `finish`
+
+Stop animating and jump to the [`.goal`](#goal) value.
+
+```ts
+spring.finish()
+```
+
+The [animation result](/objects/AnimationResult) will contain `finished: true`.
+
+## `pause`
+
+Freeze the active animation in time, and postpone any future updates until resumed.
+
+```ts
+spring.pause()
+```
+
+Equivalent to calling `.start` with `pause: true`.
+
+## `reset`
+
+Restart the active animation from its `from` value.
+
+```ts
+spring.reset()
+```
+
+Equivalent to calling `.start` with `reset: true`.
+
+## `resume`
+
+Resume the active animation and process any updates from the pause queue.
+
+```ts
+spring.resume()
+```
+
+Equivalent to calling `.start` with `pause: false`.
+
+## `set`
+
+Overwrite the current value. If an animation is active, it will stop early.
+
+```ts
+spring.set(100)
+```
+
+When a new value is passed, `onChange` handlers will be called. When an animation was active, `onRest` handlers will be called **before** the value is updated.
+
+This method updates the value **synchronously**. To wait until the next frame, call `.start` with `immediate: true` instead.
+
+### Fluid values
+
+When a [fluid value](/fluids) is passed, its current value will be inherited; and when it changes, we will animate to the new value, but only if something is observing us (like an animated component).
+
+## `start`
+
+Update the animation state, which possibly starts an animation.
+
+```ts
+spring.start(props)
+```
+
+Valid props are defined [here](/props).
+
+The returned promise contains an [animation result](/objects/AnimationResult).
+
+### Using the queue
+
+Pass nothing to use updates from the [`.queue`](#queue) array. This empties the queue.
+
+```ts
+spring.start()
+```
+
+### The `to` argument
+
+Try passing a value compatible with the `to` prop.
+
+```ts
+const spring = new SpringValue(0)
+
+spring.start(1) // Animate to 1 from current value.
+```
+
+## `stop`
+
+Stop the active animation and prevent any delayed updates.
+
+```ts
+spring.stop()
+```
+
+Our current value becomes our [`.goal`](#goal) value.
+
+The [animation result](/objects/AnimationResult) will contain `finished: false`.
+
+### Cancellation
+
+Pass `true` to cancel the animation instead, which adds `cancelled: true` to the animation result.
+
+### Async animations
+
+As you'd expect, this method interrupts [async animations](/props/to#async-animations).
+
+## `update`
+
+Add an update to the [`.queue`](#queue) array.
+
+```ts
+spring.update(props)
+```
+
+Call `.start` with no arguments to apply all queued updates.

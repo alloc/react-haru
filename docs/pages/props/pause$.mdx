@@ -1,0 +1,34 @@
+---
+title: Pausing
+keywords: [pause, freeze]
+---
+
+The `pause` prop freezes the active animation in time.
+
+```ts
+useSpring({
+  pause: true,
+})
+```
+
+It can pause [loops](/props/loop) and even [async animations](/props/to#async-animations).
+
+## Pause specific keys
+
+When `pause` is a function, you can easily customize its value per key.
+
+```ts
+useSpring({
+  pause: key => key === 'opacity',
+})
+```
+
+The `pause` function is called on every update.
+
+When `pause` is a string or array of strings, those keys will use `pause: true`.
+
+```ts
+useSpring({
+  pause: 'opacity',
+})
+```

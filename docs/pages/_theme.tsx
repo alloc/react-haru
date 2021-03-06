@@ -8,7 +8,7 @@ import { LoadingPage } from 'components/LoadingPage'
 import { DocsFilter } from 'components/DocsFilter'
 import { Attraction } from 'theme/utils/Attraction'
 
-const Theme = createTheme({
+export default createTheme({
   logo: <Logo />,
   renderError: () => <ErrorPage />,
   renderLoading: () => <LoadingPage />,
@@ -33,6 +33,3 @@ const Theme = createTheme({
     },
   },
 })
-
-// Enable react-refresh by exporting a component.
-export default (props: any) => <Theme {...props} />

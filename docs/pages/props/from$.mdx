@@ -1,0 +1,30 @@
+---
+title: The from prop
+---
+
+The `from` prop decides the initial value of an animation.
+
+It **must** be defined for [async animations](/props/to#async-animations).
+
+### Declarative updates
+
+In declarative updates, `from` is only used on first render or when `reset: true` exists.
+
+When `from` is **undefined** for a specific key, the `to` object will be searched for a default value. In the example below, `opacity` has its `from` value set to `0` or `1` (depending on `visible`), but only on the first render.
+
+```ts
+useSpring({
+  to: { opacity: visible ? 1 : 0 },
+})
+```
+
+### Imperative updates
+
+In imperative updates, a defined `from` implies `reset: true`, which means the `from` value is always used.
+
+```ts
+spring.start({
+  to: 100,
+  from: 0,
+})
+```

@@ -1,14 +1,12 @@
 import React, { Children, ReactHTML, ReactNode } from 'react'
 import { a, SpringValue } from 'react-haru/web'
 import { isElement } from 'react-is'
-import Slugger from 'github-slugger'
-import css from './Heading.module.sass'
+import { useSlug } from '../../utils/useSlug'
 import { copyLink } from '../Header'
-
-const slugger = new Slugger()
+import css from './Heading.module.sass'
 
 export const makeHeading = (Tag: keyof ReactHTML) => (props: any) => {
-  const slug = slugger.slug(stringifyChildren(props.children))
+  const slug = useSlug(stringifyChildren(props.children))
   return (
     <Tag
       id={slug}

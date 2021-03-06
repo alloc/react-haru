@@ -1,0 +1,6 @@
+{
+  "[mdx]": {
+    "editor.wordWrap": "on",
+    "files.trimTrailingWhitespace": false
+  }
+}

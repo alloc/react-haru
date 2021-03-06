@@ -1,6 +1,8 @@
 import { ReactNode } from 'react'
 import makePathRegex from 'regexparam'
 
+export { usePage } from './utils/PageContext'
+
 export interface ThemeConfig {
   logo?: ReactNode
   topRight?: (ReactNode | { text: string; href: string })[]
@@ -12,32 +14,32 @@ export interface ThemeConfig {
   }
 }
 
-export interface PathConfig extends Omit<ThemeConfig, 'pathOverrides'> {
+export interface PageConfig extends Omit<ThemeConfig, 'pathOverrides'> {
   path: string
 }
 
 type PathRegexCache = { [path: string]: RegExp }
 let pathRegexCache: PathRegexCache
 
-const pathConfigCache: { [path: string]: PathConfig } = {}
+const pageConfigs: { [path: string]: PageConfig } = {}
 
-export function resolvePathConfig(
+export function resolvePageConfig(
   path: string,
-  { overrides: pathOverrides, ...config }: ThemeConfig
-): PathConfig {
-  if (pathConfigCache[path]) {
-    return pathConfigCache[path]
+  { overrides: pageOverrides, ...config }: ThemeConfig
+): PageConfig {
+  if (pageConfigs[path]) {
+    return pageConfigs[path]
   }
 
-  if (pathOverrides) {
-    pathRegexCache ??= Object.keys(pathOverrides).reduce((cache, route) => {
+  if (pageOverrides) {
+    pathRegexCache ??= Object.keys(pageOverrides).reduce((cache, route) => {
       cache[path] = makePathRegex(route).pattern
       return cache
     }, {} as PathRegexCache)
 
     for (const route in pathRegexCache) {
       if (pathRegexCache[route].test(path)) {
-        Object.assign(config, pathOverrides[route])
+        Object.assign(config, pageOverrides[route])
         break
       }
     }

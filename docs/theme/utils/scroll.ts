@@ -49,15 +49,25 @@ function updateScrollTop() {
   scrolls.forEach(elem => (elem.scrollTop = nextScrollTop))
 }
 
+function getMaxScrollTop() {
+  const scrollHeight = Math.max(...scrolls.map(elem => elem.scrollHeight))
+  const windowHeight = window.innerHeight
+  return Math.max(0, scrollHeight - windowHeight)
+}
+
 export function scrollTo(elem: HTMLElement, config?: SpringConfig) {
   raf.onStart(() => {
+    const maxPosition = getMaxScrollTop()
+    const elemPosition = getOffsetTop(elem)
     scrollTop.start({
-      to: getOffsetTop(elem),
+      to: Math.min(elemPosition, maxPosition),
       from: getScrollTop(),
       config: {
-        frequency: 3,
+        round: 1,
+        frequency: 1.8,
         ...config,
       },
+      onChange: setScrollTop,
     })
   })
 }

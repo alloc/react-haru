@@ -1,0 +1,52 @@
+---
+title: Cancellation
+keywords: [stop, prevent]
+---
+
+The `cancel` prop stops the active animation at its current value.
+
+```ts
+useSpring({
+  cancel: true,
+})
+```
+
+The update it's defined in will never be applied (except for [default props](/props#default-props), which are always applied).
+
+It can be very useful when you want to prevent a `useSpring` update from being applied until the component state is ready. For example, you might want to prevent fade-in until fonts are loaded.
+
+## Cancelled delays
+
+When `cancel` is true, delayed updates are never applied.
+
+```ts
+const [style, ref] = useSpring(() => ({ x: 0 }))
+
+// Pass this to an element.
+const onClick = () => {
+  ref.start({ x: 100, delay: 500 })
+
+  // Cancel the delayed update for no good reason.
+  ref.start({ cancel: true })
+}
+```
+
+## Cancel specific keys
+
+When `cancel` is a function, you can easily customize its value per key.
+
+```ts
+useSpring({
+  cancel: key => key === 'opacity',
+})
+```
+
+The `cancel` function is called on every update.
+
+When `cancel` is a string or array of strings, those keys will use `cancel: true`.
+
+```ts
+useSpring({
+  cancel: 'opacity',
+})
+```

@@ -4,16 +4,8 @@ title: onRest prop
 
 The `onRest` prop
 
-# Test
+- onRest is batched
+- onRest is called when all animations have finished, stopped, or cancelled
+- onRest not called when an animation is paused
 
-The `onRest` prop
-
-## Updates from onRest
-
-If you `.set` a spring while it's animating
-
-```ts
-onRest() {
-  spring.set(10)
-}
-```
+# Quirks

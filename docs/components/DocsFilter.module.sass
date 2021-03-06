@@ -36,6 +36,7 @@
 
   .content
     overflow-y: scroll
+    will-change: height
 
   .currentPage
     color: #CFB8BE
@@ -50,12 +51,14 @@
     position: absolute
     width: 100%
     transition: opacity 0.15s ease-out
-    @apply flex flex-col pt-2.8 pb-9.6 mx-auto
+    @apply flex flex-col pt-16.8 pb-24.0 pl-10.8 mx-auto
+    @apply text-1.35rem font-700 text-black leading-tight tracking-tight
 
     a
-      box-shadow: 0 0 0 1.5px #FFCCE5
-      transition: box-shadow 0.25s ease-out
-      @apply block rounded-full font-540 text-1rem text-center text-deepPink mx-auto mt-6.2 px-3.8 py-1.9
+      background: #FFEDF5
+      transition: background 0.25s ease-out
+      @apply inline-block rounded-full mt-6.0 -ml-1.2 px-3.6 py-2.4
+      @apply text-1rem font-420 text-deepPink3
 
       &:hover
-        box-shadow: 0 0 0 1.5px #F50076
+        background: #FFE3F0

@@ -14,7 +14,7 @@ export function Footer() {
     }),
   })
   return (
-    <div className="w-1/1">
+    <div className="w-1/1 overflow-hidden">
       <a.div className="w-1/1 transform-gpu" style={rootStyle}>
         <Background />
         <div className={css.footer}>

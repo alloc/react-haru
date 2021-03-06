@@ -6,19 +6,27 @@
 
 .markdown-body
   font-family: inherit
-  font-size: inherit
+  font-size: 1.1rem
 
   h1, h2
     padding: 0
     border-bottom: none
+    letter-spacing: -0.008em
+
+    code
+      display: inline-block
+      margin-bottom: 0.25rem
+      letter-spacing: inherit
+      font-size: 80%
 
   h1
-    @apply text-2.6rem border-rose3 mb-5 mt-12
+    @apply text-2.6rem mb-5 mt-20
 
   h2
-    @apply text-1.8rem mb-4 mt-11
+    @apply text-2rem mb-4.8 mt-20
 
   p
+    line-height: 1.75
     @apply font-460
 
   strong
@@ -30,7 +38,7 @@
     @apply text-deepPink
 
   code
-    @apply rounded-md bg-code
+    @apply rounded-md bg-code whitespace-nowrap
 
   a
     @apply text-deepPink
@@ -54,7 +62,7 @@
   pre
     box-shadow: 0 0 0 1.5px #FFCCE5
     background: rgba(white, 0.6)
-    @apply rounded-0.6rem
+    @apply rounded-0.6rem mt-7.2
 
   p, pre, blockquote, ol, ul
     @apply mb-4.8

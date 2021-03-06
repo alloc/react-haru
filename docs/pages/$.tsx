@@ -33,13 +33,13 @@ function Home() {
 export default Home
 
 function Header() {
-  const { config } = usePage()
+  const page = usePage()
 
   return (
     <div className="flex h-13.4 z-100">
       <FlexEnd className={css.topRight}>
         <div className={css.items}>
-          {config.topRight!.map((item, i) =>
+          {page.topRight!.map((item, i) =>
             item instanceof Object && 'href' in item ? (
               <Anchor key={i} href={item.href} className="flex items-center">
                 <Attraction>{item.text}</Attraction>

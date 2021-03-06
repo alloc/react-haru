@@ -1,0 +1,106 @@
+---
+title: Loops
+keywords: [repeat, yoyo, infinite]
+---
+
+The `loop` prop lets you animate in a loop (unsurprisingly).
+
+Its most basic form is `loop: true`, which repeats the update it's defined in.
+
+```ts
+useSpring({
+  z: 180,
+  from: { z: 0 },
+  loop: true,
+})
+```
+
+The animation will restart at its `from` value on every repetition.
+
+## Loop objects
+
+When `loop` is an object, it becomes an update that is looped after its parent update is finished.
+
+Among other things, this is useful for a `reverse` loop (often called a yo-yo).
+
+```ts
+useSpring({
+  z: 180,
+  from: { z: 0 },
+  loop: { reverse: true },
+})
+```
+
+The `loop` object is **merged** into its parent update, so it becomes the following:
+
+```ts
+{ z: 180, from: { z: 0 }, reverse: true, loop: true }
+```
+
+## Loop functions
+
+When `loop` is a function, it's called **after** every repetition.
+
+From this function, you can return `true` to continue looping, or `false` to stop.
+
+```ts
+useSpring({
+  loop() {
+    console.log('loop')
+    return true
+  },
+})
+```
+
+Or you can return an object, which works exactly like `loop` as an object.
+
+```ts
+useSpring({
+  loop: () => ({
+    // TODO
+  }),
+})
+```
+
+## Stopping a loop
+
+Like any other animation, loops can be stopped with the `cancel` prop or `stop` method.
+
+Passing `loop: false` will **not** stop an active loop, but returning `false` from a `loop` function **will**.
+
+Loops can be paused, too!
+
+# Quirks
+
+Here are a few things to keep in mind when using the `loop` prop.
+
+## Some props are never inherited
+
+For `loop` repetitions, the `default` prop is replaced with `false`. This means the looped update won't re-apply its [default props](/props#default-props) on every repetition.
+
+Of course, if you _want_ to update default props on every repetition, you can use a `loop` function.
+
+```ts
+useSpring({
+  loop: () => ({ default: true }),
+})
+```
+
+Another one is the `pause` prop.
+
+For example, when using `loop: true` alongside `pause: true`, looping will _not_ be paused after each repetition. Although, the loop _will_ be paused to begin with.
+
+Of course, if you _want_ to pause after each repetition, you can use a `loop` function.
+
+```ts
+useSpring({
+  loop: () => ({ pause: true }),
+})
+```
+
+The full list of props that are never inherited by `loop` objects:
+
+- `default`
+- `pause`
+- `reset`
+- `reverse`

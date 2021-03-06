@@ -1,0 +1,32 @@
+---
+title: Delay
+keywords: [timeout, wait]
+---
+
+The `delay` prop postpones an update for a certain amount of time in milliseconds.
+
+```ts
+useSpring({
+  z: 180,
+  from: { z: 0 },
+  delay: 1000, // Wait one second.
+})
+```
+
+## Delay functions
+
+When `delay` is a function, you can easily customize the delay for each key.
+
+```ts
+useSpring({
+  delay: key => (key === 'opacity' ? 0 : 1000),
+})
+```
+
+The `delay` function is called before the `pause` prop is applied.
+
+## Default props
+
+[Default props]() are applied synchronously, so `delay` has no effect.
+
+The `delay` prop cannot have a default value.

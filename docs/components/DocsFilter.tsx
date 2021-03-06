@@ -16,13 +16,13 @@ import useClickOutside from 'use-click-outside'
 import type { PagesStaticData } from 'vite-plugin-react-pages'
 import { Anchor } from 'theme/layout/mdx/Anchor'
 import { Attraction } from 'theme/utils/Attraction'
-import { usePage } from 'theme/utils/PageContext'
 import { limitCalls } from 'theme/utils/limitCalls'
 import { useFuse } from 'theme/utils/useFuse'
 import { useHeight } from 'theme/utils/useHeight'
 import { usePrev } from 'theme/utils/usePrev'
 import { useCancellableDelay } from 'theme/utils/useCancellableDelay'
 import css from './DocsFilter.module.sass'
+import { useStaticData } from 'vite-plugin-react-pages/dist/client'
 
 // Note: This assumes only one DocsFilter ever exists.
 const global = { animating: 0 }
@@ -34,8 +34,11 @@ export function DocsFilter() {
     enableOnTags: ['INPUT'],
   })
 
+  const hideMenu = () => setMenuVisible(false)
+  useHotkeys('escape', hideMenu, { enableOnTags: ['INPUT'] })
+
   const menuRef = useRef<HTMLDivElement>(null)
-  useClickOutside(menuRef, () => setMenuVisible(false))
+  useClickOutside(menuRef, hideMenu)
 
   const leaveTimeout = useCancellableDelay()
   return (
@@ -48,7 +51,7 @@ export function DocsFilter() {
       onMouseLeave={() =>
         !global.animating &&
         leaveTimeout(() => {
-          setMenuVisible(false)
+          // setMenuVisible(false)
         }, 300)
       }>
       <Attraction className="flex items-center">
@@ -67,7 +70,8 @@ export function DocsFilter() {
 }
 
 // The padding before/after the search results
-const contentPadding = 1.2
+const contentPaddingTop = 1.2
+const contentPaddingBottom = 0.8
 
 // The height of a search result multiplied by the given count
 const getContentHeight = (count: number, padding = 0) =>
@@ -81,8 +85,9 @@ interface MenuProps {
 const Menu = React.forwardRef<HTMLDivElement, MenuProps>(
   ({ visible, onClick }, menuRef) => {
     const menuStyle = useSpring({
-      translateX: visible ? '-50%' : '-52%',
-      translateY: visible ? 0 : -8,
+      x: visible ? '-50%' : '-52%',
+      y: visible ? 0 : -8,
+      z: 0, // Give the menu its own layer.
       opacity: visible ? 1 : 0,
       // Translate before/after scaling to adjust the anchor point.
       transform: `translateY(-50%) scale(${
@@ -111,20 +116,6 @@ const Menu = React.forwardRef<HTMLDivElement, MenuProps>(
       onSearch((inputRef.current!.value = ''))
     }
 
-    const scrollStyle = useSpring({
-      from: { height: 0 },
-    })
-
-    const setScrollHeight = useCallback(
-      (height: number, immediate?: boolean) =>
-        scrollStyle.height.start({
-          to: Math.min(height, 0.72 * window.innerHeight),
-          immediate: immediate || scrollStyle.height.get() == 0,
-          config: { frequency: 0.6 },
-        }),
-      []
-    )
-
     const onSearch = useChannel<string>()
     return (
       <a.div
@@ -135,9 +126,7 @@ const Menu = React.forwardRef<HTMLDivElement, MenuProps>(
           pointerEvents: visible ? 'auto' : 'none',
         }}>
         <div className={cn(css.menuBorder, 'fill')} />
-        <div
-          className="flex h-13.2 w-1/1 text-1rem font-440"
-          style={{ marginBottom: contentPadding + 'rem' }}>
+        <div className="flex h-13.2 w-1/1 text-1rem font-440">
           <img src="/search.svg" className="h-5.0 mt-0.55 ml-4.6 self-center" />
           <div className="absolute h-1/1 right-6.0 flex items-center">
             <img src="/command.svg" className="h-3.0" />
@@ -155,14 +144,7 @@ const Menu = React.forwardRef<HTMLDivElement, MenuProps>(
             onInput={e => onSearch(e.currentTarget.value)}
           />
         </div>
-        <a.div className={css.content} style={scrollStyle}>
-          <Results
-            visible={visible}
-            onClick={onClick}
-            onSearch={onSearch}
-            setScrollHeight={setScrollHeight}
-          />
-        </a.div>
+        <Results visible={visible} onClick={onClick} onSearch={onSearch} />
       </a.div>
     )
   }
@@ -176,9 +158,8 @@ const Results = React.memo(
     visible: boolean
     onClick: () => void
     onSearch: Channel<string>
-    setScrollHeight: (height: number, immediate?: boolean) => void
   }) => {
-    const { pages } = usePage()
+    const pages = useStaticData()
     const findablePages = useMemo(() => getFindablePages(pages), [pages])
     const [searchResults, search] = useFuse(findablePages, {
       keys: ['0', '1.main.title'],
@@ -191,7 +172,7 @@ const Results = React.memo(
     useChannel(props.onSearch, limitCalls(search, 200))
 
     const getResultY = (result: any) =>
-      getContentHeight(searchResults.indexOf(result))
+      getContentHeight(searchResults.indexOf(result), contentPaddingTop)
 
     const resultCount = searchResults.length
     const prevResultCount = usePrev(resultCount)
@@ -201,22 +182,33 @@ const Results = React.memo(
       {
         key: result => result.item[0],
         enter: result => ({
+          zIndex: 1,
           translateY: getResultY(result),
           pointerEvents: 'unset' as CSS.Properties['pointerEvents'],
           opacity: 1,
-          delay: key => (key == 'opacity' ? 200 : 0),
+          display: 'block',
+          delay: key => (key == 'opacity' && prevResultCount == 0 ? 200 : 0),
+          immediate: !props.visible || 'translateY',
         }),
         update: result => ({
           translateY: getResultY(result),
         }),
-        leave: {
-          pointerEvents: 'none' as CSS.Properties['pointerEvents'],
-          opacity: 0,
-        },
+        leave: [
+          {
+            zIndex: 0,
+            pointerEvents: 'none' as CSS.Properties['pointerEvents'],
+            opacity: 0,
+          },
+          {
+            // Prevent hidden items from affecting content height.
+            display: 'none',
+          },
+        ],
+        lead: 'leave',
         config: () => key => ({
           frequency: key == 'opacity' ? 0.3 : 0.5,
         }),
-        immediate: !props.visible || (prevResultCount == 0 ? 'translateY' : []),
+        immediate: !props.visible,
         expires: false,
         onStart() {
           global.animating++
@@ -228,25 +220,48 @@ const Results = React.memo(
       [searchResults]
     )
 
-    const notFound = resultCount == 0
     const [notFoundRef, notFoundHeight] = useHeight()
     const notFoundStyle = useSpring({
-      opacity: notFound ? 1 : 0,
-      delay: notFound ? 200 : 0,
+      from: { opacity: 0, display: 'none' as CSS.Properties['display'] },
+      to: resultCount
+        ? [{ opacity: 0 }, { display: 'none' }]
+        : { opacity: 1, display: 'block' as CSS.Properties['display'] },
+      delay: resultCount ? 0 : 200,
       config: {
-        frequency: 0.3,
+        frequency: 0.2,
       },
     })
-
-    const contentHeight = getContentHeight(resultCount, contentPadding)
-    useEffect(() => {
-      props.setScrollHeight(
-        resultCount ? toPixels(contentHeight) : notFoundHeight,
-        !props.visible
-      )
-    }, [resultCount, contentHeight, notFoundHeight])
-
     const openIssueRef = useRef<HTMLAnchorElement>(null)
+    const notFound = (
+      <a.div ref={notFoundRef} className={css.notFound} style={notFoundStyle}>
+        <div>
+          Can't find what you're <br />
+          looking for?
+        </div>
+        <Anchor
+          ref={openIssueRef}
+          href="https://github.com/alloc/react-haru/issues/new">
+          Open an issue
+        </Anchor>
+        <img src="/accent1.svg" className="absolute bottom-0 right-0 w-24.0" />
+      </a.div>
+    )
+
+    const contentHeight = getContentHeight(
+      resultCount,
+      contentPaddingTop + contentPaddingBottom
+    )
+
+    const maxScrollHeight = toPixels(getContentHeight(9.5, contentPaddingTop))
+    const scrollHeight = resultCount
+      ? Math.min(toPixels(contentHeight), maxScrollHeight)
+      : notFoundHeight
+
+    const scrollStyle = useSpring({
+      height: scrollHeight,
+      immediate: !props.visible,
+      config: { frequency: 0.6 },
+    })
 
     const [selectedIdx, setSelectedIdx] = useState(0)
     const anchors: HTMLAnchorElement[] = []
@@ -273,50 +288,48 @@ const Results = React.memo(
     useLayoutEffect(resetSelection, [searchResults])
 
     const location = useLocation()
-    return (
-      <div className="flex flex-1 flex-col" style={{ height: contentHeight }}>
-        <a.div ref={notFoundRef} className={css.notFound} style={notFoundStyle}>
-          <div className="text-1.5rem font-520 text-black text-center leading-normal tracking-tight">
-            Can't find what you're <br />
-            looking for?
-          </div>
+    const pageLinks = renderPages((style, result) => {
+      const [path, page] = result.item
+      const { title } = page.main
+      const index = searchResults.indexOf(result)
+      const isSelected = index === selectedIdx
+      const isCurrentPage = path === location.pathname
+      return (
+        <a.div
+          className="absolute rotate-0.01 w-1/1"
+          style={style}
+          onMouseMove={() => !isSelected && setSelectedIdx(index)}>
           <Anchor
-            ref={openIssueRef}
-            href="https://github.com/alloc/react-haru/issues/new">
-            Open an issue
+            ref={elem => elem && (anchors[index] = elem)}
+            href={path}
+            className="block w-1/1 h-9.6 mb-1.0 px-4.8"
+            onClick={props.onClick}>
+            <span
+              className={cn(
+                'flex items-center pl-2.4 w-1/1 h-1/1 text-1.04rem text-black font-460 overflow-hidden',
+                isCurrentPage && css.currentPage,
+                isSelected && css.selectedResult
+              )}>
+              {title}
+              {isSelected && (
+                <div className="absolute right-0 w-0.8 h-1/1 bg-red" />
+              )}
+            </span>
           </Anchor>
         </a.div>
-        {renderPages((style, result) => {
-          const [path, page] = result.item
-          const { title } = page.main
-          const index = searchResults.indexOf(result)
-          const isSelected = index === selectedIdx
-          const isCurrentPage = path === location.pathname
-          return (
-            <a.div
-              className="absolute rotate-0.01 w-1/1"
-              style={style}
-              onMouseMove={() => !isSelected && setSelectedIdx(index)}>
-              <Anchor
-                ref={elem => elem && (anchors[index] = elem)}
-                href={path}
-                className="block w-1/1 h-9.6 mb-1.0 px-4.8"
-                onClick={props.onClick}>
-                <span
-                  className={cn(
-                    'flex items-center pl-2.4 w-1/1 h-1/1 text-1.04rem text-black font-460 overflow-hidden',
-                    isCurrentPage && css.currentPage,
-                    isSelected && css.selectedResult
-                  )}>
-                  {title}
-                  {isSelected && (
-                    <div className="absolute right-0 w-0.8 h-1/1 bg-red" />
-                  )}
-                </span>
-              </Anchor>
-            </a.div>
-          )
-        })}
+      )
+    })
+
+    return (
+      <div>
+        {notFound}
+        <a.div className={css.content} style={scrollStyle}>
+          <div
+            className="flex flex-1 flex-col"
+            style={{ height: contentHeight }}>
+            {pageLinks}
+          </div>
+        </a.div>
       </div>
     )
   }

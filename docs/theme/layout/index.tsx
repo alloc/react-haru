@@ -1,22 +1,22 @@
 import React from 'react'
 import { a, useTransition } from 'react-haru/web'
-import { PageContext, PageProvider } from '../utils/PageContext'
+import { PageConfig } from 'theme/config'
+import { PageProvider } from '../utils/PageContext'
 import { DocsLayout } from './DocsLayout'
 
-export function Layout({
-  context,
-  children,
-}: {
-  context: PageContext
+interface Props {
+  page: PageConfig
   children: any
-}) {
-  const Layout = context.path == '/' ? NoLayout : DocsLayout
+}
+
+export function Layout({ page, children }: Props) {
+  const Layout = page.path == '/' ? NoLayout : DocsLayout
 
   const currentState = {
     key: Layout,
     layout: (
       // Cache the page context during leave transition.
-      <PageProvider value={context}>
+      <PageProvider value={page}>
         <Layout>{children}</Layout>
       </PageProvider>
     ),

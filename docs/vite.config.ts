@@ -42,7 +42,7 @@ const theme: Theme = {
 
 export default defineConfig({
   optimizeDeps: {
-    exclude: ['react-haru'],
+    exclude: ['react-haru', 'react-error-overlay'],
   },
   build: {
     outDir: 'dist',

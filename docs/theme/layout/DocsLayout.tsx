@@ -1,5 +1,6 @@
 import React, { useEffect, useLayoutEffect, useState } from 'react'
 import { a, useSpring, useTransition } from 'react-haru/web'
+import { useStaticData } from 'vite-plugin-react-pages/dist/client'
 import { setScrollTop } from '../utils/scroll'
 import { useQueue } from '../utils/queue'
 import { useFontLoaded } from '../utils/useFontLoaded'
@@ -12,20 +13,22 @@ import { Footer } from './Footer'
 import { Title } from './Title'
 
 export const DocsLayout = React.memo((props: any) => {
-  const context = usePage()
-  const { path, page } = context
-  const { title } = page.main!
+  const page = usePage()
+  const title = useStaticData<string | undefined>(
+    page.path,
+    data => data.main.title
+  )
 
   useEffect(() => {
-    document.title = title + ' | react-haru'
+    document.title = (title ? title + ' | ' : '') + 'react-haru'
   }, [title])
 
   const currentState = {
-    path,
+    path: page.path,
     title,
     content: (
       // Cache the page context during leave transition.
-      <PageProvider value={context}>{props.children}</PageProvider>
+      <PageProvider value={page}>{props.children}</PageProvider>
     ),
   }
 
@@ -46,7 +49,7 @@ export const DocsLayout = React.memo((props: any) => {
   const [headerRef, headerHeight] = useHeight()
   return (
     <>
-      <Header ref={headerRef} page={page.main} />
+      <Header ref={headerRef} title={title} />
       {renderContent((style, { title, content }) => {
         return (
           <a.div className="flex flex-col flex-1" style={style}>
@@ -103,7 +106,6 @@ function Content({ title, headerHeight, children }: ContentProps) {
     delay: 420,
     cancel: !isFontLoaded || !wiperHeight,
     onRest() {
-      console.log('onRest')
       setWiperHidden(true)
       unlockScrolling()
       queue.flush()
@@ -132,7 +134,7 @@ function Content({ title, headerHeight, children }: ContentProps) {
 
   return (
     <>
-      <div className="-sm:w-95/100 w-8/10 max-w-920px flex-1 mx-auto">
+      <div className="-sm:w-95/100 w-8/10 -xl:max-w-800px max-w-920px flex-1 mx-auto">
         {title && <Title ref={titleRef} text={title} />}
         <div ref={contentRef} style={{ opacity: wiperHeight ? 1 : 0 }}>
           {children}

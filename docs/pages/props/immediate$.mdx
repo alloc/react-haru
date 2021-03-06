@@ -1,0 +1,78 @@
+---
+title: Immediate
+keywords: [instant]
+---
+
+The `immediate` prop forces an animation to finish in one frame.
+
+```ts
+useSpring({
+  immediate: true,
+})
+```
+
+If a value is already animating, the `immediate` prop will affect it.
+
+```ts
+const x = new SpringValue({ from: 0, to: 100 })
+
+// Finish the current animation on the next frame.
+x.start({ immediate: true })
+```
+
+## Key-specific value
+
+When `immediate` is a function, you can easily customize its value per key.
+
+```ts
+useSpring({
+  immediate: key => key === 'opacity',
+})
+```
+
+The `immediate` function is called on every update.
+
+When `immediate` is a string or array of strings, those keys will use `immediate: true`.
+
+```ts
+useSpring({
+  immediate: 'opacity',
+})
+```
+
+## Non-animatable values
+
+Values without numbers are never animated, so `immediate: true` is implied.
+
+In this example, `pointerEvents` changes on the next frame, but only when `visible` changes.
+
+```ts
+useSpring({
+  pointerEvents: visible ? 'auto' : 'none',
+  opacity: visible ? 1 : 0,
+})
+```
+
+## Default value
+
+The default value of `immediate` can be a boolean or function.
+
+To set it, you **must** use a `default` object.
+
+```ts
+useSpring({
+  default: { immediate: true },
+})
+```
+
+## Command from above
+
+Using the power of React context, you can force all animations in a component tree to use `immediate: true` in their current and future updates.
+
+```tsx
+<SpringContext immediate={true}>
+  {children /* @prettier-ignore */}
+</SpringContext>
+```
+
+Learn more about [`SpringContext`]()

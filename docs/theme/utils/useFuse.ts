@@ -4,20 +4,23 @@ import { useObjectMemo } from './useObjectMemo'
 
 interface FuseConfig<T> extends Fuse.IFuseOptions<T> {
   matchAllIfEmpty?: boolean
+  limit?: number
 }
 
-export function useFuse<T>(items: T[], config: FuseConfig<T> = {}) {
+export function useFuse<T>(
+  items: T[],
+  { matchAllIfEmpty, limit = Infinity, ...config }: FuseConfig<T> = {}
+) {
   config = useObjectMemo(config)
   const fuse = useMemo(() => new Fuse(items, config), [items, config])
-  const [results, setResults] = useState(() =>
-    config.matchAllIfEmpty ? createResults(items) : []
-  )
-  const search = (pattern: string, options?: Fuse.FuseSearchOptions) =>
-    setResults(
-      config.matchAllIfEmpty && !pattern
+  const [pattern, search] = useState('')
+  const results = useMemo(
+    () =>
+      matchAllIfEmpty && !pattern
         ? createResults(items)
-        : fuse.search(pattern, options)
-    )
+        : fuse.search(pattern, { limit }),
+    [fuse, pattern, limit, matchAllIfEmpty]
+  )
   return [results, search] as const
 }
 

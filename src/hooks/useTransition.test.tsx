@@ -113,6 +113,47 @@ describe('useTransition', () => {
       expect(rendered).toEqual([false])
     })
   })
+
+  describe('when "lead" is leave', () => {
+    it('postpones mounting until leave transitions end', async () => {
+      const didLeave = jest.fn()
+      const props: UseTransitionProps = {
+        from: { opacity: 0 },
+        enter: { opacity: 1 },
+        leave: { opacity: 0, onRest: didLeave },
+        lead: 'leave',
+      }
+
+      update(true, props)
+      await advance()
+      update(false, props)
+      expect(rendered).toEqual([true])
+      await advanceUntilCalled(didLeave)
+      expect(rendered).toEqual([false])
+    })
+
+    it('allows leave transitions to be interrupted', async () => {
+      const onLeaveEnd = jest.fn()
+      const props: UseTransitionProps = {
+        from: { opacity: 0 },
+        enter: { opacity: 1 },
+        leave: { opacity: 0, onResolve: onLeaveEnd },
+        lead: 'leave',
+      }
+
+      update(true, props)
+      await advance()
+      update(false, props)
+      await advance()
+      update(true, props)
+      await advance()
+
+      expect(rendered).toEqual([true])
+      expect(onLeaveEnd).toBeCalledWith(
+        expect.objectContaining({ finished: false })
+      )
+    })
+  })
 })
 
 function createUpdater(

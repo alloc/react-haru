@@ -6,7 +6,7 @@ export const getCombinedResult = <T extends Readable>(
   target: T,
   results: AnimationResult<T>[]
 ): AnimationResult<T> =>
-  results.length == 1
+  results.length == 1 && target == results[0].target
     ? results[0]
     : results.some(result => result.cancelled)
     ? getCancelledResult(target)

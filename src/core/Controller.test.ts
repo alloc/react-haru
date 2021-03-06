@@ -257,6 +257,29 @@ describe('Controller', () => {
     })
   })
 
+  describe('when "to" is an array', () => {
+    it('stops when an update is interrupted', async () => {
+      const ctrl = new Controller({ x: 0 })
+      const onRest = jest.fn()
+      const promise = ctrl.start({
+        to: [{ x: 100 }, { x: 0 }],
+        onRest,
+      })
+      await advance()
+      expect(ctrl.idle).toBeFalsy()
+
+      ctrl.start({ x: 200 })
+      await advance()
+      expect(ctrl.springs.x.goal).toBe(200)
+      expect(onRest).toBeCalledWith(
+        expect.objectContaining({ finished: false })
+      )
+      expect(await promise).toMatchObject({
+        finished: false,
+      })
+    })
+  })
+
   describe('when the "onStart" prop is defined', () => {
     it('is called once per "start" call maximum', async () => {
       const ctrl = new Controller({ x: 0, y: 0 })

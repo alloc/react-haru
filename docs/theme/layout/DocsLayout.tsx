@@ -1,6 +1,7 @@
 import React, { useEffect, useLayoutEffect, useState } from 'react'
 import { a, useSpring, useTransition } from 'react-haru/web'
 import { useStaticData } from 'vite-plugin-react-pages/dist/client'
+import toPixels from 'to-px'
 import { setScrollTop } from '../utils/scroll'
 import { useQueue } from '../utils/queue'
 import { useFontLoaded } from '../utils/useFontLoaded'
@@ -78,6 +79,7 @@ function Content({ title, headerHeight, children }: ContentProps) {
   const wiperBlendHeight = 120
 
   useLayoutEffect(() => {
+    console.log({ headerHeight, contentHeight, title, titleHeight })
     if (headerHeight >= 0 && contentHeight >= 0 && (!title || titleHeight >= 0))
       setWiperHeight(
         Math.min(contentHeight, window.innerHeight - headerHeight - titleHeight)
@@ -86,7 +88,7 @@ function Content({ title, headerHeight, children }: ContentProps) {
 
   // Postpone scrolling to url hash until animation is done.
   const queue = useQueue((fn: Function) => fn())
-  useScrollToHash(queue)
+  useScrollToHash(queue, headerHeight + toPixels('1.8rem'))
 
   // Disable scrolling while content is mounting.
   const unlockScrolling = useScrollLock()

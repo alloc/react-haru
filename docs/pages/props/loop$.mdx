@@ -1,6 +1,7 @@
 ---
 title: Loops
 keywords: [repeat, yoyo, infinite]
+hideSections: true
 ---
 
 The `loop` prop lets you animate in a loop (unsurprisingly).
@@ -74,7 +75,9 @@ Loops can be paused, too!
 
 Here are a few things to keep in mind when using the `loop` prop.
 
-## Some props are never inherited
+## Inherited props
+
+**Some props are never inherited.**
 
 For `loop` repetitions, the `default` prop is replaced with `false`. This means the looped update won't re-apply its [default props](/props#default-props) on every repetition.
 

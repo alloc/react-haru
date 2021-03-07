@@ -7,7 +7,9 @@ import mdx from 'vite-plugin-mdx'
 import svg from 'vite-plugin-react-svg'
 import pages from 'vite-plugin-react-pages'
 import windi from 'vite-plugin-windicss'
-import path from 'path'
+import parseMd, { Title } from 'markdown-ast'
+import noMatter from 'nomatter'
+import Slugger from 'github-slugger'
 
 const defaultFont = `-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif`
 
@@ -42,7 +44,7 @@ const theme: Theme = {
 
 export default defineConfig({
   optimizeDeps: {
-    exclude: ['react-haru', 'react-error-overlay'],
+    exclude: ['react-haru', 'react-error-overlay', 'use-element-size', 'rafz'],
   },
   build: {
     outDir: 'dist',
@@ -66,11 +68,38 @@ export default defineConfig({
       },
       scan: {
         dirs: ['pages', 'theme', 'components'],
-        fileExtensions: ['html', 'mdx', 'tsx'],
       },
     }),
     pages({
-      pagesDir: path.join(__dirname, 'pages'),
+      async loadPageData(file, { loadPageData }) {
+        const { pageId, staticData, ...rest } = await loadPageData(file)
+        if (file.extname == 'mdx') {
+          const ast = parseMd(noMatter(await file.read()))
+          const slugger = new Slugger()
+          const sections = ast
+            .filter(node => node.type == 'title' && node.rank < 3)
+            .map(node => {
+              const titleNode = node as Title
+              const title = titleNode.block.reduce(
+                (title, node) =>
+                  title +
+                  (node.type == 'text'
+                    ? node.text
+                    : node.type == 'codeSpan'
+                    ? node.code
+                    : ''),
+                ''
+              )
+              const slug = slugger.slug(title)
+              return [slug, title, titleNode.rank]
+            })
+
+          if (sections.length) {
+            staticData.sections = sections
+          }
+        }
+        return { pageId, staticData, ...rest }
+      },
     }),
   ],
 })

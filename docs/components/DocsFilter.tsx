@@ -1,6 +1,5 @@
 import cn from 'classnames'
 import React, {
-  useCallback,
   useEffect,
   useLayoutEffect,
   useMemo,
@@ -13,7 +12,6 @@ import { useChannel, Channel } from 'react-ch'
 import { useHotkeys } from 'react-hotkeys-hook'
 import toPixels from 'to-px'
 import useClickOutside from 'use-click-outside'
-import type { PagesStaticData } from 'vite-plugin-react-pages'
 import { Anchor } from 'theme/layout/mdx/Anchor'
 import { Attraction } from 'theme/utils/Attraction'
 import { limitCalls } from 'theme/utils/limitCalls'
@@ -23,6 +21,7 @@ import { usePrev } from 'theme/utils/usePrev'
 import { useCancellableDelay } from 'theme/utils/useCancellableDelay'
 import css from './DocsFilter.module.sass'
 import { useStaticData } from 'vite-plugin-react-pages/dist/client'
+import { getFindablePages } from './DocsFilter/getFindablePages'
 
 // Note: This assumes only one DocsFilter ever exists.
 const global = { animating: 0 }
@@ -30,9 +29,14 @@ const global = { animating: 0 }
 export function DocsFilter() {
   const [menuVisible, setMenuVisible] = useState(false)
 
-  useHotkeys('cmd+k', () => setMenuVisible(visible => !visible), {
-    enableOnTags: ['INPUT'],
-  })
+  useHotkeys(
+    'cmd+k',
+    e => {
+      e.preventDefault()
+      setMenuVisible(visible => !visible)
+    },
+    { enableOnTags: ['INPUT'] }
+  )
 
   const hideMenu = () => setMenuVisible(false)
   useHotkeys('escape', hideMenu, { enableOnTags: ['INPUT'] })
@@ -150,8 +154,11 @@ const Menu = React.forwardRef<HTMLDivElement, MenuProps>(
   }
 )
 
-const getFindablePages = (pages: PagesStaticData) =>
-  Object.entries(pages).filter(({ 1: { main } }) => main.title && !main.hidden)
+const searchKeys = [
+  { name: 'path', weight: 1 },
+  { name: 'title', weight: 5 },
+  { name: 'keywords', weight: 2 },
+]
 
 const Results = React.memo(
   (props: {
@@ -159,66 +166,29 @@ const Results = React.memo(
     onClick: () => void
     onSearch: Channel<string>
   }) => {
-    const pages = useStaticData()
-    const findablePages = useMemo(() => getFindablePages(pages), [pages])
-    const [searchResults, search] = useFuse(findablePages, {
-      keys: ['0', '1.main.title'],
-      threshold: 0.3,
-      findAllMatches: true,
-      matchAllIfEmpty: true,
-    })
+    const [searchTerm, search] = useState('')
+    const isEmptySearch = searchTerm == ''
 
     // Trigger search from parent component.
     useChannel(props.onSearch, limitCalls(search, 200))
 
-    const getResultY = (result: any) =>
-      getContentHeight(searchResults.indexOf(result), contentPaddingTop)
+    const pages = useStaticData()
+    const findablePages = useMemo(
+      () => getFindablePages(pages, !isEmptySearch),
+      [pages, isEmptySearch]
+    )
+
+    const searchResults = useFuse(findablePages, searchTerm, {
+      keys: searchKeys,
+      threshold: 0.2,
+      findAllMatches: true,
+      matchAllIfEmpty: true,
+      ignoreLocation: true,
+      ignoreFieldNorm: true,
+    })
 
     const resultCount = searchResults.length
     const prevResultCount = usePrev(resultCount)
-
-    const [renderPages] = useTransition(
-      searchResults,
-      {
-        key: result => result.item[0],
-        enter: result => ({
-          zIndex: 1,
-          translateY: getResultY(result),
-          pointerEvents: 'unset' as CSS.Properties['pointerEvents'],
-          opacity: 1,
-          display: 'block',
-          delay: key => (key == 'opacity' && prevResultCount == 0 ? 200 : 0),
-          immediate: !props.visible || 'translateY',
-        }),
-        update: result => ({
-          translateY: getResultY(result),
-        }),
-        leave: [
-          {
-            zIndex: 0,
-            pointerEvents: 'none' as CSS.Properties['pointerEvents'],
-            opacity: 0,
-          },
-          {
-            // Prevent hidden items from affecting content height.
-            display: 'none',
-          },
-        ],
-        lead: 'leave',
-        config: () => key => ({
-          frequency: key == 'opacity' ? 0.3 : 0.5,
-        }),
-        immediate: !props.visible,
-        expires: false,
-        onStart() {
-          global.animating++
-        },
-        onRest() {
-          global.animating--
-        },
-      },
-      [searchResults]
-    )
 
     const [notFoundRef, notFoundHeight] = useHeight()
     const notFoundStyle = useSpring({
@@ -233,17 +203,24 @@ const Results = React.memo(
     })
     const openIssueRef = useRef<HTMLAnchorElement>(null)
     const notFound = (
-      <a.div ref={notFoundRef} className={css.notFound} style={notFoundStyle}>
-        <div>
-          Can't find what you're <br />
-          looking for?
+      <a.div className="fill" style={notFoundStyle}>
+        <div ref={notFoundRef} className={css.notFound}>
+          <div>
+            Can't find what you're <br />
+            looking for?
+          </div>
+          <Anchor
+            ref={openIssueRef}
+            href="https://github.com/alloc/react-haru/issues/new">
+            Open an issue
+          </Anchor>
         </div>
-        <Anchor
-          ref={openIssueRef}
-          href="https://github.com/alloc/react-haru/issues/new">
-          Open an issue
-        </Anchor>
-        <img src="/accent1.svg" className="absolute bottom-0 right-0 w-24.0" />
+        <div className="fill" style={{ minHeight: notFoundHeight }}>
+          <img
+            src="/accent1.svg"
+            className="absolute bottom-0 right-0 w-24.0"
+          />
+        </div>
       </a.div>
     )
 
@@ -261,6 +238,8 @@ const Results = React.memo(
       height: scrollHeight,
       immediate: !props.visible,
       config: { frequency: 0.6 },
+      // Avoid animating to -1 when `notFoundHeight` is being measured.
+      cancel: scrollHeight < 0,
     })
 
     const [selectedIdx, setSelectedIdx] = useState(0)
@@ -287,30 +266,77 @@ const Results = React.memo(
     useHotkeys('up', selectPrevious, { enableOnTags: ['INPUT'] })
     useLayoutEffect(resetSelection, [searchResults])
 
+    const getResultY = (result: any) =>
+      getContentHeight(searchResults.indexOf(result), contentPaddingTop)
+
+    const [renderPageLinks] = useTransition(
+      searchResults,
+      {
+        key: result => result.item.path,
+        enter: result => ({
+          zIndex: 1,
+          translateY: getResultY(result),
+          pointerEvents: 'unset' as CSS.Properties['pointerEvents'],
+          opacity: 1,
+          display: 'block',
+          delay: key => (key == 'opacity' && prevResultCount == 0 ? 200 : 0),
+          immediate: ['zIndex', 'translateY'],
+        }),
+        update: result => ({
+          translateY: getResultY(result),
+        }),
+        leave: [
+          {
+            zIndex: 0,
+            pointerEvents: 'none' as CSS.Properties['pointerEvents'],
+            opacity: 0,
+            immediate: 'zIndex',
+          },
+          {
+            // Prevent hidden items from affecting content height.
+            display: 'none',
+          },
+        ],
+        lead: 'leave',
+        config: {
+          frequency: 0.32,
+        },
+        default: {
+          immediate: !props.visible,
+        },
+        expires: false,
+        onStart() {
+          global.animating++
+        },
+        onRest() {
+          global.animating--
+        },
+      },
+      [searchResults]
+    )
+
     const location = useLocation()
-    const pageLinks = renderPages((style, result) => {
-      const [path, page] = result.item
-      const { title } = page.main
+    const currentPath = location.pathname + location.hash
+    const pageLinks = renderPageLinks((style, result) => {
+      const page = result.item
       const index = searchResults.indexOf(result)
       const isSelected = index === selectedIdx
-      const isCurrentPage = path === location.pathname
+      const isCurrentPage = page.path === currentPath
       return (
-        <a.div
-          className="absolute rotate-0.01 w-1/1"
-          style={style}
-          onMouseMove={() => !isSelected && setSelectedIdx(index)}>
+        <a.div className="absolute rotate-0.01 w-1/1" style={style}>
           <Anchor
             ref={elem => elem && (anchors[index] = elem)}
-            href={path}
+            href={page.path}
             className="block w-1/1 h-9.6 mb-1.0 px-4.8"
-            onClick={props.onClick}>
+            onClick={props.onClick}
+            onMouseMove={() => !isSelected && setSelectedIdx(index)}>
             <span
               className={cn(
                 'flex items-center pl-2.4 w-1/1 h-1/1 text-1.04rem text-black font-460 overflow-hidden',
                 isCurrentPage && css.currentPage,
                 isSelected && css.selectedResult
               )}>
-              {title}
+              {page.title}
               {isSelected && (
                 <div className="absolute right-0 w-0.8 h-1/1 bg-red" />
               )}

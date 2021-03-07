@@ -15,7 +15,7 @@
   border-radius: 0.9rem
   box-shadow: 0 2px 8px rgba(#F2EBED, 0.8)
   will-change: height
-  @apply absolute flex flex-col w-96.0
+  @apply absolute flex flex-col w-96.0 overflow-hidden
 
   .menuBorder
     box-shadow: 0 0 0 0.6px #F4DEE3
@@ -48,16 +48,13 @@
     @apply font-560 text-deepPink
 
   .notFound
-    position: absolute
-    width: 100%
-    transition: opacity 0.15s ease-out
-    @apply flex flex-col pt-16.8 pb-24.0 pl-10.8 mx-auto
+    @apply flex flex-col w-full pt-16.8 pb-24.0 pl-10.8 mx-auto
     @apply text-1.35rem font-700 text-black leading-tight tracking-tight
 
     a
       background: #FFEDF5
       transition: background 0.25s ease-out
-      @apply inline-block rounded-full mt-6.0 -ml-1.2 px-3.6 py-2.4
+      @apply self-start rounded-full mt-6.0 -ml-1.2 px-3.6 py-2.4
       @apply text-1rem font-420 text-deepPink3
 
       &:hover

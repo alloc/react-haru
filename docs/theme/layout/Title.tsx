@@ -63,9 +63,24 @@ export const Title = React.forwardRef<HTMLDivElement, Props>(
     }
 
     return (
-      <div ref={ref} className="overflow-auto">
-        <div className={style.title}>{content}</div>
+      <div ref={ref} className="my-7.2">
+        <div
+          className="absolute -left-0.9rem h-full"
+          style={{ transform: 'translateX(-100%)' }}>
+          <SectionMenuBtn />
+        </div>
+        <div className="overflow-auto">
+          <div className={style.title}>{content}</div>
+        </div>
       </div>
     )
   }
 )
+
+function SectionMenuBtn() {
+  return (
+    <div className="px-3.6 py-2.4 rounded-full border-deepPink border-px">
+      <img src="/menu.svg" className="h-3.0" />
+    </div>
+  )
+}

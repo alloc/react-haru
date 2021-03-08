@@ -79,7 +79,6 @@ function Content({ title, headerHeight, children }: ContentProps) {
   const wiperBlendHeight = 120
 
   useLayoutEffect(() => {
-    console.log({ headerHeight, contentHeight, title, titleHeight })
     if (headerHeight >= 0 && contentHeight >= 0 && (!title || titleHeight >= 0))
       setWiperHeight(
         Math.min(contentHeight, window.innerHeight - headerHeight - titleHeight)

@@ -9,6 +9,7 @@ export interface FuseConfig<T> extends Fuse.IFuseOptions<T> {
 
 export interface FuseResult<T = any> extends Fuse.FuseResult<T> {
   score: number
+  matches: ReadonlyArray<Fuse.FuseResultMatch>
 }
 
 export function useFuse<T>(
@@ -17,6 +18,7 @@ export function useFuse<T>(
   { matchAllIfEmpty, limit = Infinity, ...config }: FuseConfig<T> = {}
 ) {
   config.includeScore = true
+  config.includeMatches = true
   config = useObjectMemo(config)
   const fuse = useMemo(() => new Fuse(items, config), [items, config])
   return useMemo(
@@ -29,5 +31,10 @@ export function useFuse<T>(
 }
 
 function createResults<T>(items: T[]): Fuse.FuseResult<T>[] {
-  return items.map((item, refIndex) => ({ item, refIndex, score: 0 }))
+  return items.map((item, refIndex) => ({
+    item,
+    refIndex,
+    score: 0,
+    matches: [],
+  }))
 }

@@ -55,7 +55,7 @@ export function DocsFilter() {
       onMouseLeave={() =>
         !global.animating &&
         leaveTimeout(() => {
-          // setMenuVisible(false)
+          setMenuVisible(false)
         }, 300)
       }>
       <Attraction className="flex items-center">
@@ -154,37 +154,36 @@ const Menu = React.forwardRef<HTMLDivElement, MenuProps>(
   }
 )
 
-const searchKeys = [
-  { name: 'path', weight: 1 },
-  { name: 'title', weight: 5 },
-  { name: 'keywords', weight: 2 },
-]
-
 const Results = React.memo(
   (props: {
     visible: boolean
     onClick: () => void
     onSearch: Channel<string>
   }) => {
-    const [searchTerm, search] = useState('')
-    const isEmptySearch = searchTerm == ''
+    let [searchTerm, search] = useState('')
+    if (searchTerm.length < 2) {
+      searchTerm = ''
+    }
 
     // Trigger search from parent component.
     useChannel(props.onSearch, limitCalls(search, 200))
 
+    const includeSections = searchTerm !== ''
+
     const pages = useStaticData()
     const findablePages = useMemo(
-      () => getFindablePages(pages, !isEmptySearch),
-      [pages, isEmptySearch]
+      () => getFindablePages(pages, includeSections),
+      [pages, includeSections]
     )
 
     const searchResults = useFuse(findablePages, searchTerm, {
-      keys: searchKeys,
+      keys: ['title', 'keywords'],
       threshold: 0.2,
       findAllMatches: true,
       matchAllIfEmpty: true,
       ignoreLocation: true,
       ignoreFieldNorm: true,
+      minMatchCharLength: 2,
     })
 
     const resultCount = searchResults.length
@@ -316,12 +315,14 @@ const Results = React.memo(
     )
 
     const location = useLocation()
-    const currentPath = location.pathname + location.hash
     const pageLinks = renderPageLinks((style, result) => {
       const page = result.item
       const index = searchResults.indexOf(result)
       const isSelected = index === selectedIdx
-      const isCurrentPage = page.path === currentPath
+      const isCurrentPage = page.path === location.pathname
+      const matchedKeyword =
+        !result.matches.some(m => m.key == 'title') &&
+        result.matches.find(m => m.key == 'keywords')?.value
       return (
         <a.div className="absolute rotate-0.01 w-1/1" style={style}>
           <Anchor
@@ -339,6 +340,14 @@ const Results = React.memo(
               {page.title}
               {isSelected && (
                 <div className="absolute right-0 w-0.8 h-1/1 bg-red" />
+              )}
+              {matchedKeyword && (
+                <div className="absolute right-0 h-full flex items-center mr-4.0">
+                  <div className={css.keyword}>
+                    <span className="opacity-75 font-300 mr-0.2">#</span>
+                    {matchedKeyword}
+                  </div>
+                </div>
               )}
             </span>
           </Anchor>

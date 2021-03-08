@@ -39,13 +39,20 @@
     will-change: height
 
   .currentPage
-    color: #CFB8BE
+    background: #F7F7F7
+    border-radius: 0.3rem
 
   .selectedResult
     background: #FEF1F5
     border-radius: 0.3rem
     transition: font-weight 0.06s ease-out
     @apply font-560 text-deepPink
+
+    .keyword
+      @apply opacity-65
+
+  .keyword
+    @apply text-0.85rem font-400 opacity-40
 
   .notFound
     @apply flex flex-col w-full pt-16.8 pb-24.0 pl-10.8 mx-auto

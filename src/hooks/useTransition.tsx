@@ -186,38 +186,32 @@ export function useTransition(
 
   // Generate changes to apply in useEffect.
   const changes = new Map<TransitionState, Change>()
-  each(transitions, (t, i) => {
+  each(transitions, t => {
     const key = t.key
+    const index = keys.indexOf(key)
     const prevPhase = t.phase
 
     let to: TransitionTo<any>
     let phase: TransitionPhase
-    if (prevPhase == MOUNT) {
+    if (index < 0) {
+      if (prevPhase == LEAVE) return
+      to = props.leave
+      phase = LEAVE
+    } else if (prevPhase == MOUNT || prevPhase == LEAVE) {
       to = props.enter
       phase = ENTER
-    } else {
-      const isLeave = keys.indexOf(key) < 0
-      if (prevPhase != LEAVE) {
-        if (isLeave) {
-          to = props.leave
-          phase = LEAVE
-        } else if ((to = props.update)) {
-          phase = UPDATE
-        } else return
-      } else if (!isLeave) {
-        to = props.enter
-        phase = ENTER
-      } else return
-    }
+    } else if ((to = props.update)) {
+      phase = UPDATE
+    } else return
 
     // When "to" is a function, it can return (1) an array of "useSpring" props,
     // (2) an async function, or (3) an object with any "useSpring" props.
-    to = callProp(to, t.item, i)
+    to = callProp(to, t.item, index)
     to = is.plainObject(to) ? inferTo(to) : { to }
 
     if (!to.config) {
       const config = props.config || defaultProps.config
-      to.config = callProp(config, t.item, i)
+      to.config = callProp(config, t.item, index)
     }
 
     // The payload is used to update the spring props once the current render is committed.
@@ -239,7 +233,7 @@ export function useTransition(
           ? props.from
           : props.initial
 
-      payload.from = callProp(from, t.item, i)
+      payload.from = callProp(from, t.item, index)
     }
 
     const leadPhase = props.lead

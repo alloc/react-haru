@@ -358,23 +358,30 @@ export function useTransition(
       ? transitions.filter(t => t.phase != MOUNT)
       : transitions
 
-  const renderTransitions: TransitionFn = render => (
-    <>
-      {activeTransitions.map((t, i) => {
-        const { springs } = changes.get(t) || t.ctrl
-        const elem: any = render({ ...springs }, t.item, t, i)
-        return elem && elem.type ? (
-          <elem.type
-            {...elem.props}
-            key={is.string(t.key) || is.number(t.key) ? t.key : t.ctrl.id}
-            ref={elem.ref}
-          />
-        ) : (
-          elem
-        )
-      })}
-    </>
-  )
+  const renderTransitions: TransitionFn = render => {
+    let index = 0
+    const elems = activeTransitions.map(t => {
+      const change = changes.get(t)
+      const { phase } = change || t
+      const elem: any = render(
+        (change || t.ctrl).springs,
+        t.item,
+        phase == LEAVE ? -1 : index++,
+        phase as any,
+        t.ctrl
+      )
+      return elem && elem.type ? (
+        <elem.type
+          {...elem.props}
+          key={is.string(t.key) || is.number(t.key) ? t.key : t.ctrl.id}
+          ref={elem.ref}
+        />
+      ) : (
+        elem
+      )
+    })
+    return <>{elems}</>
+  }
 
   return ref ? [renderTransitions, ref] : renderTransitions
 }

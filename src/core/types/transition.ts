@@ -140,10 +140,11 @@ export interface TransitionFn<Item = any, State extends Lookup = Lookup> {
 
 export interface TransitionRenderFn<Item = any, State extends Lookup = Lookup> {
   (
-    values: SpringValues<State>,
+    values: Readonly<SpringValues<State>>,
     item: Item,
-    transition: TransitionState<Item, State>,
-    index: number
+    index: number,
+    phase: Exclude<TransitionPhase, 'mount'>,
+    ctrl: Controller<State>
   ): ReactNode
 }
 

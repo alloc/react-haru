@@ -161,9 +161,6 @@ export function useTransition(
     transitions.sort((a, b) => sort(a.item, b.item))
   }
 
-  // Track cumulative delay for the "trail" prop.
-  let delay = -trail
-
   // Expired transitions use this to dismount.
   const forceUpdate = useForceUpdate()
 
@@ -183,6 +180,10 @@ export function useTransition(
 
   // Changes may be skipped until leads are done.
   const skipCountRef = useRef(0)
+
+  // The `trail` prop affects enter and leave transitions separately.
+  let enterDelay = -trail
+  let leaveDelay = -trail
 
   // Generate changes to apply in useEffect.
   const changes = new Map<TransitionState, Change>()
@@ -217,7 +218,13 @@ export function useTransition(
     // The payload is used to update the spring props once the current render is committed.
     const payload: ControllerUpdate<UnknownProps> = {
       ...defaultProps,
-      delay: (delay += trail),
+      delay:
+        trail &&
+        (phase == ENTER
+          ? (enterDelay += trail)
+          : phase == LEAVE
+          ? (leaveDelay += trail)
+          : 0),
       // This prevents implied resets.
       reset: false,
       // Merge any phase-specific props.

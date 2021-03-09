@@ -1,3 +1,4 @@
+import { SectionMenu } from 'components/SectionMenu'
 import React, { ReactNode } from 'react'
 import { a, useSpring } from 'react-haru/web'
 import { useFontLoaded } from '../utils/useFontLoaded'
@@ -65,9 +66,9 @@ export const Title = React.forwardRef<HTMLDivElement, Props>(
     return (
       <div ref={ref} className="my-7.2">
         <div
-          className="absolute -left-0.9rem h-full"
-          style={{ transform: 'translateX(-100%)' }}>
-          <SectionMenuBtn />
+          className="absolute z-80 top-1/2 left-0 mt-1.0"
+          style={{ transform: 'translate(-100%, -50%)' }}>
+          <SectionMenu />
         </div>
         <div className="overflow-auto">
           <div className={style.title}>{content}</div>
@@ -76,11 +77,3 @@ export const Title = React.forwardRef<HTMLDivElement, Props>(
     )
   }
 )
-
-function SectionMenuBtn() {
-  return (
-    <div className="px-3.6 py-2.4 rounded-full border-deepPink border-px">
-      <img src="/menu.svg" className="h-3.0" />
-    </div>
-  )
-}

@@ -8,10 +8,10 @@
   font-family: inherit
   font-size: 1.1rem
 
-  h1, h2
+  h1, h2, h3
     padding: 0
+    padding-top: 0.1rem
     border-bottom: none
-    letter-spacing: -0.008em
 
     code
       display: inline-block
@@ -24,6 +24,9 @@
 
   h2
     @apply text-2rem mb-4.8 mt-20
+
+  h3
+    @apply text-1.75rem mb-3.6 mt-7.2
 
   p
     line-height: 1.75
@@ -75,11 +78,8 @@
 //
 
 *, .markdown-body
-  h1, h2, h3, h4
-    @apply m-0 text-deepPink
-
-  h1, h2
-    @apply font-h font-500 tracking-tighter
+  h1, h2, h3
+    @apply font-h font-500 tracking-tight text-deepPink
 
   h1
     @apply text-5xl

@@ -68,6 +68,7 @@ export default defineConfig({
       },
       scan: {
         dirs: ['pages', 'theme', 'components'],
+        fileExtensions: ['tsx', 'mdx', 'css'],
       },
     }),
     pages({

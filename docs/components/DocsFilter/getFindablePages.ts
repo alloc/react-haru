@@ -43,10 +43,12 @@ export function getFindablePages(
   return findablePages
 }
 
-interface StaticPageData {
+export type SectionData = [slug: string, title: string, rank: number][]
+
+export interface StaticPageData {
   title?: string
   keywords?: string[]
-  sections?: [slug: string, title: string, rank: number][]
+  sections?: SectionData
   /** Hide page from DocsFilter */
   hideSelf?: boolean
   /** Hide <h1> sections from DocsFilter */

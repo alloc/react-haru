@@ -1,5 +1,7 @@
+import { Falsy } from '@alloc/types'
 import { raf } from 'rafz'
-import { SpringConfig, SpringValue } from 'react-haru/web'
+import { useEffect } from 'react'
+import { SpringValue } from 'react-haru/web'
 
 // Disable automated scroll restoration
 history.scrollRestoration = 'manual'
@@ -122,4 +124,23 @@ function canScrollY(elem: HTMLElement) {
     height < elem.scrollHeight &&
     /auto|scroll/.test(getComputedStyle(elem).overflowY)
   )
+}
+
+/**
+ * The `onScroll` argument remains constant between renders.
+ */
+export function useScroll(onScroll: (() => void) | Falsy) {
+  useEffect(() => {
+    if (onScroll) {
+      const listener = raf.throttle(onScroll)
+      scrolls.forEach(scroll => {
+        scroll.addEventListener('scroll', listener)
+      })
+      return () => {
+        scrolls.forEach(scroll => {
+          scroll.removeEventListener('scroll', listener)
+        })
+      }
+    }
+  }, [!!onScroll])
 }

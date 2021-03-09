@@ -10,8 +10,8 @@ Its most basic form is `loop: true`, which repeats the update it's defined in.
 
 ```ts
 useSpring({
-  z: 180,
-  from: { z: 0 },
+  rotateZ: 180,
+  from: { rotateZ: 0 },
   loop: true,
 })
 ```
@@ -26,8 +26,8 @@ Among other things, this is useful for a `reverse` loop (often called a yo-yo).
 
 ```ts
 useSpring({
-  z: 180,
-  from: { z: 0 },
+  rotateZ: 180,
+  from: { rotateZ: 0 },
   loop: { reverse: true },
 })
 ```
@@ -35,7 +35,7 @@ useSpring({
 The `loop` object is **merged** into its parent update, so it becomes the following:
 
 ```ts
-{ z: 180, from: { z: 0 }, reverse: true, loop: true }
+{ rotateZ: 180, from: { rotateZ: 0 }, reverse: true, loop: true }
 ```
 
 ## Loop functions

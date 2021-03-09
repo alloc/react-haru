@@ -245,24 +245,39 @@ const Results = React.memo(
     const anchors: HTMLAnchorElement[] = []
 
     function clickSelection() {
-      if (resultCount > 0) anchors[selectedIdx].click()
-      else openIssueRef.current!.click()
+      if (props.visible) {
+        if (resultCount > 0) anchors[selectedIdx].click()
+        else openIssueRef.current!.click()
+      }
     }
     function selectNext(event: KeyboardEvent) {
-      setSelectedIdx(idx => Math.min(idx + 1, resultCount - 1))
-      event.preventDefault()
+      if (props.visible) {
+        setSelectedIdx(idx => Math.min(idx + 1, resultCount - 1))
+        event.preventDefault()
+      }
     }
     function selectPrevious(event: KeyboardEvent) {
-      setSelectedIdx(idx => Math.max(idx - 1, 0))
-      event.preventDefault()
+      if (props.visible) {
+        setSelectedIdx(idx => Math.max(idx - 1, 0))
+        event.preventDefault()
+      }
     }
     function resetSelection() {
       if (resultCount > 0) setSelectedIdx(0)
     }
 
-    useHotkeys('enter', clickSelection, { enableOnTags: ['INPUT'] })
-    useHotkeys('down', selectNext, { enableOnTags: ['INPUT'] })
-    useHotkeys('up', selectPrevious, { enableOnTags: ['INPUT'] })
+    useHotkeys('enter', clickSelection, { enableOnTags: ['INPUT'] }, [
+      props.visible,
+      resultCount,
+      selectedIdx,
+    ])
+    useHotkeys('down', selectNext, { enableOnTags: ['INPUT'] }, [
+      props.visible,
+      resultCount,
+    ])
+    useHotkeys('up', selectPrevious, { enableOnTags: ['INPUT'] }, [
+      props.visible,
+    ])
     useLayoutEffect(resetSelection, [searchResults])
 
     const getResultY = (result: any) =>

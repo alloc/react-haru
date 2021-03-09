@@ -12,7 +12,6 @@ describe('helpers', () => {
       onStart: 'onStart',
     }
     const excludeProps: Required<ReservedProps> = {
-      children: undefined,
       config: undefined,
       from: undefined,
       to: undefined,
@@ -25,20 +24,13 @@ describe('helpers', () => {
       immediate: undefined,
       default: undefined,
       delay: undefined,
-      items: undefined,
-      trail: undefined,
-      sort: undefined,
-      expires: undefined,
-      initial: undefined,
-      enter: undefined,
-      leave: undefined,
-      update: undefined,
+      onPause: undefined,
       onProps: undefined,
       onStart: undefined,
       onChange: undefined,
       onRest: undefined,
+      onResume: undefined,
       onResolve: undefined,
-      onDestroyed: undefined,
     }
     expect(
       inferTo({

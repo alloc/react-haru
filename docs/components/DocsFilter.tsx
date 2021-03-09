@@ -22,6 +22,7 @@ import { useCancellableDelay } from 'theme/utils/useCancellableDelay'
 import css from './DocsFilter.module.sass'
 import { useStaticData } from 'vite-plugin-react-pages/dist/client'
 import { getFindablePages } from './DocsFilter/getFindablePages'
+import { scaleFrom } from './DocsFilter/scaleFrom'
 
 // Note: This assumes only one DocsFilter ever exists.
 const global = { animating: 0 }
@@ -91,12 +92,8 @@ const Menu = React.forwardRef<HTMLDivElement, MenuProps>(
     const menuStyle = useSpring({
       x: visible ? '-50%' : '-52%',
       y: visible ? 0 : -8,
-      z: 0, // Give the menu its own layer.
+      scale: visible ? 1 : 0.92,
       opacity: visible ? 1 : 0,
-      // Translate before/after scaling to adjust the anchor point.
-      transform: `translateY(-50%) scale(${
-        visible ? 1 : 0.92
-      }) translateY(50%)`,
       config: key => ({
         frequency: key == 'opacity' ? 0.2 : 0.25,
       }),
@@ -128,27 +125,34 @@ const Menu = React.forwardRef<HTMLDivElement, MenuProps>(
         style={{
           ...menuStyle,
           pointerEvents: visible ? 'auto' : 'none',
+          scale: undefined,
+          transform: menuStyle.scale.to(scaleFrom(0.5, 0)),
         }}>
         <div className={cn(css.menuBorder, 'fill')} />
-        <div className="flex h-13.2 w-1/1 text-1rem font-440">
-          <img src="/search.svg" className="h-5.0 mt-0.55 ml-4.6 self-center" />
-          <div className="absolute h-1/1 right-6.0 flex items-center">
-            <img src="/command.svg" className="h-3.0" />
-            <div
-              className="font-600 ml-0.6 text-0.9rem"
-              style={{ color: '#CFB8BE' }}>
-              K
+        <div className="w-full overflow-hidden">
+          <div className="flex h-13.2 w-1/1 text-1rem font-440">
+            <img
+              src="/search.svg"
+              className="h-5.0 mt-0.55 ml-4.6 self-center"
+            />
+            <div className="absolute h-1/1 right-6.0 flex items-center">
+              <img src="/command.svg" className="h-3.0" />
+              <div
+                className="font-600 ml-0.6 text-0.9rem"
+                style={{ color: '#CFB8BE' }}>
+                K
+              </div>
             </div>
+            <input
+              ref={inputRef}
+              spellCheck={false}
+              className="fill pl-12.0"
+              placeholder="Filter list..."
+              onInput={e => onSearch(e.currentTarget.value)}
+            />
           </div>
-          <input
-            ref={inputRef}
-            spellCheck={false}
-            className="fill pl-12.0"
-            placeholder="Filter list..."
-            onInput={e => onSearch(e.currentTarget.value)}
-          />
+          <Results visible={visible} onClick={onClick} onSearch={onSearch} />
         </div>
-        <Results visible={visible} onClick={onClick} onSearch={onSearch} />
       </a.div>
     )
   }
@@ -312,18 +316,18 @@ const Results = React.memo(
           },
         ],
         lead: 'leave',
-        config: {
-          frequency: 0.32,
-        },
+        expires: false,
         default: {
           immediate: !props.visible,
-        },
-        expires: false,
-        onStart() {
-          global.animating++
-        },
-        onRest() {
-          global.animating--
+          config: {
+            frequency: 0.32,
+          },
+          onStart() {
+            global.animating++
+          },
+          onRest() {
+            global.animating--
+          },
         },
       },
       [searchResults]

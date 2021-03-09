@@ -1,18 +1,18 @@
 @import ../theme/styles/global.sass
 
 .menu
-  @apply absolute -top-1.1rem left-9/10 w-79.2 h-79.2 z-100 select-none
+  @apply absolute w-79.2 h-79.2 z-100 select-none
 
   .title
     @apply font-600 text-1.5rem tracking-tight whitespace-nowrap overflow-ellipsis
-    @apply pt-7.6 pb-3.8 ml-7.2 mr-12.8 overflow-hidden
+    @apply pt-3.0 pb-3.8 ml-7.2 mr-12.8 overflow-hidden
 
   .content
     background: #FFFCFD
     box-shadow: 0 2px 8px rgba(#F2EBED, 0.6)
     border-radius: inherit
     overflow: hidden scroll
-    @apply w-full max-h-99.2
+    @apply w-full max-h-99.2 pt-4.6
 
   .border
     box-shadow: 0 0 0 0.6px #F4DEE3
@@ -22,7 +22,7 @@
 
   .cursor
     pointer-events: none
-    @apply absolute w-1.2 h-6.0 top-1.4 left-3.0
+    @apply absolute w-1.2 h-6.0 top-0 left-3.0
 
   a
     transition: all 0.06s ease-out

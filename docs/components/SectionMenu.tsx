@@ -1,7 +1,7 @@
 import cn from 'classnames'
-import React, { useMemo, useRef, useState } from 'react'
+import React, { ReactNode, useRef, useState } from 'react'
 import { Channel, useChannel } from 'react-ch'
-import { a, useSpring, CSS, to, SpringValue } from 'react-haru/web'
+import { a, useSpring, CSS } from 'react-haru/web'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { useHistory } from 'react-router-dom'
 import { usePage } from 'theme/config'
@@ -10,24 +10,31 @@ import { useCancellableDelay } from 'theme/utils/useCancellableDelay'
 import { usePrev } from 'theme/utils/usePrev'
 import { useStaticData } from 'vite-plugin-react-pages/dist/client'
 import { SectionData } from './DocsFilter/getFindablePages'
+import { scaleFrom } from './DocsFilter/scaleFrom'
 import css from './SectionMenu.module.sass'
 
-export function SectionMenu() {
+interface SectionMenuProps extends React.ComponentProps<'div'> {
+  placeBelow?: boolean
+  disabled?: boolean
+}
+
+export function SectionMenu(props: SectionMenuProps) {
   const page = usePage()
   const title = useStaticData<string>(page.path, data => data.main.title)
   const sections = useStaticData<SectionData | undefined>(
     page.path,
     data => data.main.sections
-  )?.filter(section => {
+  )?.filter(
     // Hide <h3> sections.
-    return section[2] < 3
-  })
+    section => section[2] < 3
+  )
 
   const mouseTimeout = useCancellableDelay()
   const onVisible = useChannel<boolean>()
 
-  return sections?.length ? (
+  return !props.disabled && sections?.length ? (
     <div
+      {...props}
       onMouseEnter={() => {
         mouseTimeout(() => {
           onVisible(true)
@@ -35,11 +42,16 @@ export function SectionMenu() {
       }}
       onMouseLeave={() => {
         mouseTimeout(() => {
-          // onVisible(false)
+          onVisible(false)
         }, 300)
       }}>
-      <MenuButton />
-      <Menu title={title} sections={sections} onVisible={onVisible} />
+      {props.children}
+      <Menu
+        title={title}
+        sections={sections}
+        placeBelow={props.placeBelow}
+        onVisible={onVisible}
+      />
     </div>
   ) : null
 }
@@ -47,6 +59,7 @@ export function SectionMenu() {
 interface MenuProps {
   title: string
   sections: SectionData
+  placeBelow?: boolean
   onVisible: Channel<boolean>
 }
 
@@ -63,8 +76,6 @@ const Menu = React.memo((props: MenuProps) => {
   })
 
   const scrollRef = useRef<HTMLDivElement>(null)
-
-  const isAnimating = useMemo(() => new SpringValue(false), [])
   const minScale = 0.4
   const style = useSpring({
     scale: visible ? 1 : minScale,
@@ -73,11 +84,9 @@ const Menu = React.memo((props: MenuProps) => {
       ? 'inherit'
       : 'none') as CSS.Properties['pointerEvents'],
     config: key => ({
-      frequency: key == 'opacity' ? 0.2 : 0.35,
-      damping: visible ? 1.1 : 1,
+      frequency: key == 'opacity' ? 0.2 : 0.25,
+      damping: visible ? 1.08 : 1,
     }),
-    onStart: () => isAnimating.set(true),
-    onRest: () => isAnimating.set(false),
   })
 
   const history = useHistory()
@@ -114,6 +123,7 @@ const Menu = React.memo((props: MenuProps) => {
     const selected = i === selectedIndex
     return (
       <Anchor
+        key={i}
         href={'#' + slug}
         onMouseEnter={() => selectIndex(i)}
         className={cn(
@@ -128,9 +138,8 @@ const Menu = React.memo((props: MenuProps) => {
   })
 
   const prevHidden = usePrev(!visible)
-  console.log({ prevHidden, selectedIndex, visible })
   const cursorStyle = useSpring({
-    y: computeCursorY(selectedIndex, props.sections),
+    transform: computeCursorTransform(selectedIndex, props.sections),
     immediate: prevHidden,
     config: {
       frequency: 0.32,
@@ -140,20 +149,20 @@ const Menu = React.memo((props: MenuProps) => {
 
   return (
     <a.div
-      className={css.menu}
+      className={cn(
+        css.menu,
+        props.placeBelow ? 'top-82/100 -left-2.2' : '-top-1.1rem left-9/10'
+      )}
       style={{
         ...style,
         scale: undefined,
-        transform: to(
-          [style.scale, isAnimating],
-          (scale, isAnimating) =>
-            `translate3d(-60%, -40%, 0) scale(${scale}) translate(60%, 40%)` +
-            (true ? ` rotateZ(0.01deg)` : ``)
+        transform: style.scale.to(
+          props.placeBelow ? scaleFrom(0.3, 0.075) : scaleFrom(-0.1, 0.1)
         ),
       }}>
       <div className="absolute w-full rounded-0.9rem">
         <div ref={scrollRef} className={css.content}>
-          <div className={css.title}>{props.title}</div>
+          {!props.placeBelow && <div className={css.title}>{props.title}</div>}
           <img src="/accent2.svg" className="absolute top-0 right-0 h-9.4" />
           <div className="pb-4.6">
             {sectionLinks}
@@ -170,38 +179,17 @@ const Menu = React.memo((props: MenuProps) => {
   )
 })
 
-function computeCursorY(selectedIndex: number, sections: SectionData) {
-  let cursorY = 0
-  for (let i = 0; i < selectedIndex; i++) {
-    cursorY += sections[i][2] > 1 ? 2.1 : 2.6
-  }
-  return cursorY + 'rem'
+function getLinkHeight(section: SectionData[number]) {
+  return section[2 /* rank */] > 1 ? 2.1 : 2.6
 }
 
-const MenuButton = React.memo(() => {
-  const style = useSpring({
-    to: { scale: 1, opacity: 1 },
-    from: { scale: 0.6, opacity: 0, rotateZ: '0.01deg' },
-    config: key => ({ frequency: key == 'opacity' ? 0.7 : 1 }),
-    delay: 1200,
-  })
-  const imgStyle = useSpring({
-    to: { x: 0 },
-    from: { x: 40 },
-    config: { frequency: 0.9, damping: 0.7 },
-    delay: 1500,
-  })
-  return (
-    <a.div className="p-0.4rem m-0.5rem" style={style}>
-      <div
-        className="px-3.3 py-2.1 rounded-full bg-rose1 overflow-hidden"
-        style={{ boxShadow: '0 0 0 1.5px #FF007B' }}>
-        <a.img
-          src="/menu.svg"
-          className="h-3.0 block select-none bg-rose1"
-          style={imgStyle}
-        />
-      </div>
-    </a.div>
-  )
-})
+function computeCursorTransform(selectedIndex: number, sections: SectionData) {
+  let cursorY = 0
+  if (selectedIndex < sections.length) {
+    for (let i = 0; i < selectedIndex; i++) {
+      cursorY += getLinkHeight(sections[i])
+    }
+    cursorY += getLinkHeight(sections[selectedIndex]) / 2
+  }
+  return `translateY(${cursorY}rem) translateY(-50%)`
+}

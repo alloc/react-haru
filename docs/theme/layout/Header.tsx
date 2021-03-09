@@ -9,6 +9,7 @@ import { ScaledText } from '../utils/ScaledText'
 import { useValue } from '../utils/useValue'
 import { Anchor } from './mdx/Anchor'
 import css from './Header.module.sass'
+import { SectionMenu } from 'components/SectionMenu'
 
 interface Props {
   title?: string
@@ -64,19 +65,29 @@ export const Header = React.forwardRef<HTMLDivElement, Props>((props, ref) => {
           {page.logo}
         </div>
         <div className="flex flex-1">
-          {renderTitle(({ scaleY, opacity, translateX }, title) => (
+          {renderTitle(({ scaleY, opacity, translateX }, title, _i, phase) => (
             <>
               <a.div
                 className="w-4px h-44/100 bg-rose3 self-center rounded-lg"
                 style={{ scaleY }}
               />
-              <a.div
-                className="flex flex-1 text-maroon tracking-tighter self-center font-500 font-h text-2rem mt-1.25 ml-4.8 mr-8.4"
-                style={{ opacity, translateX, rotateZ: '0.01deg' }}>
-                <ScaledText className="self-center max-h-6.4">
-                  {title}
-                </ScaledText>
-              </a.div>
+              <SectionMenu
+                className="flex flex-1"
+                placeBelow
+                disabled={phase == 'leave'}>
+                <a.div
+                  className={css.title}
+                  style={{
+                    opacity,
+                    translateX,
+                    rotateZ: '0.01deg',
+                  }}>
+                  <ScaledText className="self-center max-h-6.4">
+                    {title}
+                  </ScaledText>
+                  <img src="/down2.svg" className="h-1.69 ml-1.84" />
+                </a.div>
+              </SectionMenu>
             </>
           ))}
         </div>

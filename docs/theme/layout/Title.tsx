@@ -68,7 +68,9 @@ export const Title = React.forwardRef<HTMLDivElement, Props>(
         <div
           className="absolute z-80 top-1/2 left-0 mt-1.0"
           style={{ transform: 'translate(-100%, -50%)' }}>
-          <SectionMenu />
+          <SectionMenu>
+            <MenuButton />
+          </SectionMenu>
         </div>
         <div className="overflow-auto">
           <div className={style.title}>{content}</div>
@@ -77,3 +79,31 @@ export const Title = React.forwardRef<HTMLDivElement, Props>(
     )
   }
 )
+
+const MenuButton = React.memo(() => {
+  const style = useSpring({
+    to: { scale: 1, opacity: 1 },
+    from: { scale: 0.6, opacity: 0, rotateZ: '0.01deg' },
+    config: key => ({ frequency: key == 'opacity' ? 0.7 : 1 }),
+    delay: 1200,
+  })
+  const imgStyle = useSpring({
+    to: { x: 0 },
+    from: { x: 40 },
+    config: { frequency: 0.9, damping: 0.7 },
+    delay: 1500,
+  })
+  return (
+    <a.div className="p-0.4rem m-0.5rem" style={style}>
+      <div
+        className="px-3.3 py-2.1 rounded-full bg-rose1 overflow-hidden"
+        style={{ boxShadow: '0 0 0 1.5px #FF007B' }}>
+        <a.img
+          src="/menu.svg"
+          className="h-3.0 block select-none bg-rose1"
+          style={imgStyle}
+        />
+      </div>
+    </a.div>
+  )
+})

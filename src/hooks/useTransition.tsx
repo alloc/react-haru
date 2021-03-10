@@ -166,6 +166,7 @@ export function useTransition(
 
   // These props are inherited by every phase change.
   const defaultProps = getDefaultProps<UseTransitionProps>(props)
+  defaultProps.ref = props.ref
   if (!is.plainObject(props.default))
     each(['immediate', 'cancel', 'pause'] as const, key => {
       if (is.defined(props[key])) {

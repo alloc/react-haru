@@ -123,15 +123,7 @@ export type TransitionComponentProps<
     children: TransitionRenderFn<NoInfer<Item>, PickAnimated<Props>>
   }
 
-export type ItemKeys<T = any> =
-  | string
-  | number
-  | symbol
-  | boolean
-  | object
-  | readonly any[]
-  | ((item: T) => any)
-  | null
+export type ItemKeys<T = any> = ((item: T) => any) | null
 
 /** The function returned by `useTransition` */
 export interface TransitionFn<Item = any, State extends Lookup = Lookup> {

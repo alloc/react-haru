@@ -410,9 +410,5 @@ function getKeys(
       return nextKey++
     })
   }
-  return is.undefined(keys)
-    ? items
-    : is.function(keys)
-    ? items.map(keys)
-    : toArray(keys)
+  return is.undefined(keys) ? items : items.map(keys)
 }

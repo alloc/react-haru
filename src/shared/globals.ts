@@ -27,6 +27,8 @@ export let skipAnimation = false as boolean
 
 export let willAdvance: (animation: OpaqueAnimation) => void = noop
 
+export let tracker: any
+
 //
 // Configuration
 //
@@ -48,6 +50,8 @@ export interface AnimatedGlobals {
   batchedUpdates?: typeof raf.batchedUpdates
   /** @internal Exposed for testing purposes */
   willAdvance?: typeof willAdvance
+  /** @internal Exposed for demo purposes */
+  tracker?: typeof tracker
 }
 
 export const assign = (globals: AnimatedGlobals) => {
@@ -60,4 +64,5 @@ export const assign = (globals: AnimatedGlobals) => {
   if (globals.requestAnimationFrame) raf.use(globals.requestAnimationFrame)
   if (globals.batchedUpdates) raf.batchedUpdates = globals.batchedUpdates
   if (globals.willAdvance) willAdvance = globals.willAdvance
+  if (globals.tracker) tracker = globals.tracker
 }

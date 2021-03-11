@@ -10,6 +10,7 @@ import {
   flushCalls,
   addFluidObserver,
   FluidObserver,
+  Globals as G,
 } from '../shared'
 
 import { getDefaultProp } from './helpers'
@@ -19,6 +20,7 @@ import { SpringValue, createLoopUpdate, createUpdate } from './SpringValue'
 import { getCancelledResult, getCombinedResult } from './AnimationResult'
 import { runAsync, RunAsyncState, stopAsync } from './runAsync'
 import { scheduleProps } from './scheduleProps'
+import { Tracker } from './types/internal'
 import {
   AnimationResult,
   AsyncResult,
@@ -59,6 +61,9 @@ export class Controller<State extends Lookup = Lookup> {
 
   /** Custom handler for flushing update queues */
   protected _flush?: ControllerFlushFn<this>
+
+  /** The tracker is notified of every `start` call */
+  protected _tracker?: Tracker = G.tracker
 
   /** These props are used by all future spring values */
   protected _initialProps?: Lookup
@@ -156,12 +161,16 @@ export class Controller<State extends Lookup = Lookup> {
       this.queue = []
     }
 
+    let result: AsyncResult<this>
     if (this._flush) {
-      return this._flush(this, queue)
+      result = this._flush(this, queue)
+    } else {
+      prepareKeys(this, queue)
+      result = flushUpdateQueue(this, queue)
     }
 
-    prepareKeys(this, queue)
-    return flushUpdateQueue(this, queue)
+    this._tracker?.(this as any, result)
+    return result
   }
 
   /** Stop all animations. */

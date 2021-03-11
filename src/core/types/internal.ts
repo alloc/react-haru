@@ -10,6 +10,11 @@ import type {
 } from './props'
 
 /** @internal */
+export interface Tracker {
+  (ctrl: Controller, resultPromise: AsyncResult): void
+}
+
+/** @internal */
 export interface Readable<T = any> {
   get(): T
 }

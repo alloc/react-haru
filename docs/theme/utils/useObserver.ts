@@ -5,6 +5,7 @@ import {
   FluidEvent,
   FluidObserver,
   FluidValue,
+  hasFluidValue,
 } from 'fluids'
 
 export function useObserver<T, E extends FluidEvent<T>>(
@@ -22,7 +23,9 @@ export function useObserver(
 // Observer order may not be consistent between renders.
 export function useObserver(target: any, observer: any, deps?: readonly any[]) {
   useEffect(() => {
-    addFluidObserver(target, observer)
-    return () => removeFluidObserver(target, observer)
+    if (hasFluidValue(target)) {
+      addFluidObserver(target, observer)
+      return () => removeFluidObserver(target, observer)
+    }
   }, deps)
 }

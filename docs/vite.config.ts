@@ -5,6 +5,7 @@ import reactRefresh from '@vitejs/plugin-react-refresh'
 import rehost from 'vite-plugin-rehost'
 import mdx from 'vite-plugin-mdx'
 import svg from 'vite-plugin-react-svg'
+import demos from 'vite-plugin-demos'
 import pages from 'vite-plugin-react-pages'
 import windi from 'vite-plugin-windicss'
 import parseMd, { Title } from 'markdown-ast'
@@ -71,6 +72,7 @@ export default defineConfig({
         fileExtensions: ['tsx', 'mdx', 'css'],
       },
     }),
+    demos(),
     pages({
       async loadPageData(file, { loadPageData }) {
         const { pageId, staticData, ...rest } = await loadPageData(file)
@@ -78,7 +80,7 @@ export default defineConfig({
           const ast = parseMd(noMatter(await file.read()))
           const slugger = new Slugger()
           const sections = ast
-            .filter(node => node.type == 'title' && node.rank < 3)
+            .filter(node => node.type == 'title' && node.rank <= 3)
             .map(node => {
               const titleNode = node as Title
               const title = titleNode.block.reduce(

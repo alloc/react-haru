@@ -18,21 +18,29 @@ interface SectionMenuProps extends React.ComponentProps<'div'> {
   disabled?: boolean
 }
 
-export function SectionMenu(props: SectionMenuProps) {
+export function SectionMenu({
+  placeBelow,
+  disabled,
+  ...props
+}: SectionMenuProps) {
   const page = usePage()
   const title = useStaticData<string>(page.path, data => data.main.title)
-  const sections = useStaticData<SectionData | undefined>(
+
+  let sections = useStaticData<SectionData | undefined>(
     page.path,
     data => data.main.sections
-  )?.filter(
-    // Hide <h3> sections.
-    section => section[2] < 3
   )
+
+  let maxRank = -1
+  if (sections) {
+    maxRank = sections.some(section => section[2] == 1) ? 2 : 3
+    sections = sections.filter(section => section[2] <= maxRank)
+  }
 
   const mouseTimeout = useCancellableDelay()
   const onVisible = useChannel<boolean>()
 
-  return !props.disabled && sections?.length ? (
+  return !disabled && sections?.length ? (
     <div
       {...props}
       onMouseEnter={() => {
@@ -48,8 +56,9 @@ export function SectionMenu(props: SectionMenuProps) {
       {props.children}
       <Menu
         title={title}
+        maxRank={maxRank}
         sections={sections}
-        placeBelow={props.placeBelow}
+        placeBelow={placeBelow}
         onVisible={onVisible}
       />
     </div>
@@ -58,13 +67,14 @@ export function SectionMenu(props: SectionMenuProps) {
 
 interface MenuProps {
   title: string
+  maxRank: number
   sections: SectionData
   placeBelow?: boolean
   onVisible: Channel<boolean>
 }
 
 const Menu = React.memo((props: MenuProps) => {
-  const [visible, setVisible] = useState(true)
+  const [visible, setVisible] = useState(false)
   useChannel(props.onVisible, nextVisible => {
     if (nextVisible !== visible) {
       setVisible(nextVisible)
@@ -117,19 +127,20 @@ const Menu = React.memo((props: MenuProps) => {
   useHotkeys('up', selectPrevious, [visible, maxIndex])
   useHotkeys('down', selectNext, [visible, maxIndex])
 
-  let lastRank1 = -1
+  let minRank = 3
   const sectionLinks = props.sections.map(([slug, title, rank], i) => {
-    if (rank == 1) lastRank1 = i
+    if (rank < minRank) minRank = rank
     const selected = i === selectedIndex
     return (
       <Anchor
         key={i}
         href={'#' + slug}
+        onClick={() => props.onVisible(false)}
         onMouseEnter={() => selectIndex(i)}
         className={cn(
           'flex items-center w-full',
           rank > 1 ? 'h-8.4' : 'h-10.4',
-          rank > 1 && ~lastRank1 ? 'pl-9.6 text-1.05rem' : 'pl-7.2 text-1.2rem',
+          rank > minRank ? 'pl-9.6 text-1rem' : 'pl-7.2 text-1.1rem',
           selected ? 'text-deepPink3 font-600' : 'text-black font-400'
         )}>
         {title}
@@ -151,13 +162,13 @@ const Menu = React.memo((props: MenuProps) => {
     <a.div
       className={cn(
         css.menu,
-        props.placeBelow ? 'top-82/100 -left-2.2' : '-top-1.1rem left-9/10'
+        props.placeBelow ? 'top-82/100 -left-2.2' : '-top-1.4rem left-9/10'
       )}
       style={{
         ...style,
         scale: undefined,
         transform: style.scale.to(
-          props.placeBelow ? scaleFrom(0.3, 0.075) : scaleFrom(-0.1, 0.1)
+          props.placeBelow ? scaleFrom(0.4, -0.16) : scaleFrom(-0.1, 0.1)
         ),
       }}>
       <div className="absolute w-full rounded-0.9rem">

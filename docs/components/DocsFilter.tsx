@@ -284,24 +284,21 @@ const Results = React.memo(
     ])
     useLayoutEffect(resetSelection, [searchResults])
 
-    const getResultY = (result: any) =>
-      getContentHeight(searchResults.indexOf(result), contentPaddingTop)
-
     const [renderPageLinks] = useTransition(
       searchResults,
       {
         key: result => result.item.path,
-        enter: result => ({
+        enter: (_, i) => ({
           zIndex: 1,
-          translateY: getResultY(result),
+          translateY: getContentHeight(i, contentPaddingTop),
           pointerEvents: 'unset' as CSS.Properties['pointerEvents'],
           opacity: 1,
           display: 'block',
           delay: key => (key == 'opacity' && prevResultCount == 0 ? 200 : 0),
           immediate: ['zIndex', 'translateY'],
         }),
-        update: result => ({
-          translateY: getResultY(result),
+        update: (_, i) => ({
+          translateY: getContentHeight(i, contentPaddingTop),
         }),
         leave: [
           {
@@ -334,9 +331,8 @@ const Results = React.memo(
     )
 
     const location = useLocation()
-    const pageLinks = renderPageLinks((style, result) => {
+    const pageLinks = renderPageLinks((style, result, index) => {
       const page = result.item
-      const index = searchResults.indexOf(result)
       const isSelected = index === selectedIdx
       const isCurrentPage = page.path === location.pathname
       const matchedKeyword =

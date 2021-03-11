@@ -1,0 +1,14 @@
+{
+  "name": "vite-plugin-demos",
+  "private": true,
+  "dependencies": {
+    "chokidar": "^3.5.1",
+    "dedent": "^0.7.0",
+    "slash": "^3.0.0",
+    "ts-morph": "^10.0.1",
+    "vite": "link:../node_modules/vite"
+  },
+  "devDependencies": {
+    "@types/dedent": "^0.7.0"
+  }
+}

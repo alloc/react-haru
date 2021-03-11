@@ -197,7 +197,6 @@
 .markdown-body ul {
   padding-left: 0;
   margin-top: 0;
-  margin-bottom: 0;
 }
 
 .markdown-body ol ol,
@@ -562,18 +561,6 @@
 .markdown-body a:not([href]) {
   color: inherit;
   text-decoration: none;
-}
-
-.markdown-body blockquote,
-.markdown-body details,
-.markdown-body dl,
-.markdown-body ol,
-.markdown-body p,
-.markdown-body pre,
-.markdown-body table,
-.markdown-body ul {
-  margin-top: 0;
-  margin-bottom: 16px;
 }
 
 .markdown-body hr {

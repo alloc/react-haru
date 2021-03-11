@@ -1,13 +1,15 @@
 dependencies:
   '@alloc/types': 1.3.0
   classnames: 2.2.6
+  delay: 5.0.0
   dequal: 2.0.2
-  fluids: 0.2.7
+  fluids: 0.2.8
   fontfaceobserver-es: 3.3.3
   fuse.js: 6.4.6
   github-slugger: 1.3.0
   prism-react-renderer: 1.2.0_react@17.0.1
   react: 17.0.1
+  react-async-hook: 3.6.2_react@17.0.1
   react-ch: 1.1.5_react@17.0.1
   react-dom: 17.0.1_react@17.0.1
   react-error-overlay: /@alloc/react-error-overlay/6.0.10
@@ -19,8 +21,10 @@ dependencies:
   react-router-dom: 5.2.0_react@17.0.1
   regexparam: 1.3.0
   to-px: 1.1.0
+  typestyle: 2.1.0
   use-click-outside: 2.0.0_react-dom@17.0.1+react@17.0.1
   use-element-size: 1.2.1_react-dom@17.0.1+react@17.0.1
+  wana: 0.13.8_react@17.0.1
 devDependencies:
   '@alloc/prettier-config': 1.0.0
   '@mdx-js/mdx': 2.0.0-next.8
@@ -41,15 +45,20 @@ devDependencies:
   sass: 1.32.8
   sirv-cli: 1.0.11
   vite: 2.0.3
-  vite-plugin-mdx: 3.0.0_860b01894adbf534512a844ddb8f30a5
+  vite-plugin-demos: link:vite-plugin-demos
+  vite-plugin-mdx: 3.1.0_860b01894adbf534512a844ddb8f30a5
   vite-plugin-react-pages: 2.1.0_vite@2.0.3
   vite-plugin-react-svg: 0.2.0_vite@2.0.3
   vite-plugin-rehost: 2.0.5_vite@2.0.3
   vite-plugin-windicss: 0.6.10_vite@2.0.3
-  vite-tsconfig-paths: 2.1.0_vite@2.0.3
+  vite-tsconfig-paths: 2.3.0_vite@2.0.3
   windicss: 2.2.1
 lockfileVersion: 5.2
 packages:
+  /@alloc/is-dev/1.2.2:
+    dev: false
+    resolution:
+      integrity: sha512-EkpBVIODXFYUWxou3xJmRD+bmwYTOYMShG0tswjZ6uv0k7INOzXzp/uyjOdSZ4K9ygp8mNCLOxjCkiRfd7TDYA==
   /@alloc/is/2.1.2:
     dev: false
     resolution:
@@ -470,6 +479,12 @@ packages:
       '@babel/core': ^7.0.0-0
     resolution:
       integrity: sha512-LXJwxrHy0N3f6gIJlYbLta1D9BDtHpQeqwzM0LIfjDlr6UE/D5Mc7W4iDiQzaE+ks0sTjT26ArcHWnJVt0QiHw==
+  /@babel/runtime/7.13.10:
+    dependencies:
+      regenerator-runtime: 0.13.7
+    dev: false
+    resolution:
+      integrity: sha512-4QPkjJq6Ns3V/RgpEahRk+AGfL0eO6RHHtTWoNNr5mO49G6B5+X6d6THgWEAvTrznU5xYpbAlVKRYcsCgh/Akw==
   /@babel/runtime/7.13.7:
     dependencies:
       regenerator-runtime: 0.13.7
@@ -1421,6 +1436,10 @@ packages:
       node: '>=8.0.0'
     resolution:
       integrity: sha512-wvlcdIbf6pwKEk7vHj8/Bkc0B4ylXZruLvOgs9doS5eOsOpuodOV2zJChSpkp+pRpYQLQMeF04nr3Z68Sta9jA==
+  /csstype/2.6.9:
+    dev: false
+    resolution:
+      integrity: sha512-xz39Sb4+OaTsULgUERcCk+TJj8ylkL4aSVDQiX/ksxbELSqwkgt4d4RD7fovIdgJGSuNYqwZEiVjYY5l0ask+Q==
   /csstype/3.0.7:
     resolution:
       integrity: sha512-KxnUB0ZMlnUWCsx2Z8MUsr6qV6ja1w9ArPErJaJaF8a5SOWoHLIszeCTKGRGRgtLgYrs1E8CHkNSP1VZTTPc9g==
@@ -1463,6 +1482,12 @@ packages:
       node: '>= 0.4'
     resolution:
       integrity: sha512-3MqfYKj2lLzdMSf8ZIZE/V+Zuy+BgD6f164e8K2w7dgnpKArBDerGYpM46IYYcjnkdPNMjPk9A6VFB8+3SKlXQ==
+  /delay/5.0.0:
+    dev: false
+    engines:
+      node: '>=10'
+    resolution:
+      integrity: sha512-ReEBKkIfe4ya47wlPYf/gu5ib6yUG0/Aez0JQZQz94kiWtRQvZIQbTiehsnwHvLSWJnQdhVeqYue7Id1dKr0qw==
   /dequal/2.0.2:
     dev: false
     engines:
@@ -1652,6 +1677,12 @@ packages:
     requiresBuild: true
     resolution:
       integrity: sha512-PTMdAWK3JI2MNW811znGssGP5GR44tQPr++VQ1rPP0n8Z1cTKbCPD3S/kXPLr3ZZDIwAaVm08fuFym6Rp8l/0A==
+  /esbuild/0.8.57:
+    dev: true
+    hasBin: true
+    requiresBuild: true
+    resolution:
+      integrity: sha512-j02SFrUwFTRUqiY0Kjplwjm1psuzO1d6AjaXKuOR9hrY0HuPsT6sV42B6myW34h1q4CRy+Y3g4RU/cGJeI/nNA==
   /escalade/3.1.1:
     dev: true
     engines:
@@ -1750,10 +1781,18 @@ packages:
     dev: false
     resolution:
       integrity: sha512-BtISY0anNFQ/Krayyzvx22YjxNm/IMDwyxlLHpECrKSOJOy0WTFqbmTKOH5hMzEkYcBsYb/fXvuunv5AIPanew==
+  /fluids/0.2.8:
+    dev: false
+    resolution:
+      integrity: sha512-60W1IZZaIm7OeNKhlyxNgCqEt0t89ds+RODxiWy6BVgaolK1eXFCamIEmxdAx8o83XtuH1haIl5QkOX2nff9wA==
   /fontfaceobserver-es/3.3.3:
     dev: false
     resolution:
       integrity: sha512-1EyweL1ryy0koZWk80Kr0UgWq9KhbOl2cD6x1O8BtFu0gNqCWIXK1lVFSUb37DI5FMn1m86I6X7N1JRBy8wVfw==
+  /free-style/3.1.0:
+    dev: false
+    resolution:
+      integrity: sha512-vJujYSIyT30iDoaoeigNAxX4yB1RUrh+N2ZMhIElMr3BvCuGXOw7XNJMEEJkDUeamK2Rnb/IKFGKRKlTWIGRWA==
   /fs-extra/9.1.0:
     dependencies:
       at-least-node: 1.0.0
@@ -3327,13 +3366,23 @@ packages:
     resolution:
       integrity: sha512-In3o+lUxlgejoVJgwEdYtdxrmlL0cQWJXj0+kkI7RWVo7hg5AhFtybeKlC9Dpgbr8eOC4ydpEh8017WwyfzqVQ==
   /queue-microtask/1.2.2:
-    dev: true
     resolution:
       integrity: sha512-dB15eXv3p2jDlbOiNLyMabYg1/sXvppd8DP2J3EOCQ0AkuSXCW2tP7mnVouVLJKgUMY6yP0kcQDVpLCN13h4Xg==
   /rafz/0.1.14:
     dev: false
     resolution:
       integrity: sha512-YiQkedSt1urYtYbvHhTQR3l67M8SZbUvga5eJFM/v4vx/GmDdtXlE2hjJIyRjhhO/PjcdGC+CXCYOUA4onit8w==
+  /react-async-hook/3.6.2_react@17.0.1:
+    dependencies:
+      react: 17.0.1
+    dev: false
+    engines:
+      node: '>=8'
+      npm: '>=5'
+    peerDependencies:
+      react: '>=16.8'
+    resolution:
+      integrity: sha512-RkwHCJ8V7I6umKZLHneapuTRWf+eO4LOj0qUwUDsSn27jrAOcW6ClbV3x22Z4hVxH9bA0zb7y+ozDJDJ8PnZoA==
   /react-ch/1.1.5_react@17.0.1:
     dependencies:
       '@alloc/is': 2.1.2
@@ -4086,6 +4135,13 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-4dbzIzqvjtgiM5rw1k5rEHtBANKmdudhGyBEajN01fEyhaAIhsoKNy6y7+IN93IfpFtwY9iqi7kD+xwKhQsNJA==
+  /typestyle/2.1.0:
+    dependencies:
+      csstype: 2.6.9
+      free-style: 3.1.0
+    dev: false
+    resolution:
+      integrity: sha512-6uCYPdG4xWLeEcl9O0GtNFnNGhami+irKiLsXSuvWHC/aTS7wdj49WeikWAKN+xHN3b1hm+9v0svwwgSBhCsNA==
   /unbox-primitive/1.0.0:
     dependencies:
       function-bind: 1.1.1
@@ -4201,6 +4257,14 @@ packages:
       react-dom: '>=16.9'
     resolution:
       integrity: sha512-JiBYTMJsbGzGpHbIkv4Til36zsHXTOxy5WfBxx+/BNn0SVcmJcdQD9oe8CesOq+6E37hbRhJiZrFe5xf5d0pPg==
+  /use-memo-one/1.1.2_react@17.0.1:
+    dependencies:
+      react: 17.0.1
+    dev: false
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0
+    resolution:
+      integrity: sha512-u2qFKtxLsia/r8qG0ZKkbytbztzRb317XCkT7yP8wxL0tZ/CzK2G+WWie5vWvpyeP7+YoPIwbJoIHJ4Ba4k0oQ==
   /util-deprecate/1.0.2:
     dev: true
     resolution:
@@ -4249,17 +4313,17 @@ packages:
     dev: true
     resolution:
       integrity: sha512-O6AE4OskCG5S1emQ/4gl8zK586RqA3srz3nfK/Viy0UPToBc5Trp9BVFb1u0CjsKrAWwnpr4ifM/KBXPWwJbCA==
-  /vite-plugin-mdx/3.0.0_860b01894adbf534512a844ddb8f30a5:
+  /vite-plugin-mdx/3.1.0_860b01894adbf534512a844ddb8f30a5:
     dependencies:
       '@mdx-js/mdx': 2.0.0-next.8
-      esbuild: 0.8.56
+      esbuild: 0.8.57
       vite: 2.0.3
     dev: true
     peerDependencies:
       '@mdx-js/mdx': '*'
       vite: '*'
     resolution:
-      integrity: sha512-hDKvF23eqUq6YobqrwBZEw3uajLuV+a3Bs4b0YE1hUzX/4ItXekhvCJG4c0D4QHC7EKMd7G8l7NKMEoY84jCBA==
+      integrity: sha512-yGOOlUlqwEPqiXMmWQ9mGAfK97p8u+Q5PEg9sf0nWfNL+qlE7HSSvpxHmkWNoqHH03hgHlrishHChWLonARrvQ==
   /vite-plugin-react-pages/2.1.0_vite@2.0.3:
     dependencies:
       '@babel/preset-react': 7.12.13
@@ -4322,7 +4386,7 @@ packages:
       vite: ^2.0.1
     resolution:
       integrity: sha512-ofeJGvHu/Tz+HIP9Ap0uQHBt5YNi2uv/4yoJH30I3zFE5gAdsKN3GgzrcySQEPaQIgWmcDNbpWqAFejLHFLpzw==
-  /vite-tsconfig-paths/2.1.0_vite@2.0.3:
+  /vite-tsconfig-paths/2.3.0_vite@2.0.3:
     dependencies:
       debug: 4.3.1
       tsconfig-paths: 3.9.0
@@ -4331,7 +4395,7 @@ packages:
     peerDependencies:
       vite: '>2.0.0-0'
     resolution:
-      integrity: sha512-SGCAtgg3PdadLsbCyDEOirlFa0bnw6EdtXbqqSyXb6gX769hA0CzTFpEj472j8LyiHnjXMr6SEwNDMADZdJxcg==
+      integrity: sha512-mAbbzsvMPEuxZtPxxUII8SnVoa4NsevYiCcpgjn5FtjiqYTXT/AsmNK0hXHSf+KQrNns8CoVLYycVg4U5HSo7g==
   /vite/2.0.3:
     dependencies:
       esbuild: 0.8.51
@@ -4346,6 +4410,20 @@ packages:
       fsevents: 2.3.2
     resolution:
       integrity: sha512-4CUm3FVUHyTSSSK6vHWkj3SVkP+GGNNzwYcFsHOjjc8xQ3BPjJa1JDDmFlYxpxR29ANa+7RWptYPoyHyJ29Nhw==
+  /wana/0.13.8_react@17.0.1:
+    dependencies:
+      '@alloc/is': 2.1.2
+      '@alloc/is-dev': 1.2.2
+      '@babel/runtime': 7.13.10
+      queue-microtask: 1.2.2
+      react: 17.0.1
+      react-layout-effect: 1.0.5_react@17.0.1
+      use-memo-one: 1.1.2_react@17.0.1
+    dev: false
+    peerDependencies:
+      react: '>=16.9'
+    resolution:
+      integrity: sha512-MpkMaguxM+sKRiEapk+05U+hfIyIVYTiuC9ty7afEjKTozH958G7h86PX7niD9ysO2pzLOF+07fd5PKBmkx3Lw==
   /wcwidth/1.0.1:
     dependencies:
       defaults: 1.0.3
@@ -4422,8 +4500,9 @@ specifiers:
   '@types/to-px': ^1.1.0
   '@vitejs/plugin-react-refresh': ^1.0.0
   classnames: ^2.2.6
+  delay: ^5.0.0
   dequal: ^2.0.2
-  fluids: ^0.2.7
+  fluids: ^0.2.8
   fontfaceobserver-es: ^3.3.3
   fuse.js: ^6.4.6
   github-slugger: ^1.3.0
@@ -4432,6 +4511,7 @@ specifiers:
   prettier: ^2.2.1
   prism-react-renderer: ^1.2.0
   react: ^17.0.0
+  react-async-hook: ^3.6.2
   react-ch: ^1.1.5
   react-dom: ^17.0.0
   react-error-overlay: npm:@alloc/react-error-overlay@^6.0.10
@@ -4445,13 +4525,16 @@ specifiers:
   sass: ^1.32.8
   sirv-cli: ^1.0.11
   to-px: ^1.1.0
+  typestyle: ^2.1.0
   use-click-outside: ^2.0.0
   use-element-size: ^1.2.1
   vite: ^2.0.0
-  vite-plugin-mdx: '3'
+  vite-plugin-demos: link:./vite-plugin-demos
+  vite-plugin-mdx: ^3.1.0
   vite-plugin-react-pages: ^2.0.0
   vite-plugin-react-svg: ^0.2.0
   vite-plugin-rehost: ^2.0.5
   vite-plugin-windicss: ^0.6.10
-  vite-tsconfig-paths: ^2.1.0
+  vite-tsconfig-paths: ^2.3.0
+  wana: ^0.13.8
   windicss: ^2.2.1

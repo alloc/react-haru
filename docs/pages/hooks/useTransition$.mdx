@@ -1,2 +1,295 @@
-- how to get item index in phase-specific props function (minus any leaving items)
-- hot to wait for leave animations before mounting
+---
+title: useTransition
+keywords: [hook]
+---
+
+import { Demo } from 'theme/demo'
+
+The `useTransition` hook makes it easier to animate before unmounting a component or a group of components. It also supports animating newly added components. This hook can be used with a _single value_ or an _array of values_ that will be "diffed" between renders. These values are referred to as **items** for the rest of this document.
+
+## Enter animations
+
+The `enter` prop defines the props of a newly identified item.
+
+```ts
+enter: {...}
+```
+
+These props also apply to "revived items", which are items that were **not** passed to `useTransition` in the **previous** render but were reintroduced in the latest render _before_ the item's component was unmounted. To disable this behavior, see the [Unique mode](#unique-mode) section.
+
+If an `enter` transition is cancelled, the `enter` phase is retried in the next render.
+
+### From values
+
+Instead of defining [`from`](/props/from) within the `enter` props like so...
+
+```ts
+enter: {
+  from: { opacity: 0 },
+}
+```
+
+...you can define `from` alongside the `enter` prop.
+
+```ts
+from: { opacity: 0 },
+enter: { ... }
+```
+
+The `initial` prop lets you set the `from` prop **only** for items that existed on first render. In the following example, items are visible immediately on the first render, but any items added after that are faded in.
+
+```ts
+initial: { opacity: 1 },
+from: { opacity: 0 },
+enter: {...}
+```
+
+When `reset: true` is passed, the `initial` prop takes precedence over the `from` prop.
+
+## Leave animations
+
+The `leave` prop defines the props of a newly "removed item", also known as item that was passed to `useTransition` in the previous render but not in the current render.
+
+```ts
+leave: {
+  opacity: 0
+}
+```
+
+While a `leave` transition is active, changes to the `leave` prop will **not** apply to it. The `leave` transition will be interrupted if its item key is reintroduced in a future render. For more details, see the [Item keys](#item-keys) section.
+
+### Leave first
+
+Pass `lead: "leave"` to postpone other transitions until `leave` transitions are finished. New items will **not** be rendered until elements related to removed items have been unmounted.
+
+```ts
+lead: 'leave'
+```
+
+By default, `enter` and `leave` transitions happen simultaneously.
+
+## Render-based updates
+
+The `update` prop lets you update the props of transitions whose item was rendered in both the current and previous renders.
+
+```ts
+update: {
+  background: 'red',
+}
+```
+
+This is particularly useful when working with an array of items that may be reordered between renders. In this case, you'll put `position: absolute` on each item's element and use its index to calculate the appropriate `top` or `transform` CSS value.
+
+The following example uses [Item-specific transitions](#item-specific-transitions) to accomplish this.
+
+```ts
+update: (_, i) => ({
+  translateY: i * 60,
+})
+```
+
+### Variable height
+
+If each item's element has a variable height, things get a little more complicated. If you can calculate each item's height before calling `useTransition`, you can cache that height alongside its item by using the same approach described in the [Beware removed items](#beware-removed-items) section.
+
+```ts
+const items = props.todos.map(todo => ({
+  todo,
+  height: computeTodoHeight(todo),
+}))
+```
+
+If can't know the height until the item is rendered, things get even more complicated. If each item's height relies on units like `vh` or `rem`, you _could_ get away with re-rendering the caller of `useTransition` whenever the window resizes or `<html>` font size changes, respectively. Otherwise, you'll probably need a library that observes each element.
+
+For a full example, see [this sandbox]().
+
+## Item-specific transitions
+
+The `enter`, `leave`, `update`, `from`, and `initial` props all accept a function like below.
+
+```ts
+enter: (item, index) => ({ ... })
+```
+
+This function can return a [props object](/props) or a falsy value (which is a no-op).
+
+The `index` is the `item`'s position in the items array. For this reason, the `leave` prop's `index` parameter is always `-1`.
+
+### Async animations
+
+The `enter`, `leave`, and `update` props can also return an [async animation](/props/to#async-animations).
+
+```ts
+enter: (item, index) => async animate => {...}
+```
+
+## Item keys
+
+Every item needs a unique key. Item keys are used to reconnect an item with its `leave` transition if your component passes that item to `useTransition` before the `leave` transition is finished. If this happens, the transition is revived by the `enter` prop, and unmounting is prevented.
+
+**By default,** the item itself is used as its key.
+
+The `key` prop lets you map an item to its key.
+
+```ts
+key: (item) => item.key,
+```
+
+An item's key is cached and cannot be changed.
+
+### Unique mode
+
+Pass `key: null` if you either (1) have duplicate items or (2) want to prevent `leave` transitions from being revived.
+
+Doing this will generate a globally unique key for every `enter` transition. Once a `leave` transition has started, it cannot be stopped by passing the associated item back into `useTransition` in a future render.
+
+## Rendering
+
+`useTransition` returns a "mapping function", which is used to map each item into a React element, a string, or `null`. The mapping function always returns a React fragment.
+
+### Render function
+
+The mapping function must be passed a "render function", which takes the following arguments:
+
+- an object containing one [`SpringValue`](/objects/SpringValue) per key
+- the associated item
+- the item's position in the items array (`-1` for `leave` transitions)
+- the item's next transition phase (`enter`, `update`, or `leave`)
+- the transition's [`Controller`](/objects/Controller) object
+
+```tsx
+const renderItems = useTransition(items, {...})
+
+return renderItems((style, item, index, phase, ctrl) => (
+  <a.div style={style} />
+))
+```
+
+It's **not** necessary to define a `key` prop on elements returned by your render function, as `useTransition` handles that automatically.
+
+### Beware removed items
+
+If the `leave` prop is defined, removed items will remain rendered until their `leave` transition is finished.
+
+For this reason, you **must** avoid using the item or its index to access data outside the render function, or else you risk runtime errors.
+
+**Instead,** you can cache any data needed by the render function inside the item itself, which usually involves wrapping the item in an object created during render and defining an appropriate [`key`](#item-keys) prop.
+
+```tsx
+const items = props.users.map(userId => ({
+  userId,
+  posts: postStore.get(userId),
+}))
+
+const renderItems = useTransition(items, {
+  key: item => item.userId,
+})
+
+return renderItems((style, { userId, posts }) => (
+  <a.div style={style}>
+    <UserWithPosts userId={userId} posts={posts} />
+  </a.div>
+))
+```
+
+### Skipping items
+
+The `skip` prop lets you exclude items from being rendered or animated.
+
+```ts
+skip: item => Boolean(item),
+```
+
+### Sorting items
+
+The `sort` prop lets you reorder items using a comparator function, like `Array#sort` but without in-place mutation.
+This is useful if you want to avoid cloning and sorting your items array with `[...items].sort(...)` before passing it into `useTransition`.
+
+```ts
+sort: (a, b) => {...}
+```
+
+It also lets you sort removed items before their `leave` transition is finished.
+
+## Start over
+
+Pass `reset: true` to pretend like it's the first render again. The transition state of every item is reset, which means the `initial` prop is applied (or `from` if undefined), and they each repeat their `enter` transition.
+
+```tsx
+reset: true
+```
+
+## Trailing
+
+The `trail` prop lets you delay `enter` and `leave` transitions based on their item index.
+The delay accumulates as more items are entering or leaving in the same render.
+
+```ts
+trail: 40
+```
+
+The `trail` prop is different from using [Item-specific transitions](#item-specific-transitions) to set the `delay` prop in the following ways:
+
+- `enter` and `leave` transitions have separate delays
+- `update` transitions are never delayed
+
+### Override the trail
+
+Set `delay: 0` in a phase prop to override the `trail` prop.
+
+```ts
+trail: 40,
+leave: { delay: 0 }
+```
+
+## Unmounting
+
+By default, when a `leave` transition is finished, it unmounts on the next render.
+
+<Demo id="useTransition/unmount" />
+
+If all current `leave` transitions finish before the next render, `useTransition` will force its caller to re-render.
+
+```ts
+
+```
+
+### Controlled expiration
+
+The `expires` prop lets you control when
+
+### Side effects
+
+The `onDestroyed` prop
+
+## Inherited props
+
+The following props are inherited by every transition phase.
+
+- [`config`](/props/config)
+- [`immediate`](/props/immediate)
+- [`cancel`](/props/cancel)
+- [`pause`](/props/pause)
+- [event props](/events)
+
+## Dependency array
+
+Similar to `React.useEffect`, you can pass an array as the last argument of `useTransition`, which will be compared (using [shallow equality](https://javascript.plainenglish.io/the-effect-of-shallow-equality-in-react-85ae0287960c)) with the array you passed in the previous render.
+
+When a dependency array is present, the props you pass to `useTransition` will only be applied if a dependency changed since the previous render.
+
+```ts
+useTransition(items, props, [props])
+```
+
+## Command from above
+
+Transitions respect the current [`SpringContext`](/components/SpringContext).
+
+This can be used to override the `pause` and/or `immediate` props of all transitions within a subtree.
+
+```tsx
+<SpringContext pause={pause}>
+  <TodoList items={items} />
+</SpringContext>
+```

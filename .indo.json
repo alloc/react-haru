@@ -4,10 +4,6 @@
       "url": "https://github.com/alloc/react-haru",
       "head": "gh-pages"
     },
-    "vendor/vite-plugin-mdx": {
-      "url": "git@github.com:aleclarson/vite-plugin-mdx.git",
-      "head": "dev"
-    },
     "vendor/vite-svg": {
       "url": "git@github.com:aleclarson/vite-svg.git",
       "head": "master"

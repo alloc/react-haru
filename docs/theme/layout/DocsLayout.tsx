@@ -72,7 +72,7 @@ interface ContentProps {
 
 function Content({ title, headerHeight, children }: ContentProps) {
   const [titleRef, titleHeight] = useHeight()
-  const [contentRef, contentHeight] = useHeight()
+  const [contentRef, contentHeight] = useHeight(() => !wiperHidden)
 
   const [wiperHidden, setWiperHidden] = useState(false)
   const [wiperHeight, setWiperHeight] = useState(0)
@@ -87,7 +87,7 @@ function Content({ title, headerHeight, children }: ContentProps) {
 
   // Postpone scrolling to url hash until animation is done.
   const queue = useQueue((fn: Function) => fn())
-  useScrollToHash(queue, headerHeight + toPixels('1.8rem'))
+  useScrollToHash(queue, headerHeight + toPixels('1.6rem'))
 
   // Disable scrolling while content is mounting.
   const unlockScrolling = useScrollLock()

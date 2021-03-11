@@ -30,13 +30,14 @@
 
   p
     line-height: 1.75
+
+  p, ul, ol
     @apply font-460
 
   strong
     @apply font-670
 
   code, pre
-    font-variation-settings: 'MONO' 1, 'CASL' 0
     letter-spacing: 0.005em
     @apply text-deepPink
 
@@ -53,7 +54,7 @@
       box-shadow: 0 0 0 1.5px #FFCCE5
       background: none
       transition: all 0.25s ease-out
-      @apply font-400
+      @apply font-400 px-0.8 mx-0.8
 
     &:hover
       text-decoration: none
@@ -72,6 +73,14 @@
 
   img
     background: none
+
+  li
+    @apply pl-2.0 pb-1.6
+
+  li::marker
+    content: '✲'
+    font-family: monospace
+    @apply text-deepPink3
 
 //
 // Global overrides

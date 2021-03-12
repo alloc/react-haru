@@ -1,7 +1,8 @@
 import delay from 'delay'
 import { useEffect } from 'react'
-import {  withAuto } from 'wana'
-import { useDemo } from './context'
+import { unstable_batchedUpdates as batchedUpdates } from 'react-dom'
+import { withAuto } from 'wana'
+import { useDemo } from './DemoContext'
 import { Cycle } from './types'
 import { TrackedState } from './useTracker'
 
@@ -11,7 +12,7 @@ interface Props {
 
 export const AppCycle = withAuto(({ state }: Props) => {
   const demo = useDemo()
-  const {onCycle} = demo
+  const { onCycle } = demo
 
   useEffect(() => {
     let paused = false
@@ -58,8 +59,16 @@ export const AppCycle = withAuto(({ state }: Props) => {
 
     async function nextCycle(): Promise<void> {
       for (const action of onCycle(demo.props, cycle)) {
+        // Wait for cycle to be resumed.
         await resumePromise
-        await action()
+
+        let result: any
+        batchedUpdates(() => {
+          result = action()
+        })
+        await result
+
+        // Break out of loop if cancelled.
         if (cycle.cancelled) {
           throw cycle
         }
@@ -67,6 +76,7 @@ export const AppCycle = withAuto(({ state }: Props) => {
       await nextCycle()
     }
 
+    console.log('startCycle:', cycle)
     demo.cycle = cycle
     nextCycle().catch(err => {
       err !== cycle && console.error(err)
@@ -75,6 +85,7 @@ export const AppCycle = withAuto(({ state }: Props) => {
     return () => {
       demo.cycle = null
       abortCtrl.abort()
+      console.log('stopCycle:', cycle)
     }
   }, [onCycle])
 

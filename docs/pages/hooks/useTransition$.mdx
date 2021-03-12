@@ -224,9 +224,7 @@ reset: true
 The `trail` prop lets you delay `enter` and `leave` transitions based on their item index.
 The delay accumulates as more items are entering or leaving in the same render.
 
-```ts
-trail: 40
-```
+<Demo id="useTransition/trail" />
 
 The `trail` prop is different from using [Item-specific transitions](#item-specific-transitions) to set the `delay` prop in the following ways:
 
@@ -237,26 +235,49 @@ The `trail` prop is different from using [Item-specific transitions](#item-speci
 
 Set `delay: 0` in a phase prop to override the `trail` prop.
 
-```ts
-trail: 40,
-leave: { delay: 0 }
-```
+In the following demo, all `leave` transitions start together, while `enter` transitions trail each other.
+
+<Demo id="useTransition/trail/enter-only" />
 
 ## Unmounting
 
-By default, when a `leave` transition is finished, it unmounts on the next render.
+When the last active `leave` transition ends, `useTransition` will force its caller to render immediately, but only if there are **expired items** whose elements need to be unmounted. An expired item is one whose `leave` transition has finished and is now ready to be unmounted.
 
 <Demo id="useTransition/unmount" />
 
-If all current `leave` transitions finish before the next render, `useTransition` will force its caller to re-render.
+As seen above, as long as a `leave` transition is active, expired items will remain mounted, assuming you've not set the `expires` prop to a number `> 0`. The first pink dot is an example of that fact.
+
+### Item expiration
+
+The `expires` prop lets you control if/when items expire.
+
+When it's `true` (the default value) or `<= 0`, items expire **immediately** after their `leave` transition is finished.
+
+When it's `false`, items **never** expire, and so they never unmount.
+
+In the next example, pay attention to the pink dot's `enter` transition. Notice how its scale isn't animated while `expires` is false.
+
+<Demo id="useTransition/expires-false" />
+
+Since the item is never unmounted, the `from` prop isn't used after the first `enter` animation. To force `from` to be used, You can add `reset: true` to your `enter` transition. (Try clicking the `reset` toggle in the demo above)
+
+### Time-sensitive unmounting
+
+When `expires` is greater than `0`, it's used as a `setTimeout` delay. When the timeout ends, `useTransition` forces its caller to re-render, even if other `leave` transitions are still animating.
+
+When `expires` is infinite, `useTransition` will **never** force its caller to re-render, and expired items will need to wait for the caller to re-render for some other reason before they can unmount.
 
 ```ts
-
+expires: Infinity
 ```
 
-### Controlled expiration
+### Item-specific expiration
 
-The `expires` prop lets you control when
+When `expires` is a function, it receives an item and must return a number or boolean. It gets called immediately after the given item's `leave` transition has finished.
+
+```ts
+expires: item => {...}
+```
 
 ### Side effects
 

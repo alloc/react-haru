@@ -22,11 +22,15 @@ if (import.meta.hot) {
   )
 }
 
+export function useDemos() {
+  return useValue(demoManifest)
+}
+
 const Context = React.createContext<Demo | null>(null)
 
 // The "id" is assumed to be constant.
 export function DemoContext({ id, ...props }: { id: string; children: any }) {
-  const demos = useValue(demoManifest)
+  const demos = useDemos()
 
   // Load the demo asynchronously.
   const { result } = useAsync(loadDemo, [id, demos], {
@@ -54,7 +58,7 @@ export function DemoContext({ id, ...props }: { id: string; children: any }) {
 
   // Keep the previous tree rendered until hot-reloaded.
   const demoElem = <Context.Provider value={demo} {...props} />
-  const cachedElem = useCache(result ? () => demoElem : null)
+  const cachedElem = useCache(result && (() => demoElem))
   return result ? demoElem : cachedElem
 }
 
@@ -63,7 +67,7 @@ export function useDemo() {
 }
 
 function loadDemo(id: string, demos: typeof demoManifest) {
-  return Promise.all(demos[id]())
+  return demos[id] ? Promise.all(demos[id]()) : Promise.resolve(null)
 }
 
 function createDemo(
@@ -75,6 +79,7 @@ function createDemo(
     ...config,
     App,
     code: src.default,
+    codeVisible: false,
     props: createProps(config),
     cycle: null,
   })

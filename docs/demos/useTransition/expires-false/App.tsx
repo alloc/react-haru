@@ -4,13 +4,13 @@ import { style } from 'typestyle'
 import { Props } from './props'
 
 export function App(props: Props) {
-  const items = props.visible ? [1, 2] : []
+  const items = props.visible ? [1] : []
 
   const transition = useTransition(items, {
     from: { scale: 0, opacity: 1 },
-    enter: { scale: 1 },
+    enter: { scale: 1, reset: props.reset },
     leave: { opacity: 0 },
-    trail: 300,
+    expires: props.expires,
     config: () => key => ({
       frequency: 0.5,
       damping: key == 'opacity' ? 1 : 0.2,
@@ -23,7 +23,7 @@ export function App(props: Props) {
 
   return (
     <>
-      <div className="flex">{elems}</div>
+      {elems}
       <div className={labelStyle}>
         {(elems.props.children.length ? 'M' : 'Not m') + 'ounted'}
       </div>

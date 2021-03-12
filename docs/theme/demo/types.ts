@@ -1,4 +1,5 @@
 import { Channel } from 'react-ch'
+import { style } from 'typestyle'
 import { Tracker } from './useTracker'
 
 export {}
@@ -53,6 +54,7 @@ export interface Cycle {
 export interface Demo extends AppModule, ConfigModule {
   id: string
   code: string
+  codeVisible: boolean
   props: any
   cycle: Cycle | null
 }
@@ -88,4 +90,5 @@ export interface AppModule {
 export interface ConfigModule<Props = any> {
   knobs: { [name: string]: KnobType }
   onCycle: (props: Props, cycle: Cycle) => (() => any)[]
+  rootStyle: Parameters<typeof style>
 }

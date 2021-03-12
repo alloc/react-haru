@@ -26,7 +26,7 @@
     @apply text-2rem mb-4.8 mt-20
 
   h3
-    @apply text-1.75rem mb-3.6 mt-7.2
+    @apply text-1.75rem mb-3.6 mt-8.2
 
   p
     line-height: 1.75
@@ -64,11 +64,17 @@
         box-shadow: 0 0 0 1.5px #F50076
 
   pre
+    @apply p-4.0
+
+  pre, .demo
     box-shadow: 0 0 0 1.5px #FFCCE5
     background: rgba(white, 0.6)
-    @apply rounded-0.6rem mt-7.2
+    @apply rounded-0.6rem mt-5.2 mb-6.2
 
-  p, pre, blockquote, ol, ul
+  .demo pre
+    @apply rounded-none bg-transparent shadow-none m-0
+
+  p, blockquote, ol, ul, .demo
     @apply mb-4.8
 
   img

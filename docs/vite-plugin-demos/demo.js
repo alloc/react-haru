@@ -109,6 +109,7 @@ exports.Demo = class Demo {
 
       let knobs
       let onCycle
+      let rootStyle
       let propTypes
 
       for (const stmt of propsFile.getStatements()) {
@@ -116,14 +117,16 @@ exports.Demo = class Demo {
           const call = stmt.getExpressionIfKind(ts.SyntaxKind.CallExpression)
           if (call) {
             const callee = call.getExpression()
-            const [firstArg] = call.getArguments()
+            const args = call.getArguments()
             switch (Node.isIdentifier(callee) && callee.getText()) {
               case 'defineKnobs':
-                knobs = firstArg
+                knobs = args[0]
                 break
               case 'defineCycle':
-                onCycle = firstArg
+                onCycle = args[0]
                 break
+              case 'defineRootStyle':
+                rootStyle = args
             }
           }
         } else if (Node.isInterfaceDeclaration(stmt)) {
@@ -148,6 +151,7 @@ exports.Demo = class Demo {
           }
           const propType = propTypes.find(prop => prop.getName() === name)
           if (!propType) {
+            prop.remove()
             continue
           }
           const type = propType.getType().getText()
@@ -172,6 +176,14 @@ exports.Demo = class Demo {
 
       if (Node.isArrowFunction(onCycle)) {
         added.push('export const onCycle = ' + onCycle.getText())
+      }
+
+      if (rootStyle) {
+        added.push(
+          'export const rootStyle = [\n' +
+            rootStyle.map(node => node.getText()) +
+            '\n]'
+        )
       }
 
       if (added.length) {

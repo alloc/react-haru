@@ -121,11 +121,13 @@ export function useTransition(
     each(prevTransitions, (t, i) => {
       // Expired transitions are not rendered.
       if (t.expired) {
-        clearTimeout(t.expirationId!)
         expired.push(t)
       } else {
         i = reused[i] = keys.indexOf(t.key)
-        if (~i) transitions[i] = t
+        if (~i) {
+          transitions[i] = t
+          clearTimeout(t.expirationId || 0)
+        }
       }
     })
 
@@ -275,32 +277,40 @@ export function useTransition(
       }
 
       if (t.ctrl.idle) {
-        const idle = transitions.every(t => t.ctrl.idle)
         if (t.phase == LEAVE) {
           const expiry = callProp(expires, t.item)
           if (expiry !== false) {
             const expiryMs = expiry === true ? 0 : expiry
-            t.expired = true
 
-            // Force update once the expiration delay ends.
-            if (!idle && expiryMs > 0) {
-              // The maximum timeout is 2^31-1
-              if (expiryMs <= 0x7fffffff)
-                t.expirationId = setTimeout(forceUpdate, expiryMs)
-              return
+            // The maximum timeout is 2^31-1
+            if (expiryMs <= 0 || expiryMs > 0x7fffffff) {
+              t.expired = true
+            } else {
+              t.expirationId = setTimeout(() => {
+                t.expired = true
+                unmountIfIdle()
+              }, expiryMs)
+            }
+
+            if (expiryMs > 0) {
+              return // Avoid forced render.
             }
           }
         }
-        // Force update once idle and expired items exist.
-        if (idle && transitions.some(t => t.expired)) {
-          forceUpdate()
-        }
+        unmountIfIdle()
       }
     }
 
     const springs = getSprings(t.ctrl, payload)
     changes.set(t, { phase, springs, payload })
   })
+
+  function unmountIfIdle() {
+    const transitions = usedTransitions.current!
+    if (transitions.every(t => t.ctrl.idle)) {
+      forceUpdate()
+    }
+  }
 
   // The prop overrides from an ancestor.
   const context = useContext(SpringContext)

@@ -617,14 +617,14 @@ export class SpringValue<T = any> extends FrameValue<T> {
 
     // The "runAsync" function treats the "config" prop as a default,
     // so we must avoid merging it when the "to" prop is async.
-    if (props.config && !hasAsyncTo) {
+    const configProp = props.config || defaultProps.config
+    if (configProp && !hasAsyncTo) {
       mergeConfig(
         config,
-        callProp(props.config, key!),
+        callProp(configProp, key!),
         // Avoid calling the same "config" prop twice.
-        props.config !== defaultProps.config
-          ? callProp(defaultProps.config, key!)
-          : void 0
+        configProp !== defaultProps.config &&
+          callProp(defaultProps.config, key!)
       )
     }
 

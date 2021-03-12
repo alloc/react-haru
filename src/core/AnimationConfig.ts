@@ -144,13 +144,13 @@ export class AnimationConfig {
 export function mergeConfig(
   config: AnimationConfig,
   newConfig: Partial<AnimationConfig>,
-  defaultConfig?: Partial<AnimationConfig>
+  defaultConfig?: Partial<AnimationConfig> | false
 ): typeof config
 
 export function mergeConfig(
   config: any,
   newConfig: object,
-  defaultConfig?: object
+  defaultConfig?: object | false
 ) {
   if (defaultConfig) {
     defaultConfig = { ...defaultConfig }

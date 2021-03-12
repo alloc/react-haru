@@ -8,6 +8,7 @@ const defaults: any = {
   damping: 1,
   easing: linear,
   clamp: false,
+  velocity: 0,
 }
 
 export class AnimationConfig {
@@ -58,7 +59,7 @@ export class AnimationConfig {
   /**
    * The initial velocity of one or more values.
    */
-  velocity: number | number[] = 0
+  velocity!: number | number[]
 
   /**
    * The smallest velocity before the animation is considered "not moving".
@@ -158,13 +159,7 @@ export function mergeConfig(
   }
 
   sanitizeConfig(config, newConfig)
-  Object.assign(config, newConfig)
-
-  for (const key in defaults) {
-    if (config[key] == null) {
-      config[key] = defaults[key]
-    }
-  }
+  Object.assign(config, defaults, newConfig)
 
   let { mass, frequency, damping } = config
   if (is.defined(frequency)) {

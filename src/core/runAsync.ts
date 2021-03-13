@@ -1,8 +1,7 @@
 import { raf, Timeout } from 'rafz'
-import { is, flush, eachProp } from '../shared'
+import { is, flush } from '../shared'
 import { Falsy } from '../types'
 
-import { getDefaultProps } from './helpers'
 import { AnimationTarget, InferState, InferProps } from './types/internal'
 import { AnimationResult, AsyncResult, SpringChain, SpringToFn } from './types'
 import { getCancelledResult, getFinishedResult } from './AnimationResult'
@@ -54,12 +53,6 @@ export function runAsync<T extends AnimationTarget>(
     state.asyncId = callId
     state.asyncTo = to
 
-    // The default props of any `animate` calls.
-    const defaultProps = getDefaultProps<InferProps<T>>(props, (value, key) =>
-      // The `onRest` prop is only called when the `runAsync` promise is resolved.
-      key === 'onRest' ? undefined : value
-    )
-
     let preventBail!: () => void
     let bail: (error: any) => void
 
@@ -97,12 +90,6 @@ export function runAsync<T extends AnimationTarget>(
           ? { ...arg1 }
           : { ...arg2, to: arg1 }
         props.parentId = callId
-
-        eachProp(defaultProps, (value, key) => {
-          if (is.undefined(props[key])) {
-            props[key] = value
-          }
-        })
 
         const result = await target.start(props)
         bailIfEnded(bailSignal)

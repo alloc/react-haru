@@ -217,3 +217,12 @@ export function replaceRef(ctrl: Controller, ref?: SpringRef) {
     ctrl.ref = ref
   }
 }
+
+export function assignDefined(dest: any, from: any) {
+  for (const key in from) {
+    if (is.defined(from[key])) {
+      dest[key] = from[key]
+    }
+  }
+  return dest
+}

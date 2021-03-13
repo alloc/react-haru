@@ -1,5 +1,6 @@
 import { is } from '../shared'
 import { config as configs } from './constants'
+import { assignDefined } from './helpers'
 
 const linear = (t: number) => t
 const defaults: any = {
@@ -155,11 +156,12 @@ export function mergeConfig(
   if (defaultConfig) {
     defaultConfig = { ...defaultConfig }
     sanitizeConfig(defaultConfig, newConfig)
-    newConfig = { ...defaultConfig, ...newConfig }
+    newConfig = assignDefined(defaultConfig, newConfig)
   }
 
   sanitizeConfig(config, newConfig)
-  Object.assign(config, defaults, newConfig)
+  Object.assign(config, defaults)
+  assignDefined(config, newConfig)
 
   let { mass, frequency, damping } = config
   if (is.defined(frequency)) {

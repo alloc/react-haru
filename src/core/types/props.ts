@@ -272,6 +272,9 @@ export interface ReservedProps extends ReservedEventProps {
   reset?: any
   reverse?: any
   to?: any
+  // Internal
+  keys?: any
+  parentId?: any
 }
 
 export interface ReservedEventProps {

@@ -31,6 +31,8 @@ describe('helpers', () => {
       onRest: undefined,
       onResume: undefined,
       onResolve: undefined,
+      keys: undefined,
+      parentId: undefined,
     }
     expect(
       inferTo({

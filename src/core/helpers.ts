@@ -126,21 +126,8 @@ const RESERVED_PROPS: {
   onRest: 1,
   onResolve: 1,
 
-  // Transition props
-  items: 1,
-  trail: 1,
-  sort: 1,
-  expires: 1,
-  initial: 1,
-  enter: 1,
-  update: 1,
-  leave: 1,
-  children: 1,
-  onDestroyed: 1,
-
-  // Internal props
+  // Internal
   keys: 1,
-  callId: 1,
   parentId: 1,
 }
 

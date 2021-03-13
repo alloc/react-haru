@@ -2,7 +2,14 @@ const path = require('path')
 const slash = require('slash')
 const dedent = require('dedent')
 const chokidar = require('chokidar')
-const { Project, SourceFile, Node, ts } = require('ts-morph')
+const {
+  Project,
+  SourceFile,
+  Node,
+  ExpressionStatement,
+  InterfaceDeclaration,
+  ts,
+} = require('ts-morph')
 
 exports.Demo = class Demo {
   constructor(appPath, onChange) {
@@ -35,7 +42,7 @@ exports.Demo = class Demo {
             } else {
               propsFile.refreshFromFileSystemSync()
             }
-            demoConfig = createDemoConfig(propsFile)
+            demoConfig = createDemoConfig(propsFile.getFullText())
           }
         } else if (name == 'App.tsx') {
           if (event == 'change') {
@@ -100,96 +107,104 @@ exports.Demo = class Demo {
     }
 
     /**
-     * @param {SourceFile} propsFile
+     * @param {string} code
      */
-    function createDemoConfig(propsFile) {
-      const configFile = project.createSourceFile('config.ts', '', {
+    function createDemoConfig(code) {
+      const configFile = project.createSourceFile('config.ts', code, {
         overwrite: true,
       })
 
-      let knobs
-      let onCycle
-      let rootStyle
+      /** @type {InterfaceDeclaration} */
       let propTypes
 
-      for (const stmt of propsFile.getStatements()) {
+      const transforms = {
+        /** @param {ExpressionStatement} stmt */
+        defineKnobs(stmt, [knobs]) {
+          if (!Node.isObjectLiteralExpression(knobs) || !propTypes) {
+            return stmt.remove()
+          }
+
+          for (const prop of knobs.getProperties()) {
+            if (!Node.isPropertyAssignment(prop)) {
+              continue
+            }
+            const name = prop.getName()
+            const init = prop.getInitializer()
+            if (!Node.isObjectLiteralExpression(init)) {
+              continue
+            }
+            const propType = propTypes.getProperty(name)
+            if (!propType) {
+              prop.remove()
+              continue
+            }
+            const type = propType.getType().getText()
+            const knobType =
+              type === 'boolean'
+                ? 'toggle'
+                : type === 'number'
+                ? init.getProperty('range')
+                  ? 'range'
+                  : 'number'
+                : type === 'Channel'
+                ? 'button'
+                : null
+
+            if (knobType)
+              init.addPropertyAssignment({
+                name: 'type',
+                initializer: `"${knobType}"`,
+              })
+          }
+
+          stmt.replaceWithText('export const knobs = ' + knobs.getText())
+        },
+        /** @param {ExpressionStatement} stmt */
+        defineCycle(stmt, [onCycle]) {
+          stmt.replaceWithText('export const onCycle = ' + onCycle.getText())
+        },
+        /** @param {ExpressionStatement} stmt */
+        defineRootStyle(stmt, rootStyle) {
+          stmt.replaceWithText(
+            'export const rootStyle = [\n' +
+              rootStyle.map(node => node.getText()) +
+              '\n]'
+          )
+        },
+      }
+
+      for (const stmt of configFile.getStatements()) {
         if (Node.isExpressionStatement(stmt)) {
           const call = stmt.getExpressionIfKind(ts.SyntaxKind.CallExpression)
-          if (call) {
-            const callee = call.getExpression()
-            const args = call.getArguments()
-            switch (Node.isIdentifier(callee) && callee.getText()) {
-              case 'defineKnobs':
-                knobs = args[0]
-                break
-              case 'defineCycle':
-                onCycle = args[0]
-                break
-              case 'defineRootStyle':
-                rootStyle = args
-            }
+          if (!call) {
+            continue
+          }
+          const callee = call.getExpressionIfKind(ts.SyntaxKind.Identifier)
+          if (!callee) {
+            continue
+          }
+          const name = callee.getText()
+          const transform = transforms[name]
+          if (transform) {
+            transform(stmt, call.getArguments())
           }
         } else if (Node.isInterfaceDeclaration(stmt)) {
           if (stmt.getName() === 'Props') {
-            propTypes = stmt.getProperties()
+            propTypes = stmt
+          }
+        } else if (Node.isImportDeclaration(stmt)) {
+          const source = stmt.getModuleSpecifierValue()
+          if (source === 'theme/demo') {
+            stmt.remove()
           }
         }
       }
 
-      /** @type string[] */
-      const added = []
-
-      if (propTypes && Node.isObjectLiteralExpression(knobs)) {
-        for (const prop of knobs.getProperties()) {
-          if (!Node.isPropertyAssignment(prop)) {
-            continue
-          }
-          const name = prop.getName()
-          const init = prop.getInitializer()
-          if (!Node.isObjectLiteralExpression(init)) {
-            continue
-          }
-          const propType = propTypes.find(prop => prop.getName() === name)
-          if (!propType) {
-            prop.remove()
-            continue
-          }
-          const type = propType.getType().getText()
-          const knobType =
-            type === 'boolean'
-              ? 'toggle'
-              : type === 'number'
-              ? type
-              : type === 'Channel'
-              ? 'button'
-              : null
-
-          if (knobType)
-            init.addPropertyAssignment({
-              name: 'type',
-              initializer: `"${knobType}"`,
-            })
-        }
-
-        added.push('export const knobs = ' + knobs.getText())
+      if (propTypes) {
+        propTypes.remove()
       }
 
-      if (Node.isArrowFunction(onCycle)) {
-        added.push('export const onCycle = ' + onCycle.getText())
-      }
-
-      if (rootStyle) {
-        added.push(
-          'export const rootStyle = [\n' +
-            rootStyle.map(node => node.getText()) +
-            '\n]'
-        )
-      }
-
-      if (added.length) {
-        configFile.addStatements('\n' + added.join('\n\n') + '\n')
-        return configFile
-      }
+      return configFile
     }
   }
 }

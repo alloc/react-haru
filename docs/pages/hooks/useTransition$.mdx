@@ -3,8 +3,6 @@ title: useTransition
 keywords: [hook]
 ---
 
-import { Demo } from 'theme/demo'
-
 The `useTransition` hook makes it easier to animate before unmounting a component or a group of components. It also supports animating newly added components. This hook can be used with a _single value_ or an _array of values_ that will be "diffed" between renders. These values are referred to as **items** for the rest of this document.
 
 ## Enter animations
@@ -241,11 +239,11 @@ In the following demo, all `leave` transitions start together, while `enter` tra
 
 ## Unmounting
 
-When the last active `leave` transition ends, `useTransition` will force its caller to render immediately, but only if there are **expired items** whose elements need to be unmounted. An expired item is one whose `leave` transition has finished and is now ready to be unmounted.
+When the last active transition ends, `useTransition` will force its caller to render immediately, but only if there are **expired items** whose elements need to be unmounted. An expired item is one whose `leave` transition has finished and is now ready to be unmounted.
 
 <Demo id="useTransition/unmount" />
 
-As seen above, as long as a `leave` transition is active, expired items will remain mounted, assuming you've not set the `expires` prop to a number `> 0`. The first pink dot is an example of that fact.
+As seen above, as long as a transition is active, expired items will remain mounted. The first pink dot is an example of that fact.
 
 ### Item expiration
 
@@ -261,9 +259,9 @@ In the next example, pay attention to the pink dot's `enter` transition. Notice 
 
 Since the item is never unmounted, the `from` prop isn't used after the first `enter` animation. To force `from` to be used, You can add `reset: true` to your `enter` transition. (Try clicking the `reset` toggle in the demo above)
 
-### Time-sensitive unmounting
+### Delayed expiration
 
-When `expires` is greater than `0`, it's used as a `setTimeout` delay. When the timeout ends, `useTransition` forces its caller to re-render, even if other `leave` transitions are still animating.
+When `expires` is greater than `0`, it's used as a `setTimeout` delay. When the timeout ends, `useTransition` forces its caller to re-render if no transitions are active. Items will not expire until their timeout is finished. The item's expiration will be prevented if the item reappears before then.
 
 When `expires` is infinite, `useTransition` will **never** force its caller to re-render, and expired items will need to wait for the caller to re-render for some other reason before they can unmount.
 
@@ -301,16 +299,4 @@ When a dependency array is present, the props you pass to `useTransition` will o
 
 ```ts
 useTransition(items, props, [props])
-```
-
-## Command from above
-
-Transitions respect the current [`SpringContext`](/components/SpringContext).
-
-This can be used to override the `pause` and/or `immediate` props of all transitions within a subtree.
-
-```tsx
-<SpringContext pause={pause}>
-  <TodoList items={items} />
-</SpringContext>
 ```

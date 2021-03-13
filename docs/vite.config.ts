@@ -40,6 +40,7 @@ const theme: Theme = {
   },
   fontFamily: {
     h: `AcehSoft, ${defaultFont}`,
+    mono: `SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace`,
   },
 }
 

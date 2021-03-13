@@ -9,23 +9,6 @@ import demoManifest from '@demos/manifest'
 import { useValue } from 'theme/utils/useValue'
 import { useCache } from 'theme/utils/useCache'
 
-if (import.meta.hot) {
-  let lastManifest = demoManifest
-  setFluidGetter(demoManifest, () => lastManifest)
-
-  import.meta.hot!.accept('/@demos/manifest.js', mod =>
-    callFluidObservers(demoManifest, {
-      type: 'change',
-      parent: demoManifest,
-      value: (lastManifest = mod.default),
-    })
-  )
-}
-
-export function useDemos() {
-  return useValue(demoManifest)
-}
-
 const Context = React.createContext<Demo | null>(null)
 
 // The "id" is assumed to be constant.
@@ -97,10 +80,29 @@ function createProps({ knobs }: ConfigModule) {
           ? false
           : knob.type == 'number'
           ? 0
+          : knob.type == 'range'
+          ? knob.range[0]
           : knob.type == 'button'
           ? new Channel(name)
           : undefined
     }
   }
   return o(props)
+}
+
+export function useDemos() {
+  return useValue(demoManifest)
+}
+
+if (import.meta.hot) {
+  let lastManifest = demoManifest
+  setFluidGetter(demoManifest, () => lastManifest)
+
+  import.meta.hot!.accept('/@demos/manifest.js', mod =>
+    callFluidObservers(demoManifest, {
+      type: 'change',
+      parent: demoManifest,
+      value: (lastManifest = mod.default),
+    })
+  )
 }

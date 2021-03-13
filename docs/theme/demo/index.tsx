@@ -1,3 +1,4 @@
+import { Pick } from '@alloc/types'
 import React, { useEffect, useMemo } from 'react'
 import { ErrorBoundary } from 'react-error-boundary'
 import { useInView } from 'react-intersection-observer'
@@ -68,7 +69,7 @@ const AppContainer = withAuto(() => {
   return (
     <AppRoot>
       <ErrorBoundary FallbackComponent={ErrorFallback} onError={console.error}>
-        <App props={no(props)} tracker={tracker} />
+        <App props={{ ...no(props) }} tracker={tracker} />
         <AppCycle state={state} />
       </ErrorBoundary>
     </AppRoot>
@@ -84,7 +85,7 @@ const AppRoot = withAuto((props: any) => {
   }, [inView])
 
   const styleId = useMemo(() => {
-    return style(appRootDefaultStyle, ...demo.rootStyle)
+    return style(appRootDefaultStyle, ...(demo.rootStyle || []))
   }, [demo.rootStyle])
 
   return (
@@ -148,6 +149,10 @@ const codeStyle = style({
 //
 // Facade exports
 //
+
+type Omit<T, K extends string> = T extends infer U
+  ? Pick<U, Exclude<keyof U, K>>
+  : never
 
 type KnobConfig<T> = Omit<ResolveKnobType<T>, 'type'>
 

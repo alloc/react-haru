@@ -60,7 +60,30 @@ module.exports = () => {
           }
         })
 
-      this.closeWatcher = () => watcher.close()
+      this.closeWatcher = () => {
+        watcher.close()
+        Object.values(demoCache).forEach(demo => {
+          demo.watcher.close()
+        })
+      }
+
+      /** @type import('vite-plugin-mdx').MdxPlugin */
+      const mdxPlugin = config.plugins.find(
+        plugin => plugin.name === 'vite-plugin-mdx'
+      )
+
+      // Import the Demo component automatically.
+      mdxPlugin.mdxOptions.remarkPlugins.push(() => (root, file) => {
+        if (root.children.some(node => node.type === 'mdxBlockElement')) {
+          const [firstChild] = root.children
+          const importIndex = firstChild.type === 'yaml' ? 1 : 0
+
+          root.children.splice(importIndex, 0, {
+            type: 'import',
+            value: `import { Demo } from 'theme/demo'`,
+          })
+        }
+      })
     },
     configureServer({ moduleGraph, watcher }) {
       events.on('change', moduleId => {
@@ -108,6 +131,8 @@ module.exports = () => {
         }
       }
     },
+    // Other plugins may try to read our virtual modules
+    // in their `handleHotUpdate` hooks (eg: windicss).
     handleHotUpdate(ctx) {
       if (ctx.file.startsWith(modulePrefix)) {
         ctx.read = () => this.load(ctx.file)

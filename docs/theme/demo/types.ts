@@ -1,4 +1,5 @@
 import { Channel } from 'react-ch'
+import { ControllerUpdate } from 'react-haru/web'
 import { style } from 'typestyle'
 import { Tracker } from './useTracker'
 
@@ -26,22 +27,28 @@ export interface NumberType {
   init?: number
 }
 
+export interface RangeType {
+  type: 'range'
+  init?: number
+  range: [number, number]
+}
+
 export interface ButtonType {
   type: 'button'
   label: string
 }
 
-export type KnobType = ToggleType | NumberType | ButtonType
+export type KnobType = ToggleType | NumberType | RangeType | ButtonType
 
 export type ResolveKnobType<T> = [T] extends [boolean]
   ? ToggleType
   : [T] extends [number]
-  ? NumberType
+  ? NumberType | RangeType
   : [T] extends [Channel]
   ? ButtonType
   : unknown
 
-export interface Cycle {
+export interface Cycle<Props = any> {
   cancelled: Boolean
   /** Pause or resume the cycle */
   pause: (paused: boolean) => void
@@ -88,7 +95,7 @@ export interface AppModule {
  * Demo configuration.
  */
 export interface ConfigModule<Props = any> {
-  knobs: { [name: string]: KnobType }
-  onCycle: (props: Props, cycle: Cycle) => (() => any)[]
-  rootStyle: Parameters<typeof style>
+  knobs?: { [name: string]: KnobType }
+  onCycle?: (props: Props, cycle: Cycle<Props>) => (() => any)[]
+  rootStyle?: Parameters<typeof style>
 }

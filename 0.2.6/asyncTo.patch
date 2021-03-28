@@ -1,0 +1,885 @@
+From 4b3d38b7e0ca98ae5ecaa112758c957e538c3f6c Mon Sep 17 00:00:00 2001
+From: Alec Larson <1925840+aleclarson@users.noreply.github.com>
+Date: Sun, 28 Mar 2021 18:23:58 -0400
+Subject: [PATCH] revert: asyncTo
+
+---
+ react-haru.d.ts |  88 +++----
+ react-haru.mjs  | 622 ++++++++++++++++++++++++------------------------
+ 2 files changed, 355 insertions(+), 355 deletions(-)
+
+diff --git a/react-haru.d.ts b/react-haru.d.ts
+index e563c71..959cd3e 100644
+--- a/react-haru.d.ts
++++ b/react-haru.d.ts
+@@ -693,7 +693,7 @@ declare class Animation<T = any> {
+ interface Animation<T> extends PickEventFns<SpringProps<T>> {
+ }
+ 
+-declare type AsyncTo<T> = SpringChain<T> | SpringToFn<T>;
++
+ /** @internal */
+ declare type RunAsyncProps<T extends AnimationTarget = any> = InferProps<T> & {
+     callId: number;
+@@ -707,21 +707,21 @@ interface RunAsyncState<T extends AnimationTarget = any> {
+     pauseQueue: Set<() => void>;
+     resumeQueue: Set<() => void>;
+     timeouts: Set<Timeout>;
+-    asyncId?: number;
+-    asyncTo?: AsyncTo<InferState<T>>;
+-    promise?: AsyncResult<T>;
++
++
++
+     cancelId?: number;
+-    bail?: BailFn;
+-}
+-interface BailFn {
+-    (bailResult?: AnimationResult, bailSignal?: BailSignal): void;
+-}
+-/** This error is thrown to signal an interrupted async animation. */
+-declare class BailSignal extends Error {
+-    result: AnimationResult;
+-    constructor();
++
+ }
+ 
++
++
++
++
++
++
++
++
+ interface DefaultSpringProps<T> extends Pick<SpringProps<T>, 'pause' | 'cancel' | 'immediate' | 'config'>, PickEventFns<SpringProps<T>> {
+ }
+ /**
+@@ -862,8 +862,8 @@ declare class Controller<State extends Lookup = Lookup> {
+     protected _tracker?: Tracker;
+     /** These props are used by all future spring values */
+     protected _initialProps?: Lookup;
+-    /** The counter for tracking `scheduleProps` calls */
+-    protected _lastAsyncId: number;
++
++
+     /** The values currently being animated */
+     protected _active: Set<FrameValue<any>>;
+     /** The values that changed recently */
+@@ -957,16 +957,16 @@ declare type StringKeys<T> = T extends IsPlainObject<T> ? string & keyof T : str
+ 
+ /** The flush function that handles `start` calls */
+ declare type ControllerFlushFn<T extends Controller<any> = Controller> = (ctrl: T, queue: ControllerQueue<InferState<T>>) => AsyncResult<T>;
+-/**
+- * An async function that can update or stop the animations of a spring.
+- * Typically defined as the `to` prop.
+- *
+- * The `T` parameter can be a set of animated values (as an object type)
+- * or a primitive type for a single animated value.
+- */
+-interface SpringToFn<T = any> {
+-    (ref: SpringRef<T>): PromiseLike<any> | void;
+-}
++
++
++
++
++
++
++
++
++
++
+ /**
+  * Update the props of an animation.
+  *
+@@ -976,12 +976,12 @@ interface SpringToFn<T = any> {
+ declare type SpringUpdateFn<T = any> = T extends IsPlainObject<T> ? UpdateValuesFn<T> : UpdateValueFn<T>;
+ interface AnyUpdateFn<T extends SpringValue | Controller<any>, Props extends object = InferProps<T>, State = InferState<T>> {
+     (to: SpringTo<State>, props?: Props): AsyncResult<T>;
+-    (props: {
+-        to?: SpringToFn<T> | Falsy;
+-    } & Props): AsyncResult<T>;
+-    (props: {
+-        to?: SpringChain<State> | Falsy;
+-    } & Props): AsyncResult<T>;
++
++
++
++
++
++
+ }
+ /**
+  * Update the props of a `Controller` object or `useSpring` call.
+@@ -1111,7 +1111,7 @@ interface TransitionState<Item = any, State extends Lookup = Lookup> {
+     expirationId?: number;
+ }
+ declare type TransitionFrom<Item> = Falsy | GoalProp<UnknownProps> | ((item: Item, index: number) => GoalProp<UnknownProps> | Falsy);
+-declare type TransitionTo<Item, State extends Lookup = Lookup> = Falsy | OneOrMore<ControllerUpdate<State>> | Function | ((item: Item, index: number) => ControllerUpdate<State> | SpringChain<State> | SpringToFn<State> | Falsy);
++declare type TransitionTo<Item, State extends Lookup = Lookup> = Falsy | OneOrMore<ControllerUpdate<State>> | Function | ((item: Item, index: number) => ControllerUpdate<State> | Falsy);
+ interface Change {
+     phase: TransitionPhase;
+     springs: SpringValues<UnknownProps>;
+@@ -1173,7 +1173,7 @@ interface SpringProps<T = any> extends AnimationProps<T> {
+  * or a primitive type for a single animated value.
+  */
+ declare type ToProps<T = any> = {
+-    to?: GoalProp<T> | SpringToFn<T> | SpringChain<T>;
++    to?: GoalProp<T>;
+ } | ([T] extends [IsPlainObject<T>] ? InlineToProps<T> : never);
+ /**
+  * A value or set of values that can be animated from/to.
+@@ -1202,13 +1202,13 @@ declare type GoalValue<T> = T | FluidValue<T> | UnknownProps | null | undefined;
+ declare type InlineToProps<T = any> = Remap<GoalValues<T> & {
+     to?: undefined;
+ }>;
+-/** A serial queue of spring updates. */
+-interface SpringChain<T = any> extends Array<[
+-    T
+-] extends [IsPlainObject<T>] ? ControllerUpdate<T> : SpringTo<T> | SpringUpdate<T>> {
+-}
++
++
++
++
++
+ /** A value that any `SpringValue` or `Controller` can animate to. */
+-declare type SpringTo<T = any> = ([T] extends [IsPlainObject<T>] ? never : T | FluidValue<T>) | SpringChain<T> | SpringToFn<T> | Falsy;
++declare type SpringTo<T = any> = ([T] extends [IsPlainObject<T>] ? never : T | FluidValue<T>) | Falsy;
+ declare type ControllerUpdate<State extends Lookup = Lookup> = unknown & ToProps<State> & ControllerProps<State>;
+ /**
+  * Props for `Controller` methods and constructor.
+@@ -1511,10 +1511,10 @@ declare function useTransition<Item, Props extends object>(data: OneOrMore<Item>
+ declare type SpringComponentProps<State extends object = UnknownProps> = unknown & UseSpringProps<State> & {
+     children: (values: SpringValues<State>) => JSX.Element | null;
+ };
+-declare function Spring<State extends object>(props: {
+-    from: State;
+-    to?: SpringChain<NoInfer<State>> | SpringToFn<NoInfer<State>>;
+-} & Omit<SpringComponentProps<NoInfer<State>>, 'from' | 'to'>): JSX.Element | null;
++
++
++
++
+ declare function Spring<State extends object>(props: {
+     to: State;
+ } & Omit<SpringComponentProps<NoInfer<State>>, 'to'>): JSX.Element | null;
+@@ -1579,4 +1579,4 @@ declare function inferTo<T extends object>(props: T): InferTo<T>;
+ declare function lerp<T extends Animatable, U extends Animatable<T>>(from: T, to: U, progress: number): Animatable<T>;
+ declare function lerp<T>(from: T, to: NoInfer<T>, progress: number): T;
+ 
+-export { Animatable, Animated, AnimatedArray, AnimatedObject, AnimatedString, AnimatedType, AnimatedValue, AnimationProps, AnimationResult, AsyncResult, AsyncResultArray, BailSignal, Change, Controller, ControllerFlushFn, ControllerProps, ControllerUpdate, EasingFunction, EventProp, ExtrapolateType, ForwardProps, FrameValue, globals as Globals, GoalProp, GoalValue, GoalValues, HostConfig, InferTo, InlineToProps, Interpolated, Interpolation, Interpolator, InterpolatorArgs, InterpolatorConfig, InterpolatorFactory, InterpolatorFn, ItemKeys, LoopProp, MatchProp, OnChange, OnPause, OnProps, OnResolve, OnRest, OnResume, OnStart, Payload, PickAnimated, ReservedEventProps, ReservedProps, Spring, SpringChain, SpringComponentProps, SpringConfig, SpringContext, SpringPresets, SpringProps, SpringRef, SpringTo, SpringToFn, SpringUpdate, SpringUpdateFn, SpringValue, SpringValues, Springify, SpringsUpdate, ToProps, Trail, TrailComponentProps, Transition, TransitionComponentProps, TransitionFn, TransitionFrom, TransitionKey, TransitionRenderFn, TransitionState, TransitionTo, TransitionValues, UseSpringProps, UseSpringsProps, UseTrailProps, UseTransitionProps, VelocityProp, colors$1 as colors, createHost, createInterpolator, createStringInterpolator$1 as createStringInterpolator, getAnimated, getAnimatedType, getPayload, inferTo, interpolate, isAnimated, lerp, setAnimated, to$1 as to, update, useChain, useSpring, useSpringRef, useSprings, useTrail, useTransition };
++export { Animatable, Animated, AnimatedArray, AnimatedObject, AnimatedString, AnimatedType, AnimatedValue, AnimationProps, AnimationResult, AsyncResult, AsyncResultArray, Change, Controller, ControllerFlushFn, ControllerProps, ControllerUpdate, EasingFunction, EventProp, ExtrapolateType, ForwardProps, FrameValue, globals as Globals, GoalProp, GoalValue, GoalValues, HostConfig, InferTo, InlineToProps, Interpolated, Interpolation, Interpolator, InterpolatorArgs, InterpolatorConfig, InterpolatorFactory, InterpolatorFn, ItemKeys, LoopProp, MatchProp, OnChange, OnPause, OnProps, OnResolve, OnRest, OnResume, OnStart, Payload, PickAnimated, ReservedEventProps, ReservedProps, Spring, SpringComponentProps, SpringConfig, SpringContext, SpringPresets, SpringProps, SpringRef, SpringTo, SpringUpdate, SpringUpdateFn, SpringValue, SpringValues, Springify, SpringsUpdate, ToProps, Trail, TrailComponentProps, Transition, TransitionComponentProps, TransitionFn, TransitionFrom, TransitionKey, TransitionRenderFn, TransitionState, TransitionTo, TransitionValues, UseSpringProps, UseSpringsProps, UseTrailProps, UseTransitionProps, VelocityProp, colors$1 as colors, createHost, createInterpolator, createStringInterpolator$1 as createStringInterpolator, getAnimated, getAnimatedType, getPayload, inferTo, interpolate, isAnimated, lerp, setAnimated, to$1 as to, update, useChain, useSpring, useSpringRef, useSprings, useTrail, useTransition };
+diff --git a/react-haru.mjs b/react-haru.mjs
+index 758bc4c..0c0cf35 100644
+--- a/react-haru.mjs
++++ b/react-haru.mjs
+@@ -1160,19 +1160,19 @@ function hasProps(
+     return true;
+   return false;
+ }
+-function isAsyncTo(
+-  to
+-) {
+-  return is.function(
+-    to
+-  ) 
+-    || is.array(
+-    to
+-  ) 
+-    && is.plainObject(
+-    to[0]
+-  );
+-}
++
++
++
++
++
++
++
++
++
++
++
++
++
+ function detachRefs(
+   ctrl, 
+   ref
+@@ -2217,181 +2217,181 @@ function resolveProps(
+     : props;
+ }
+ 
+-function runAsync(
+-  to, 
+-  props, 
+-  state, 
+-  target
+-) {
+-  const {
+-    callId, 
+-    parentId, 
+-    onRest
+-  } = props;
+-  const {
+-    asyncTo: prevTo, 
+-    promise: prevPromise
+-  } = state;
+-  if (!parentId 
+-    && to === prevTo 
+-    && !props.reset) {
+-    return prevPromise;
+-  }
+-  return state.promise = (async () => {
+-    state.asyncId = callId;
+-    state.asyncTo = to;
+-    if (!parentId) {
+-      state.bail?.();
+-    }
+-    if (state.paused) {
+-      await new Promise((
+-        resume
+-      ) => {
+-        state.resumeQueue.add(
+-          resume
+-        );
+-      });
+-      if (callId !== state.asyncId) {
+-        return getFinishedResult(
+-          target, 
+-          false
+-        );
+-      }
+-    }
+-    let preventBail;
+-    let bail;
+-    const bailPromise = new Promise((
+-      resolve, 
+-      reject
+-    ) => {
+-      preventBail = resolve;
+-      state.bail = 
+-        bail = 
+-        (
+-        bailResult, 
+-        bailSignal = new BailSignal()
+-      ) => {
+-        bailSignal.result = bailResult 
+-          || (callId <= (state.cancelId 
+-          || 0) 
+-          ? getCancelledResult(
+-          target
+-        ) 
+-          : getFinishedResult(
+-          target, 
+-          false
+-        ));
+-        state.bail = 
+-          bail = 
+-          noop;
+-        ref.revoke(
+-          bailSignal
+-        );
+-        reject(
+-          bailSignal
+-        );
+-      };
+-    });
+-    const ref = new AsyncRef(async (
+-      props2, 
+-      bailSignal, 
+-      next
+-    ) => {
+-      props2.parentId = callId;
+-      const result2 = await next();
+-      if (result2.cancelled) {
+-        bail(
+-          result2, 
+-          bailSignal
+-        );
+-      }
+-      if (bail == noop) {
+-        throw bailSignal;
+-      }
+-      if (state.paused) {
+-        await new Promise((
+-          resume
+-        ) => {
+-          state.resumeQueue.add(
+-            resume
+-          );
+-        });
+-      }
+-      return result2;
+-    });
+-    ref.add(
+-      target
+-    );
+-    let result;
+-    try {
+-      let animating;
+-      if (is.array(
+-        to
+-      )) {
+-        animating = (async (
+-          queue
+-        ) => {
+-          for (const props2 of queue) {
+-            result = await ref.start(
+-              props2
+-            )[0];
+-            if (!result.finished) {
+-              break;
+-            }
+-          }
+-        })(
+-          to
+-        );
+-      } else {
+-        animating = Promise.resolve(
+-          to(
+-          ref
+-        )
+-        );
+-      }
+-      await Promise.all(
+-        [
+-        animating.then(
+-        preventBail
+-      ), 
+-        bailPromise
+-      ]
+-      );
+-      result ??= getFinishedResult(
+-        target, 
+-        true
+-      );
+-    } catch (err) {
+-      if (err instanceof BailSignal) {
+-        result = err.result;
+-      } else {
+-        throw err;
+-      }
+-    } finally {
+-      if (callId == state.asyncId) {
+-        state.asyncId = parentId;
+-        state.asyncTo = parentId 
+-          ? prevTo 
+-          : void 0;
+-        state.promise = parentId 
+-          ? prevPromise 
+-          : void 0;
+-      }
+-    }
+-    if (is.function(
+-      onRest
+-    )) {
+-      raf.batchedUpdates(
+-        () => {
+-        onRest(
+-          result
+-        );
+-      }
+-      );
+-    }
+-    return result;
+-  })();
+-}
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
+ function stopAsync(
+   state, 
+   cancelId
+@@ -2406,62 +2406,62 @@ function stopAsync(
+   );
+   state.resumeQueue.clear();
+   state.pauseQueue.clear();
+-  state.bail?.();
+-  state.bail = 
+-    state.asyncId = 
+-    state.asyncTo = 
+-    state.promise = 
+-    void 0;
+-}
+-class BailSignal extends Error {
+-  constructor() {
+-    super(
+-      "An async animation has been interrupted. You see this error because you forgot to use `await` or `.catch(...)` on its returned promise."
+-    );
+-  }
+-}
+-class AsyncRef extends SpringRef {
+-  constructor(
+-    flush2
+-  ) {
+-    super();
+-    this.flush = flush2;
+-  }
+-  _start(
+-    target, 
+-    {
+-    ...props
+-  }, 
+-    i
+-  ) {
+-    return this.flush(
+-      props, 
+-      new BailSignal(), 
+-      () => {
+-      return super._start(
+-        target, 
+-        props, 
+-        i
+-      );
+-    }
+-    );
+-  }
+-  revoke(
+-    error
+-  ) {
+-    this.revoke = noop;
+-    this.pause = 
+-      this.resume = 
+-      this.start = 
+-      this.stop = 
+-      this.update = 
+-      revoked;
+-    function revoked() {
+-      throw error;
+-    }
+-  }
++
++
++
++
++
++
+ }
+ 
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
+ function scheduleProps(
+   callId, 
+   {
+@@ -3204,9 +3204,9 @@ class SpringValue extends FrameValue {
+       ? to[key] 
+       : to;
+     if (to == null 
+-      || isAsyncTo(
+-      to
+-    )) {
++
++
++    ) {
+       to = void 0;
+     }
+     from = is.plainObject(
+@@ -3501,10 +3501,10 @@ class SpringValue extends FrameValue {
+       || isAnimatedString(
+       goal
+     );
+-    const hasAsyncTo = isAsyncTo(
+-      props.to
+-    );
+-    const immediate = !hasAsyncTo 
++
++
++
++    const immediate = true 
+       && (!isAnimatable 
+       || matchProp(
+       defaultProps.immediate 
+@@ -3594,7 +3594,7 @@ class SpringValue extends FrameValue {
+         );
+       }
+     }
+-    if (!hasAsyncTo) {
++    if (true) {
+       if (started 
+         || hasFluidValue(
+         prevTo
+@@ -3689,15 +3689,15 @@ class SpringValue extends FrameValue {
+         value
+       );
+     }
+-    if (hasAsyncTo) {
+-      resolve(
+-        runAsync(
+-        props.to, 
+-        props, 
+-        this._state, 
+-        this
+-      )
+-      );
++    if (false) {
++
++
++
++
++
++
++
++
+     } else if (started) {
+       this._start(
+         reset
+@@ -4023,9 +4023,9 @@ function createLoopUpdate(
+       default: false,
+       pause: void 0,
+       to: !reverse 
+-        || isAsyncTo(
+-        to
+-      ) 
++
++
++
+         ? to 
+         : void 0,
+       from: reset 
+@@ -4148,7 +4148,7 @@ class Controller {
+     this.springs = {};
+     this.queue = [];
+     this._tracker = tracker;
+-    this._lastAsyncId = 0;
++
+     this._active = new Set();
+     this._changed = new Set();
+     this._started = false;
+@@ -4286,11 +4286,11 @@ class Controller {
+       )
+       );
+     } else {
+-      stopAsync(
+-        this._state, 
+-        cancel 
+-        && this._lastAsyncId
+-      );
++
++
++
++
++
+       this.each(
+         (
+         spring
+@@ -4573,48 +4573,48 @@ async function flushUpdate(
+     props
+   )
+   );
+-  const cancel = props.cancel === true 
+-    || (defaultProps 
+-    && defaultProps.cancel) === true;
+-  if (asyncTo 
+-    || cancel 
+-    && state.asyncId) {
+-    promises.push(
+-      scheduleProps(
+-      ++ctrl["_lastAsyncId"], 
+-      {
+-      props,
+-      state,
+-      start(
+-        props2, 
+-        resolve
+-      ) {
+-        if (cancel) {
+-          stopAsync(
+-            state, 
+-            ctrl["_lastAsyncId"]
+-          );
+-          resolve(
+-            getCancelledResult(
+-            ctrl
+-          )
+-          );
+-        } else {
+-          props2.onRest = onRest;
+-          resolve(
+-            runAsync(
+-            asyncTo, 
+-            props2, 
+-            state, 
+-            ctrl
+-          )
+-          );
+-        }
+-      }
+-    }
+-    )
+-    );
+-  }
++
++  
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
+   const result = getCombinedResult(
+     ctrl, 
+     await Promise.all(
+@@ -6102,5 +6102,5 @@ assign(
+ );
+ const update = frameLoop.advance;
+ 
+-export { Animated, AnimatedArray, AnimatedObject, AnimatedString, AnimatedValue, BailSignal, Controller, FrameValue, globals as Globals, Interpolation, Spring, SpringContext, SpringPresets, SpringRef, SpringValue, Trail, Transition, colors$1 as colors, createHost, createInterpolator, createStringInterpolator$1 as createStringInterpolator, getAnimated, getAnimatedType, getPayload, inferTo, interpolate$1 as interpolate, isAnimated, lerp, setAnimated, to$1 as to, update, useChain, useSpring, useSpringRef, useSprings, useTrail, useTransition };
++export { Animated, AnimatedArray, AnimatedObject, AnimatedString, AnimatedValue, Controller, FrameValue, globals as Globals, Interpolation, Spring, SpringContext, SpringPresets, SpringRef, SpringValue, Trail, Transition, colors$1 as colors, createHost, createInterpolator, createStringInterpolator$1 as createStringInterpolator, getAnimated, getAnimatedType, getPayload, inferTo, interpolate$1 as interpolate, isAnimated, lerp, setAnimated, to$1 as to, update, useChain, useSpring, useSpringRef, useSprings, useTrail, useTransition };
+ //# sourceMappingURL=react-haru.mjs.map
+-- 
+2.19.2

@@ -1,0 +1,191 @@
+From 6f53ed84b2acdd1ed13a5049828160d85e81f55d Mon Sep 17 00:00:00 2001
+From: Alec Larson <1925840+aleclarson@users.noreply.github.com>
+Date: Sun, 28 Mar 2021 18:23:56 -0400
+Subject: [PATCH] revert: isUnitlessNumber
+
+---
+ web/index.mjs | 162 +++++++++++++++++++++++++-------------------------
+ 1 file changed, 81 insertions(+), 81 deletions(-)
+
+diff --git a/web/index.mjs b/web/index.mjs
+index 64d1b39..575dc9c 100644
+--- a/web/index.mjs
++++ b/web/index.mjs
+@@ -51,10 +51,10 @@ function dangerousStyleValue(
+     && !isCustomPropRE.test(
+     name
+   ) 
+-    && !(isUnitlessNumber.hasOwnProperty(
+-    name
+-  ) 
+-    && isUnitlessNumber[name]))
++    && name !== "opacity"
++    
++    
++    )
+     return value + "px";
+   return ("" + value).trim();
+ }
+@@ -141,83 +141,83 @@ function applyAnimatedValues(
+     instance.scrollLeft = scrollLeft;
+   }
+ }
+-let isUnitlessNumber = {
+-  animationIterationCount: true,
+-  borderImageOutset: true,
+-  borderImageSlice: true,
+-  borderImageWidth: true,
+-  boxFlex: true,
+-  boxFlexGroup: true,
+-  boxOrdinalGroup: true,
+-  columnCount: true,
+-  columns: true,
+-  flex: true,
+-  flexGrow: true,
+-  flexPositive: true,
+-  flexShrink: true,
+-  flexNegative: true,
+-  flexOrder: true,
+-  gridRow: true,
+-  gridRowEnd: true,
+-  gridRowSpan: true,
+-  gridRowStart: true,
+-  gridColumn: true,
+-  gridColumnEnd: true,
+-  gridColumnSpan: true,
+-  gridColumnStart: true,
+-  fontWeight: true,
+-  lineClamp: true,
+-  lineHeight: true,
+-  opacity: true,
+-  order: true,
+-  orphans: true,
+-  tabSize: true,
+-  widows: true,
+-  zIndex: true,
+-  zoom: true,
+-  fillOpacity: true,
+-  floodOpacity: true,
+-  stopOpacity: true,
+-  strokeDasharray: true,
+-  strokeDashoffset: true,
+-  strokeMiterlimit: true,
+-  strokeOpacity: true,
+-  strokeWidth: true
+-};
+-const prefixKey = (
+-  prefix, 
+-  key
+-) => prefix + key.charAt(
+-  0
+-).toUpperCase() + key.substring(
+-  1
+-);
+-const prefixes = [
+-  "Webkit", 
+-  "Ms", 
+-  "Moz", 
+-  "O"
+-];
+-isUnitlessNumber = Object.keys(
+-  isUnitlessNumber
+-).reduce(
+-  (
+-  acc, 
+-  prop
+-) => {
+-  each(
+-    prefixes, 
+-    (
+-    prefix
+-  ) => acc[prefixKey(
+-    prefix, 
+-    prop
+-  )] = acc[prop]
+-  );
+-  return acc;
+-}, 
+-  isUnitlessNumber
+-);
++
++
++  
++  
++  
++  
++  
++  
++  
++  
++  
++  
++  
++  
++  
++  
++  
++  
++  
++  
++  
++  
++  
++  
++  
++  
++  
++
++  
++  
++  
++  
++  
++  
++  
++  
++  
++  
++  
++  
++  
++  
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
+ 
+ const domTransforms = /^(matrix|translate|scale|rotate|skew)/;
+ const pxTransforms = /^(translate)/;
+-- 
+2.19.2

@@ -1,0 +1,202 @@
+From 81a4de43b064f07c272a5d70d527f37ce37e8fab Mon Sep 17 00:00:00 2001
+From: Alec Larson <1925840+aleclarson@users.noreply.github.com>
+Date: Sun, 28 Mar 2021 18:23:55 -0400
+Subject: [PATCH] revert: immediate
+
+---
+ react-haru.d.ts | 18 +++++++--------
+ react-haru.mjs  | 58 ++++++++++++++++++++++++-------------------------
+ 2 files changed, 38 insertions(+), 38 deletions(-)
+
+diff --git a/react-haru.d.ts b/react-haru.d.ts
+index e563c71..db6d254 100644
+--- a/react-haru.d.ts
++++ b/react-haru.d.ts
+@@ -688,7 +688,7 @@ declare class Animation<T = any> {
+     to: T | FluidValue<T>;
+     from: T | FluidValue<T>;
+     config: AnimationConfig;
+-    immediate: boolean;
++    
+ }
+ interface Animation<T> extends PickEventFns<SpringProps<T>> {
+ }
+@@ -722,7 +722,7 @@ declare class BailSignal extends Error {
+     constructor();
+ }
+ 
+-interface DefaultSpringProps<T> extends Pick<SpringProps<T>, 'pause' | 'cancel' | 'immediate' | 'config'>, PickEventFns<SpringProps<T>> {
++interface DefaultSpringProps<T> extends Pick<SpringProps<T>, 'pause' | 'cancel' | 'config'>, PickEventFns<SpringProps<T>> {
+ }
+ /**
+  * Only numbers, strings, and arrays of numbers/strings are supported.
+@@ -1280,10 +1280,10 @@ interface AnimationProps<T = any> {
+      * Milliseconds to wait before applying the other props.
+      */
+     delay?: number | ((key: StringKeys<T>) => number);
+-    /**
+-     * When true, props jump to their goal values instead of animating.
+-     */
+-    immediate?: MatchProp<T>;
++
++
++
++
+     /**
+      * Cancel all animations by using `true`, or some animations by using a key
+      * or an array of keys.
+@@ -1320,7 +1320,7 @@ interface ReservedProps extends ReservedEventProps {
+     default?: any;
+     delay?: any;
+     from?: any;
+-    immediate?: any;
++    
+     loop?: any;
+     pause?: any;
+     ref?: any;
+@@ -1561,8 +1561,8 @@ declare const update: (dt: number) => boolean;
+ interface SpringContext {
+     /** Pause all new and existing animations. */
+     pause?: boolean;
+-    /** Force all new and existing animations to be immediate. */
+-    immediate?: boolean;
++
++    
+ }
+ declare const SpringContext: {
+     ({ children, ...props }: PropsWithChildren<SpringContext>): JSX.Element;
+diff --git a/react-haru.mjs b/react-haru.mjs
+index 758bc4c..70c4a2f 100644
+--- a/react-haru.mjs
++++ b/react-haru.mjs
+@@ -1064,7 +1064,7 @@ const RESERVED_PROPS = {
+   pause: 1,
+   cancel: 1,
+   reverse: 1,
+-  immediate: 1,
++
+   default: 1,
+   delay: 1,
+   onProps: 1,
+@@ -2010,7 +2010,7 @@ class Animation {
+     this.toValues = null;
+     this.fromValues = emptyArray;
+     this.config = makeConfig();
+-    this.immediate = false;
++
+   }
+ }
+ 
+@@ -2892,7 +2892,7 @@ class SpringValue extends FrameValue {
+         : payload 
+         ? payload[i].lastPosition 
+         : toValues[i];
+-      let finished = anim.immediate;
++      let finished = false;
+       let position = to;
+       if (!finished) {
+         position = node2.lastPosition;
+@@ -3504,23 +3504,23 @@ class SpringValue extends FrameValue {
+     const hasAsyncTo = isAsyncTo(
+       props.to
+     );
+-    const immediate = !hasAsyncTo 
+-      && (!isAnimatable 
+-      || matchProp(
+-      defaultProps.immediate 
+-      || props.immediate, 
+-      key
+-    ));
++
++
++
++
++
++
++
+     if (hasToChanged) {
+       const nodeType = getAnimatedType(
+         to
+       );
+       if (nodeType !== node.constructor) {
+-        if (immediate) {
+-          node = this._set(
+-            goal
+-          );
+-        } else
++
++
++
++
++        
+           throw Error(
+             `Cannot animate between ${node.constructor.name} and ${nodeType.name}, as the "to" prop suggests`
+           );
+@@ -3620,15 +3620,15 @@ class SpringValue extends FrameValue {
+           );
+         }
+       }
+-      if (anim.immediate != immediate) {
+-        anim.immediate = immediate;
+-        if (!immediate 
+-          && !reset) {
+-          this._set(
+-            prevTo
+-          );
+-        }
+-      }
++
++
++
++
++
++
++
++
++
+       if (started) {
+         const {
+           onRest
+@@ -3878,7 +3878,7 @@ class SpringValue extends FrameValue {
+       );
+     }
+     );
+-    if (!anim.immediate) {
++
+       anim.fromValues = anim.values.map(
+         reset 
+         ? (
+@@ -3891,7 +3891,7 @@ class SpringValue extends FrameValue {
+         node
+       ) => node.lastPosition
+       );
+-    }
++
+     if (!isAnimating(
+       this
+     )) {
+@@ -4796,11 +4796,11 @@ const SpringContext = (
+   props = useMemo(
+     () => ({
+     pause, 
+-    immediate
++
+   }), 
+     [
+     pause, 
+-    immediate
++    
+   ]
+   );
+   const {
+@@ -5396,7 +5396,7 @@ function useTransition(
+   ))
+     each(
+       [
+-      "immediate", 
++        
+       "cancel", 
+       "pause"
+     ], 
+-- 
+2.19.2

@@ -1,0 +1,53 @@
+From f442b2fa3d669e6c469e2d19fc6d5b88f6173a4f Mon Sep 17 00:00:00 2001
+From: Alec Larson <1925840+aleclarson@users.noreply.github.com>
+Date: Sun, 28 Mar 2021 18:23:59 -0400
+Subject: [PATCH] revert: defaultNamedColors
+
+---
+ native/index.mjs | 4 ++--
+ web/index.mjs    | 4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/native/index.mjs b/native/index.mjs
+index 6382ba8..244987a 100644
+--- a/native/index.mjs
++++ b/native/index.mjs
+@@ -1,6 +1,6 @@
+ import { is } from '@alloc/is';
+ import { View, Text, Image, StyleSheet } from 'react-native';
+-import { AnimatedObject, Globals, createStringInterpolator, colors, createHost } from '..';
++import { AnimatedObject, Globals, createStringInterpolator, createHost } from '..';
+ export * from '..';
+ import { getFluidValue } from 'fluids';
+ 
+@@ -120,7 +120,7 @@ Globals.assign(
+     "react-native"
+   ).unstable_batchedUpdates,
+   createStringInterpolator,
+-  colors
++
+ }
+ );
+ const host = createHost(
+diff --git a/web/index.mjs b/web/index.mjs
+index 64d1b39..b620bb9 100644
+--- a/web/index.mjs
++++ b/web/index.mjs
+@@ -1,5 +1,5 @@
+ import { unstable_batchedUpdates } from 'react-dom';
+-import { AnimatedObject, Globals, createStringInterpolator, colors, createHost } from '..';
++import { AnimatedObject, Globals, createStringInterpolator, createHost } from '..';
+ export * from '..';
+ import { is } from '@alloc/is';
+ import { FluidValue, getFluidValue, hasFluidValue, addFluidObserver, removeFluidObserver, callFluidObservers } from 'fluids';
+@@ -629,7 +629,7 @@ Globals.assign(
+   {
+   batchedUpdates: unstable_batchedUpdates,
+   createStringInterpolator,
+-  colors
++
+ }
+ );
+ const host = createHost(
+-- 
+2.19.2

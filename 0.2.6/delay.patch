@@ -1,0 +1,409 @@
+From 7d4519f3ae10bb02999b12da21c99c981cab692e Mon Sep 17 00:00:00 2001
+From: Alec Larson <1925840+aleclarson@users.noreply.github.com>
+Date: Sun, 28 Mar 2021 18:23:58 -0400
+Subject: [PATCH] revert: delay
+
+---
+ react-haru.d.ts |  14 +--
+ react-haru.mjs  | 266 ++++++++++++++++++++++++------------------------
+ 2 files changed, 140 insertions(+), 140 deletions(-)
+
+diff --git a/react-haru.d.ts b/react-haru.d.ts
+index e563c71..94af795 100644
+--- a/react-haru.d.ts
++++ b/react-haru.d.ts
+@@ -1046,7 +1046,7 @@ declare type UseTransitionProps<Item = any> = Merge<ControllerProps<UnknownProps
+     leave?: TransitionTo<Item>;
+     key?: ItemKeys<Item>;
+     sort?: (a: Item, b: Item) => number;
+-    trail?: number;
++
+     onProps?: (props: ControllerProps, item: Item, phase: Exclude<TransitionPhase, 'mount'>) => void;
+     /**
+      * When true, existing items have their transitions recreated,
+@@ -1276,10 +1276,10 @@ interface AnimationProps<T = any> {
+      * Configure the spring behavior for each key.
+      */
+     config?: SpringPreset | SpringConfig | ((key: StringKeys<T>) => SpringPreset | SpringConfig | undefined);
+-    /**
+-     * Milliseconds to wait before applying the other props.
+-     */
+-    delay?: number | ((key: StringKeys<T>) => number);
++
++
++
++
+     /**
+      * When true, props jump to their goal values instead of animating.
+      */
+@@ -1318,7 +1318,7 @@ interface ReservedProps extends ReservedEventProps {
+     cancel?: any;
+     config?: any;
+     default?: any;
+-    delay?: any;
++
+     from?: any;
+     immediate?: any;
+     loop?: any;
+@@ -1451,7 +1451,7 @@ interface ControllerStopFn<T> {
+     (cancel: boolean, keys?: OneOrMore<string>): SpringRef<T>;
+ }
+ 
+-declare function useChain(refs: ReadonlyArray<SpringRef>, timeSteps?: number[], timeFrame?: number): void;
++declare function useChain(refs: ReadonlyArray<SpringRef>): void;
+ 
+ /**
+  * The props that `useSpring` recognizes.
+diff --git a/react-haru.mjs b/react-haru.mjs
+index 758bc4c..d9e6258 100644
+--- a/react-haru.mjs
++++ b/react-haru.mjs
+@@ -1066,7 +1066,7 @@ const RESERVED_PROPS = {
+   reverse: 1,
+   immediate: 1,
+   default: 1,
+-  delay: 1,
++
+   onProps: 1,
+   onStart: 1,
+   onChange: 1,
+@@ -1215,55 +1215,55 @@ function assignDefined(
+ 
+ function useChain(
+   refs, 
+-  timeSteps, 
+-  timeFrame = 1e3
++
++
+ ) {
+   useLayoutEffect(
+     () => {
+-    if (timeSteps) {
+-      let prevDelay = 0;
+-      each(
+-        refs, 
+-        (
+-        ref, 
+-        i
+-      ) => {
+-        const targets = ref.current;
+-        if (targets.length) {
+-          let delay = timeFrame * timeSteps[i];
+-          if (isNaN(
+-            delay
+-          ))
+-            delay = prevDelay;
+-          else
+-            prevDelay = delay;
+-          each(
+-            targets, 
+-            (
+-            target
+-          ) => {
+-            if (target.queue) {
+-              each(
+-                target.queue, 
+-                (
+-                props
+-              ) => {
+-                props.delay = (
+-                  key
+-                ) => delay + callProp(
+-                  props.delay 
+-                  || 0, 
+-                  key
+-                );
+-              }
+-              );
+-              target.start();
+-            }
+-          }
+-          );
+-        }
+-      }
+-      );
++    if (false) {
++      
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
+     } else {
+       let p = Promise.resolve();
+       each(
+@@ -2398,12 +2398,12 @@ function stopAsync(
+ ) {
+   if (cancelId)
+     state.cancelId = cancelId;
+-  flush(
+-    state.timeouts, 
+-    (
+-    t
+-  ) => t.cancel()
+-  );
++
++
++
++
++
++
+   state.resumeQueue.clear();
+   state.pauseQueue.clear();
+   state.bail?.();
+@@ -2476,67 +2476,67 @@ function scheduleProps(
+     resolve, 
+     reject
+   ) => {
+-    let delay;
+-    let timeout;
++
++
+     let cancel = matchProp(
+       props.cancel 
+       ?? defaultProps?.cancel, 
+       key
+     );
+-    if (cancel) {
+-      onStart();
+-    } else {
+-      delay = callProp(
+-        props.delay 
+-        || 0, 
+-        key
+-      );
+-      if (delay > 0 
+-        && state.paused) {
+-        state.resumeQueue.add(
+-          onResume
+-        );
+-      } else {
+-        onResume();
+-      }
+-    }
+-    function onPause() {
+-      state.resumeQueue.add(
+-        onResume
+-      );
+-      state.timeouts.delete(
+-        timeout
+-      );
+-      timeout.cancel();
+-      delay = timeout.time - raf.now();
+-    }
+-    function onResume() {
+-      if (delay > 0) {
+-        timeout = raf.setTimeout(
+-          onStart, 
+-          delay
+-        );
+-        state.pauseQueue.add(
+-          onPause
+-        );
+-        state.timeouts.add(
+-          timeout
+-        );
+-      } else {
+-        onStart();
+-      }
+-    }
+-    function onStart() {
+-      state.pauseQueue.delete(
+-        onPause
+-      );
+-      state.timeouts.delete(
+-        timeout
+-      );
+-      if (callId <= (state.cancelId 
+-        || 0)) {
+-        cancel = true;
+-      }
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
+       try {
+         start(
+           {
+@@ -2551,7 +2551,7 @@ function scheduleProps(
+           err
+         );
+       }
+-    }
++
+   });
+ }
+ 
+@@ -2783,11 +2783,11 @@ class SpringValue extends FrameValue {
+       paused: false,
+       pauseQueue: new Set(),
+       resumeQueue: new Set(),
+-      timeouts: new Set()
++
+     };
+     this._pendingCalls = new Set();
+     this._lastCallId = 0;
+-    this._lastToId = 0;
++
+     if (is.defined(
+       arg1
+     ) 
+@@ -3387,18 +3387,18 @@ class SpringValue extends FrameValue {
+     const hasFromProp = is.defined(
+       range.from
+     );
+-    if (hasToProp 
+-      || hasFromProp) {
+-      if (props.callId > this._lastToId) {
+-        this._lastToId = props.callId;
+-      } else {
+-        return resolve(
+-          getCancelledResult(
+-          this
+-        )
+-        );
+-      }
+-    }
++
++
++
++
++
++
++
++
++
++
++
++
+     const {
+       key, 
+       defaultProps, 
+@@ -4156,7 +4156,7 @@ class Controller {
+       paused: false,
+       pauseQueue: new Set(),
+       resumeQueue: new Set(),
+-      timeouts: new Set()
++
+     };
+     this._events = {
+       onStart: new Set(),
+@@ -5417,8 +5417,8 @@ function useTransition(
+   const skipCountRef = useRef(
+     0
+   );
+-  let enterDelay = -trail;
+-  let leaveDelay = -trail;
++
++
+   const changes = new Map();
+   each(
+     transitions, 
+@@ -5470,12 +5470,12 @@ function useTransition(
+     }
+     const payload = {
+       ...defaultProps,
+-      delay: trail 
+-        && (phase == ENTER 
+-        ? enterDelay += trail 
+-        : phase == LEAVE 
+-        ? leaveDelay += trail 
+-        : 0),
++
++
++
++
++
++
+       reset: false,
+       ...to
+     };
+-- 
+2.19.2

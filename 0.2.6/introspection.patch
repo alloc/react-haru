@@ -1,0 +1,153 @@
+From e4c9208b859e479f5311b3693ca171ae5ab6740f Mon Sep 17 00:00:00 2001
+From: Alec Larson <1925840+aleclarson@users.noreply.github.com>
+Date: Sun, 28 Mar 2021 18:23:58 -0400
+Subject: [PATCH] revert: introspection
+
+---
+ react-haru.d.ts | 24 ++++++++++++------------
+ react-haru.mjs  | 32 ++++++++++++++++----------------
+ 2 files changed, 28 insertions(+), 28 deletions(-)
+
+diff --git a/react-haru.d.ts b/react-haru.d.ts
+index e563c71..4c0649c 100644
+--- a/react-haru.d.ts
++++ b/react-haru.d.ts
+@@ -100,8 +100,8 @@ declare let colors: {
+     [key: string]: number;
+ };
+ declare let skipAnimation: boolean;
+-declare let willAdvance: (animation: OpaqueAnimation) => void;
+-declare let tracker: any;
++
++
+ interface AnimatedGlobals {
+     /** Returns a new `Interpolation` object */
+     to?: typeof to;
+@@ -117,10 +117,10 @@ interface AnimatedGlobals {
+     requestAnimationFrame?: (cb: () => void) => void;
+     /** Event props are called with `batchedUpdates` to reduce extraneous renders */
+     batchedUpdates?: typeof raf.batchedUpdates;
+-    /** @internal Exposed for testing purposes */
+-    willAdvance?: typeof willAdvance;
+-    /** @internal Exposed for demo purposes */
+-    tracker?: typeof tracker;
++
++
++
++
+ }
+ declare const assign: (globals: AnimatedGlobals) => void;
+ 
+@@ -128,8 +128,8 @@ declare const globals_createStringInterpolator: typeof createStringInterpolator;
+ declare const globals_to: typeof to;
+ declare const globals_colors: typeof colors;
+ declare const globals_skipAnimation: typeof skipAnimation;
+-declare const globals_willAdvance: typeof willAdvance;
+-declare const globals_tracker: typeof tracker;
++
++
+ type globals_AnimatedGlobals = AnimatedGlobals;
+ declare const globals_assign: typeof assign;
+ declare namespace globals {
+@@ -138,8 +138,8 @@ declare namespace globals {
+     globals_to as to,
+     globals_colors as colors,
+     globals_skipAnimation as skipAnimation,
+-    globals_willAdvance as willAdvance,
+-    globals_tracker as tracker,
++
++
+     globals_AnimatedGlobals as AnimatedGlobals,
+     globals_assign as assign,
+   };
+@@ -858,8 +858,8 @@ declare class Controller<State extends Lookup = Lookup> {
+     ref?: SpringRef<State>;
+     /** Custom handler for flushing update queues */
+     protected _flush?: ControllerFlushFn<this>;
+-    /** The tracker is notified of every `start` call */
+-    protected _tracker?: Tracker;
++
++
+     /** These props are used by all future spring values */
+     protected _initialProps?: Lookup;
+     /** The counter for tracking `scheduleProps` calls */
+diff --git a/react-haru.mjs b/react-haru.mjs
+index 758bc4c..c5b688b 100644
+--- a/react-haru.mjs
++++ b/react-haru.mjs
+@@ -102,8 +102,8 @@ let createStringInterpolator;
+ let to;
+ let colors = {};
+ let skipAnimation = false;
+-let willAdvance = noop;
+-let tracker;
++
++
+ const assign = (
+   globals
+ ) => {
+@@ -123,10 +123,10 @@ const assign = (
+     );
+   if (globals.batchedUpdates)
+     raf.batchedUpdates = globals.batchedUpdates;
+-  if (globals.willAdvance)
+-    willAdvance = globals.willAdvance;
+-  if (globals.tracker)
+-    tracker = globals.tracker;
++
++
++
++
+ };
+ 
+ var globals = /*#__PURE__*/Object.freeze(
+@@ -136,8 +136,8 @@ var globals = /*#__PURE__*/Object.freeze(
+   get to () { return to; },
+   get colors () { return colors; },
+   get skipAnimation () { return skipAnimation; },
+-  get willAdvance () { return willAdvance; },
+-  get tracker () { return tracker; },
++
++
+   assign: assign
+ }
+ );
+@@ -241,9 +241,9 @@ function advance(
+     const animation = currentFrame[i];
+     priority = animation.priority;
+     if (!animation.idle) {
+-      willAdvance(
+-        animation
+-      );
++
++
++
+       animation.advance(
+         dt
+       );
+@@ -4147,7 +4147,7 @@ class Controller {
+     this.id = nextId$1++;
+     this.springs = {};
+     this.queue = [];
+-    this._tracker = tracker;
++
+     this._lastAsyncId = 0;
+     this._active = new Set();
+     this._changed = new Set();
+@@ -4255,10 +4255,10 @@ class Controller {
+         queue
+       );
+     }
+-    this._tracker?.(
+-      this, 
+-      result
+-    );
++
++
++
++
+     return result;
+   }
+   stop(
+-- 
+2.19.2

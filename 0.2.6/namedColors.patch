@@ -1,0 +1,836 @@
+From e79d7b9c82ec6a64e7eaca8d31a921f95039a2a7 Mon Sep 17 00:00:00 2001
+From: Alec Larson <1925840+aleclarson@users.noreply.github.com>
+Date: Sun, 28 Mar 2021 18:23:56 -0400
+Subject: [PATCH] revert: namedColors
+
+---
+ native/index.mjs |   4 +-
+ react-haru.d.ts  | 320 +++++++++++++++++++++----------------------
+ react-haru.mjs   | 346 +++++++++++++++++++++++------------------------
+ web/index.mjs    |   4 +-
+ 4 files changed, 337 insertions(+), 337 deletions(-)
+
+diff --git a/native/index.mjs b/native/index.mjs
+index 6382ba8..1825579 100644
+--- a/native/index.mjs
++++ b/native/index.mjs
+@@ -1,6 +1,6 @@
+ import { is } from '@alloc/is';
+ import { View, Text, Image, StyleSheet } from 'react-native';
+-import { AnimatedObject, Globals, createStringInterpolator, colors, createHost } from '..';
++import { AnimatedObject, Globals, createStringInterpolator, createHost } from '..';
+ export * from '..';
+ import { getFluidValue } from 'fluids';
+ 
+@@ -120,7 +120,7 @@ Globals.assign(
+     "react-native"
+   ).unstable_batchedUpdates,
+   createStringInterpolator,
+-  colors
++  
+ }
+ );
+ const host = createHost(
+diff --git a/react-haru.d.ts b/react-haru.d.ts
+index e563c71..0afb84d 100644
+--- a/react-haru.d.ts
++++ b/react-haru.d.ts
+@@ -96,9 +96,9 @@ interface OpaqueAnimation {
+ 
+ declare let createStringInterpolator: (config: InterpolatorConfig<string>) => (input: number) => string;
+ declare let to: <In, Out>(source: OneOrMore<FluidValue>, args: InterpolatorArgs<In, Out>) => FluidValue<Out>;
+-declare let colors: {
+-    [key: string]: number;
+-};
++
++
++
+ declare let skipAnimation: boolean;
+ declare let willAdvance: (animation: OpaqueAnimation) => void;
+ declare let tracker: any;
+@@ -107,8 +107,8 @@ interface AnimatedGlobals {
+     to?: typeof to;
+     /** Used to measure frame length. Read more [here](https://developer.mozilla.org/en-US/docs/Web/API/Performance/now) */
+     now?: typeof raf.now;
+-    /** Provide custom color names for interpolation */
+-    colors?: typeof colors;
++
++
+     /** Make all animations instant and skip the frameloop entirely */
+     skipAnimation?: typeof skipAnimation;
+     /** Provide custom logic for string interpolation */
+@@ -126,7 +126,7 @@ declare const assign: (globals: AnimatedGlobals) => void;
+ 
+ declare const globals_createStringInterpolator: typeof createStringInterpolator;
+ declare const globals_to: typeof to;
+-declare const globals_colors: typeof colors;
++
+ declare const globals_skipAnimation: typeof skipAnimation;
+ declare const globals_willAdvance: typeof willAdvance;
+ declare const globals_tracker: typeof tracker;
+@@ -136,7 +136,7 @@ declare namespace globals {
+   export {
+     globals_createStringInterpolator as createStringInterpolator,
+     globals_to as to,
+-    globals_colors as colors,
++
+     globals_skipAnimation as skipAnimation,
+     globals_willAdvance as willAdvance,
+     globals_tracker as tracker,
+@@ -145,158 +145,158 @@ declare namespace globals {
+   };
+ }
+ 
+-declare const colors$1: {
+-    transparent: number;
+-    aliceblue: number;
+-    antiquewhite: number;
+-    aqua: number;
+-    aquamarine: number;
+-    azure: number;
+-    beige: number;
+-    bisque: number;
+-    black: number;
+-    blanchedalmond: number;
+-    blue: number;
+-    blueviolet: number;
+-    brown: number;
+-    burlywood: number;
+-    burntsienna: number;
+-    cadetblue: number;
+-    chartreuse: number;
+-    chocolate: number;
+-    coral: number;
+-    cornflowerblue: number;
+-    cornsilk: number;
+-    crimson: number;
+-    cyan: number;
+-    darkblue: number;
+-    darkcyan: number;
+-    darkgoldenrod: number;
+-    darkgray: number;
+-    darkgreen: number;
+-    darkgrey: number;
+-    darkkhaki: number;
+-    darkmagenta: number;
+-    darkolivegreen: number;
+-    darkorange: number;
+-    darkorchid: number;
+-    darkred: number;
+-    darksalmon: number;
+-    darkseagreen: number;
+-    darkslateblue: number;
+-    darkslategray: number;
+-    darkslategrey: number;
+-    darkturquoise: number;
+-    darkviolet: number;
+-    deeppink: number;
+-    deepskyblue: number;
+-    dimgray: number;
+-    dimgrey: number;
+-    dodgerblue: number;
+-    firebrick: number;
+-    floralwhite: number;
+-    forestgreen: number;
+-    fuchsia: number;
+-    gainsboro: number;
+-    ghostwhite: number;
+-    gold: number;
+-    goldenrod: number;
+-    gray: number;
+-    green: number;
+-    greenyellow: number;
+-    grey: number;
+-    honeydew: number;
+-    hotpink: number;
+-    indianred: number;
+-    indigo: number;
+-    ivory: number;
+-    khaki: number;
+-    lavender: number;
+-    lavenderblush: number;
+-    lawngreen: number;
+-    lemonchiffon: number;
+-    lightblue: number;
+-    lightcoral: number;
+-    lightcyan: number;
+-    lightgoldenrodyellow: number;
+-    lightgray: number;
+-    lightgreen: number;
+-    lightgrey: number;
+-    lightpink: number;
+-    lightsalmon: number;
+-    lightseagreen: number;
+-    lightskyblue: number;
+-    lightslategray: number;
+-    lightslategrey: number;
+-    lightsteelblue: number;
+-    lightyellow: number;
+-    lime: number;
+-    limegreen: number;
+-    linen: number;
+-    magenta: number;
+-    maroon: number;
+-    mediumaquamarine: number;
+-    mediumblue: number;
+-    mediumorchid: number;
+-    mediumpurple: number;
+-    mediumseagreen: number;
+-    mediumslateblue: number;
+-    mediumspringgreen: number;
+-    mediumturquoise: number;
+-    mediumvioletred: number;
+-    midnightblue: number;
+-    mintcream: number;
+-    mistyrose: number;
+-    moccasin: number;
+-    navajowhite: number;
+-    navy: number;
+-    oldlace: number;
+-    olive: number;
+-    olivedrab: number;
+-    orange: number;
+-    orangered: number;
+-    orchid: number;
+-    palegoldenrod: number;
+-    palegreen: number;
+-    paleturquoise: number;
+-    palevioletred: number;
+-    papayawhip: number;
+-    peachpuff: number;
+-    peru: number;
+-    pink: number;
+-    plum: number;
+-    powderblue: number;
+-    purple: number;
+-    rebeccapurple: number;
+-    red: number;
+-    rosybrown: number;
+-    royalblue: number;
+-    saddlebrown: number;
+-    salmon: number;
+-    sandybrown: number;
+-    seagreen: number;
+-    seashell: number;
+-    sienna: number;
+-    silver: number;
+-    skyblue: number;
+-    slateblue: number;
+-    slategray: number;
+-    slategrey: number;
+-    snow: number;
+-    springgreen: number;
+-    steelblue: number;
+-    tan: number;
+-    teal: number;
+-    thistle: number;
+-    tomato: number;
+-    turquoise: number;
+-    violet: number;
+-    wheat: number;
+-    white: number;
+-    whitesmoke: number;
+-    yellow: number;
+-    yellowgreen: number;
+-};
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
+ 
+ declare const createInterpolator: InterpolatorFactory;
+ 
+@@ -1579,4 +1579,4 @@ declare function inferTo<T extends object>(props: T): InferTo<T>;
+ declare function lerp<T extends Animatable, U extends Animatable<T>>(from: T, to: U, progress: number): Animatable<T>;
+ declare function lerp<T>(from: T, to: NoInfer<T>, progress: number): T;
+ 
+-export { Animatable, Animated, AnimatedArray, AnimatedObject, AnimatedString, AnimatedType, AnimatedValue, AnimationProps, AnimationResult, AsyncResult, AsyncResultArray, BailSignal, Change, Controller, ControllerFlushFn, ControllerProps, ControllerUpdate, EasingFunction, EventProp, ExtrapolateType, ForwardProps, FrameValue, globals as Globals, GoalProp, GoalValue, GoalValues, HostConfig, InferTo, InlineToProps, Interpolated, Interpolation, Interpolator, InterpolatorArgs, InterpolatorConfig, InterpolatorFactory, InterpolatorFn, ItemKeys, LoopProp, MatchProp, OnChange, OnPause, OnProps, OnResolve, OnRest, OnResume, OnStart, Payload, PickAnimated, ReservedEventProps, ReservedProps, Spring, SpringChain, SpringComponentProps, SpringConfig, SpringContext, SpringPresets, SpringProps, SpringRef, SpringTo, SpringToFn, SpringUpdate, SpringUpdateFn, SpringValue, SpringValues, Springify, SpringsUpdate, ToProps, Trail, TrailComponentProps, Transition, TransitionComponentProps, TransitionFn, TransitionFrom, TransitionKey, TransitionRenderFn, TransitionState, TransitionTo, TransitionValues, UseSpringProps, UseSpringsProps, UseTrailProps, UseTransitionProps, VelocityProp, colors$1 as colors, createHost, createInterpolator, createStringInterpolator$1 as createStringInterpolator, getAnimated, getAnimatedType, getPayload, inferTo, interpolate, isAnimated, lerp, setAnimated, to$1 as to, update, useChain, useSpring, useSpringRef, useSprings, useTrail, useTransition };
++export { Animatable, Animated, AnimatedArray, AnimatedObject, AnimatedString, AnimatedType, AnimatedValue, AnimationProps, AnimationResult, AsyncResult, AsyncResultArray, BailSignal, Change, Controller, ControllerFlushFn, ControllerProps, ControllerUpdate, EasingFunction, EventProp, ExtrapolateType, ForwardProps, FrameValue, globals as Globals, GoalProp, GoalValue, GoalValues, HostConfig, InferTo, InlineToProps, Interpolated, Interpolation, Interpolator, InterpolatorArgs, InterpolatorConfig, InterpolatorFactory, InterpolatorFn, ItemKeys, LoopProp, MatchProp, OnChange, OnPause, OnProps, OnResolve, OnRest, OnResume, OnStart, Payload, PickAnimated, ReservedEventProps, ReservedProps, Spring, SpringChain, SpringComponentProps, SpringConfig, SpringContext, SpringPresets, SpringProps, SpringRef, SpringTo, SpringToFn, SpringUpdate, SpringUpdateFn, SpringValue, SpringValues, Springify, SpringsUpdate, ToProps, Trail, TrailComponentProps, Transition, TransitionComponentProps, TransitionFn, TransitionFrom, TransitionKey, TransitionRenderFn, TransitionState, TransitionTo, TransitionValues, UseSpringProps, UseSpringsProps, UseTrailProps, UseTransitionProps, VelocityProp, createHost, createInterpolator, createStringInterpolator$1 as createStringInterpolator, getAnimated, getAnimatedType, getPayload, inferTo, interpolate, isAnimated, lerp, setAnimated, to$1 as to, update, useChain, useSpring, useSpringRef, useSprings, useTrail, useTransition };
+diff --git a/react-haru.mjs b/react-haru.mjs
+index 758bc4c..67b39b7 100644
+--- a/react-haru.mjs
++++ b/react-haru.mjs
+@@ -100,7 +100,7 @@ const flushCalls = (
+ 
+ let createStringInterpolator;
+ let to;
+-let colors = {};
++
+ let skipAnimation = false;
+ let willAdvance = noop;
+ let tracker;
+@@ -111,8 +111,8 @@ const assign = (
+     to = globals.to;
+   if (globals.now)
+     raf.now = globals.now;
+-  if (globals.colors !== void 0)
+-    colors = globals.colors;
++
++
+   if (globals.skipAnimation != null)
+     skipAnimation = globals.skipAnimation;
+   if (globals.createStringInterpolator)
+@@ -134,7 +134,7 @@ var globals = /*#__PURE__*/Object.freeze(
+   __proto__: null,
+   get createStringInterpolator () { return createStringInterpolator; },
+   get to () { return to; },
+-  get colors () { return colors; },
++
+   get skipAnimation () { return skipAnimation; },
+   get willAdvance () { return willAdvance; },
+   get tracker () { return tracker; },
+@@ -272,158 +272,158 @@ function findIndex(
+     : index;
+ }
+ 
+-const colors$1 = {
+-  transparent: 0,
+-  aliceblue: 4042850303,
+-  antiquewhite: 4209760255,
+-  aqua: 16777215,
+-  aquamarine: 2147472639,
+-  azure: 4043309055,
+-  beige: 4126530815,
+-  bisque: 4293182719,
+-  black: 255,
+-  blanchedalmond: 4293643775,
+-  blue: 65535,
+-  blueviolet: 2318131967,
+-  brown: 2771004159,
+-  burlywood: 3736635391,
+-  burntsienna: 3934150143,
+-  cadetblue: 1604231423,
+-  chartreuse: 2147418367,
+-  chocolate: 3530104575,
+-  coral: 4286533887,
+-  cornflowerblue: 1687547391,
+-  cornsilk: 4294499583,
+-  crimson: 3692313855,
+-  cyan: 16777215,
+-  darkblue: 35839,
+-  darkcyan: 9145343,
+-  darkgoldenrod: 3095792639,
+-  darkgray: 2846468607,
+-  darkgreen: 6553855,
+-  darkgrey: 2846468607,
+-  darkkhaki: 3182914559,
+-  darkmagenta: 2332068863,
+-  darkolivegreen: 1433087999,
+-  darkorange: 4287365375,
+-  darkorchid: 2570243327,
+-  darkred: 2332033279,
+-  darksalmon: 3918953215,
+-  darkseagreen: 2411499519,
+-  darkslateblue: 1211993087,
+-  darkslategray: 793726975,
+-  darkslategrey: 793726975,
+-  darkturquoise: 13554175,
+-  darkviolet: 2483082239,
+-  deeppink: 4279538687,
+-  deepskyblue: 12582911,
+-  dimgray: 1768516095,
+-  dimgrey: 1768516095,
+-  dodgerblue: 512819199,
+-  firebrick: 2988581631,
+-  floralwhite: 4294635775,
+-  forestgreen: 579543807,
+-  fuchsia: 4278255615,
+-  gainsboro: 3705462015,
+-  ghostwhite: 4177068031,
+-  gold: 4292280575,
+-  goldenrod: 3668254975,
+-  gray: 2155905279,
+-  green: 8388863,
+-  greenyellow: 2919182335,
+-  grey: 2155905279,
+-  honeydew: 4043305215,
+-  hotpink: 4285117695,
+-  indianred: 3445382399,
+-  indigo: 1258324735,
+-  ivory: 4294963455,
+-  khaki: 4041641215,
+-  lavender: 3873897215,
+-  lavenderblush: 4293981695,
+-  lawngreen: 2096890111,
+-  lemonchiffon: 4294626815,
+-  lightblue: 2916673279,
+-  lightcoral: 4034953471,
+-  lightcyan: 3774873599,
+-  lightgoldenrodyellow: 4210742015,
+-  lightgray: 3553874943,
+-  lightgreen: 2431553791,
+-  lightgrey: 3553874943,
+-  lightpink: 4290167295,
+-  lightsalmon: 4288707327,
+-  lightseagreen: 548580095,
+-  lightskyblue: 2278488831,
+-  lightslategray: 2005441023,
+-  lightslategrey: 2005441023,
+-  lightsteelblue: 2965692159,
+-  lightyellow: 4294959359,
+-  lime: 16711935,
+-  limegreen: 852308735,
+-  linen: 4210091775,
+-  magenta: 4278255615,
+-  maroon: 2147483903,
+-  mediumaquamarine: 1724754687,
+-  mediumblue: 52735,
+-  mediumorchid: 3126187007,
+-  mediumpurple: 2473647103,
+-  mediumseagreen: 1018393087,
+-  mediumslateblue: 2070474495,
+-  mediumspringgreen: 16423679,
+-  mediumturquoise: 1221709055,
+-  mediumvioletred: 3340076543,
+-  midnightblue: 421097727,
+-  mintcream: 4127193855,
+-  mistyrose: 4293190143,
+-  moccasin: 4293178879,
+-  navajowhite: 4292783615,
+-  navy: 33023,
+-  oldlace: 4260751103,
+-  olive: 2155872511,
+-  olivedrab: 1804477439,
+-  orange: 4289003775,
+-  orangered: 4282712319,
+-  orchid: 3664828159,
+-  palegoldenrod: 4008225535,
+-  palegreen: 2566625535,
+-  paleturquoise: 2951671551,
+-  palevioletred: 3681588223,
+-  papayawhip: 4293907967,
+-  peachpuff: 4292524543,
+-  peru: 3448061951,
+-  pink: 4290825215,
+-  plum: 3718307327,
+-  powderblue: 2967529215,
+-  purple: 2147516671,
+-  rebeccapurple: 1714657791,
+-  red: 4278190335,
+-  rosybrown: 3163525119,
+-  royalblue: 1097458175,
+-  saddlebrown: 2336560127,
+-  salmon: 4202722047,
+-  sandybrown: 4104413439,
+-  seagreen: 780883967,
+-  seashell: 4294307583,
+-  sienna: 2689740287,
+-  silver: 3233857791,
+-  skyblue: 2278484991,
+-  slateblue: 1784335871,
+-  slategray: 1887473919,
+-  slategrey: 1887473919,
+-  snow: 4294638335,
+-  springgreen: 16744447,
+-  steelblue: 1182971135,
+-  tan: 3535047935,
+-  teal: 8421631,
+-  thistle: 3636451583,
+-  tomato: 4284696575,
+-  turquoise: 1088475391,
+-  violet: 4001558271,
+-  wheat: 4125012991,
+-  white: 4294967295,
+-  whitesmoke: 4126537215,
+-  yellow: 4294902015,
+-  yellowgreen: 2597139199
+-};
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
+ 
+ function normalizeColor(
+   color
+@@ -661,8 +661,8 @@ const HEX8_RE = /^#([0-9a-fA-F]{8})$/;
+ function colorToRgba(
+   input
+ ) {
+-  let color = colors[input];
+-  if (color == null) {
++  let color;
++  if (true) {
+     color = normalizeColor(
+       input
+     );
+@@ -688,8 +688,8 @@ const isAnimatedString = (
+   || /\d/.test(
+   value
+ ) 
+-  || value in (colors 
+-  || {}));
++  || false
++  );
+ 
+ const createInterpolator = (
+   range, 
+@@ -819,7 +819,7 @@ function findRange(
+ 
+ const numberRegex = /[+\-]?(?:0|[1-9]\d*)(?:\.\d*)?(?:[eE][+\-]?\d+)?/g;
+ const colorRegex = /(#(?:[0-9a-f]{2}){2,4}|(#[0-9a-f]{3})|(rgb|hsl)a?\((-?\d+%?[,\s]+){2,3}\s*[\d\.]+%?\))/gi;
+-let namedColorRegex;
++
+ const rgbaRegex = /rgba\(([0-9\.-]+), ([0-9\.-]+), ([0-9\.-]+), ([0-9\.-]+)\)/gi;
+ const rgbaRound = (
+   _, 
+@@ -837,14 +837,14 @@ const rgbaRound = (
+ const createStringInterpolator$1 = (
+   config
+ ) => {
+-  if (!namedColorRegex)
+-    namedColorRegex = colors 
+-      ? new RegExp(`(${Object.keys(
+-      colors
+-    ).join(
+-      "|"
+-    )})`, "g") 
+-      : /^\b$/;
++
++
++
++
++
++
++
++
+   const output = config.output.map(
+     (
+     value
+@@ -853,9 +853,9 @@ const createStringInterpolator$1 = (
+   ).replace(
+     colorRegex, 
+     colorToRgba
+-  ).replace(
+-    namedColorRegex, 
+-    colorToRgba
++
++
++
+   )
+   );
+   const keyframes = output.map(
+@@ -6102,5 +6102,5 @@ assign(
+ );
+ const update = frameLoop.advance;
+ 
+-export { Animated, AnimatedArray, AnimatedObject, AnimatedString, AnimatedValue, BailSignal, Controller, FrameValue, globals as Globals, Interpolation, Spring, SpringContext, SpringPresets, SpringRef, SpringValue, Trail, Transition, colors$1 as colors, createHost, createInterpolator, createStringInterpolator$1 as createStringInterpolator, getAnimated, getAnimatedType, getPayload, inferTo, interpolate$1 as interpolate, isAnimated, lerp, setAnimated, to$1 as to, update, useChain, useSpring, useSpringRef, useSprings, useTrail, useTransition };
++export { Animated, AnimatedArray, AnimatedObject, AnimatedString, AnimatedValue, BailSignal, Controller, FrameValue, globals as Globals, Interpolation, Spring, SpringContext, SpringPresets, SpringRef, SpringValue, Trail, Transition, createHost, createInterpolator, createStringInterpolator$1 as createStringInterpolator, getAnimated, getAnimatedType, getPayload, inferTo, interpolate$1 as interpolate, isAnimated, lerp, setAnimated, to$1 as to, update, useChain, useSpring, useSpringRef, useSprings, useTrail, useTransition };
+ //# sourceMappingURL=react-haru.mjs.map
+diff --git a/web/index.mjs b/web/index.mjs
+index 64d1b39..b925118 100644
+--- a/web/index.mjs
++++ b/web/index.mjs
+@@ -1,5 +1,5 @@
+ import { unstable_batchedUpdates } from 'react-dom';
+-import { AnimatedObject, Globals, createStringInterpolator, colors, createHost } from '..';
++import { AnimatedObject, Globals, createStringInterpolator, createHost } from '..';
+ export * from '..';
+ import { is } from '@alloc/is';
+ import { FluidValue, getFluidValue, hasFluidValue, addFluidObserver, removeFluidObserver, callFluidObservers } from 'fluids';
+@@ -629,7 +629,7 @@ Globals.assign(
+   {
+   batchedUpdates: unstable_batchedUpdates,
+   createStringInterpolator,
+-  colors
++  
+ }
+ );
+ const host = createHost(
+-- 
+2.19.2

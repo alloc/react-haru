@@ -1,0 +1,584 @@
+From b5e67cde547d3fb18007017eb8acfab32467b19f Mon Sep 17 00:00:00 2001
+From: Alec Larson <1925840+aleclarson@users.noreply.github.com>
+Date: Sun, 28 Mar 2021 18:23:57 -0400
+Subject: [PATCH] revert: InterpolatorConfig
+
+---
+ native/index.mjs |   4 +-
+ react-haru.d.ts  | 166 ++++++++++++++++++++--------------------
+ react-haru.mjs   | 194 +++++++++++++++++++++++------------------------
+ web/index.mjs    |   4 +-
+ 4 files changed, 184 insertions(+), 184 deletions(-)
+
+diff --git a/native/index.mjs b/native/index.mjs
+index 6382ba8..f2d9957 100644
+--- a/native/index.mjs
++++ b/native/index.mjs
+@@ -1,6 +1,6 @@
+ import { is } from '@alloc/is';
+ import { View, Text, Image, StyleSheet } from 'react-native';
+-import { AnimatedObject, Globals, createStringInterpolator, colors, createHost } from '..';
++import { AnimatedObject, Globals, colors, createHost } from '..';
+ export * from '..';
+ import { getFluidValue } from 'fluids';
+ 
+@@ -119,7 +119,7 @@ Globals.assign(
+   batchedUpdates: require(
+     "react-native"
+   ).unstable_batchedUpdates,
+-  createStringInterpolator,
++
+   colors
+ }
+ );
+diff --git a/react-haru.d.ts b/react-haru.d.ts
+index e563c71..f38ccc0 100644
+--- a/react-haru.d.ts
++++ b/react-haru.d.ts
+@@ -19,74 +19,74 @@ declare type Merge<A, B> = Remap<{
+ declare type Constrain<T, U> = [T] extends [Any] ? U : [T] extends [U] ? T : U;
+ 
+ declare type EasingFunction = (t: number) => number;
+-declare type ExtrapolateType = 'identity' | 'clamp' | 'extend';
++
+ interface InterpolatorFactory {
+     <In, Out>(interpolator: InterpolatorFn<In, Out>): typeof interpolator;
+-    <Out>(config: InterpolatorConfig<Out>): (input: number) => Animatable<Out>;
+-    <Out>(range: readonly number[], output: readonly Constrain<Out, Animatable>[], extrapolate?: ExtrapolateType): (input: number) => Animatable<Out>;
+-    <In, Out>(...args: InterpolatorArgs<In, Out>): InterpolatorFn<In, Out>;
++
++    
++    
+ }
+-declare type InterpolatorArgs<In = any, Out = any> = [InterpolatorFn<Arrify<In>, Out>] | [InterpolatorConfig<Out>] | [
+-    readonly number[],
+-    readonly Constrain<Out, Animatable>[],
+-    (ExtrapolateType | undefined)?
+-];
++declare type InterpolatorArgs<In = any, Out = any> = [InterpolatorFn<Arrify<In>, Out>]
++
++
++
++
+ declare type InterpolatorFn<In, Out> = (...inputs: Arrify<In>) => Out;
+-declare type InterpolatorConfig<Out = Animatable> = {
+-    /**
+-     * What happens when the spring goes below its target value.
+-     *
+-     *  - `extend` continues the interpolation past the target value
+-     *  - `clamp` limits the interpolation at the max value
+-     *  - `identity` sets the value to the interpolation input as soon as it hits the boundary
+-     *
+-     * @default 'extend'
+-     */
+-    extrapolateLeft?: ExtrapolateType;
+-    /**
+-     * What happens when the spring exceeds its target value.
+-     *
+-     *  - `extend` continues the interpolation past the target value
+-     *  - `clamp` limits the interpolation at the max value
+-     *  - `identity` sets the value to the interpolation input as soon as it hits the boundary
+-     *
+-     * @default 'extend'
+-     */
+-    extrapolateRight?: ExtrapolateType;
+-    /**
+-     * What happens when the spring exceeds its target value.
+-     * Shortcut to set `extrapolateLeft` and `extrapolateRight`.
+-     *
+-     *  - `extend` continues the interpolation past the target value
+-     *  - `clamp` limits the interpolation at the max value
+-     *  - `identity` sets the value to the interpolation input as soon as it hits the boundary
+-     *
+-     * @default 'extend'
+-     */
+-    extrapolate?: ExtrapolateType;
+-    /**
+-     * Input ranges mapping the interpolation to the output values.
+-     *
+-     * @example
+-     *
+-     *   range: [0, 0.5, 1], output: ['yellow', 'orange', 'red']
+-     *
+-     * @default [0,1]
+-     */
+-    range?: readonly number[];
+-    /**
+-     * Output values from the interpolation function. Should match the length of the `range` array.
+-     */
+-    output: readonly Constrain<Out, Animatable>[];
+-    /**
+-     * Transformation to apply to the value before interpolation.
+-     */
+-    map?: (value: number) => number;
+-    /**
+-     * Custom easing to apply in interpolator.
+-     */
+-    easing?: EasingFunction;
+-};
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
+ 
+ interface OpaqueAnimation {
+     idle: boolean;
+@@ -94,7 +94,7 @@ interface OpaqueAnimation {
+     advance(dt: number): void;
+ }
+ 
+-declare let createStringInterpolator: (config: InterpolatorConfig<string>) => (input: number) => string;
++
+ declare let to: <In, Out>(source: OneOrMore<FluidValue>, args: InterpolatorArgs<In, Out>) => FluidValue<Out>;
+ declare let colors: {
+     [key: string]: number;
+@@ -111,8 +111,8 @@ interface AnimatedGlobals {
+     colors?: typeof colors;
+     /** Make all animations instant and skip the frameloop entirely */
+     skipAnimation?: typeof skipAnimation;
+-    /** Provide custom logic for string interpolation */
+-    createStringInterpolator?: typeof createStringInterpolator;
++
++    
+     /** Schedule a function to run on the next frame */
+     requestAnimationFrame?: (cb: () => void) => void;
+     /** Event props are called with `batchedUpdates` to reduce extraneous renders */
+@@ -124,7 +124,7 @@ interface AnimatedGlobals {
+ }
+ declare const assign: (globals: AnimatedGlobals) => void;
+ 
+-declare const globals_createStringInterpolator: typeof createStringInterpolator;
++
+ declare const globals_to: typeof to;
+ declare const globals_colors: typeof colors;
+ declare const globals_skipAnimation: typeof skipAnimation;
+@@ -134,7 +134,7 @@ type globals_AnimatedGlobals = AnimatedGlobals;
+ declare const globals_assign: typeof assign;
+ declare namespace globals {
+   export {
+-    globals_createStringInterpolator as createStringInterpolator,
++    
+     globals_to as to,
+     globals_colors as colors,
+     globals_skipAnimation as skipAnimation,
+@@ -300,17 +300,17 @@ declare const colors$1: {
+ 
+ declare const createInterpolator: InterpolatorFactory;
+ 
+-/**
+- * Supports string shapes by extracting numbers so new values can be computed,
+- * and recombines those values into new strings of the same shape.  Supports
+- * things like:
+- *
+- *     "rgba(123, 42, 99, 0.36)"           // colors
+- *     "-45deg"                            // values with units
+- *     "0 2px 2px 0px rgba(0, 0, 0, 0.12)" // CSS box-shadows
+- *     "rotate(0deg) translate(2px, 3px)"  // CSS transforms
+- */
+-declare const createStringInterpolator$1: (config: InterpolatorConfig<string>) => (input: number) => string;
++
++
++
++
++
++
++
++
++
++
++
+ 
+ /**
+  * An `Interpolation` is a memoized value that's computed whenever one of its
+@@ -1547,8 +1547,8 @@ declare type Interpolated<T extends ReadonlyArray<any>> = {
+ interface Interpolator {
+     <In extends ReadonlyArray<any>, Out>(parents: In, interpolator: (...args: Interpolated<In>) => Out): Interpolation<Out>;
+     <In, Out>(parent: FluidValue<In> | In, interpolator: InterpolatorFn<In, Out>): Interpolation<Out>;
+-    <Out>(parents: OneOrMore<FluidValue>, config: InterpolatorConfig<Out>): Interpolation<Animatable<Out>>;
+-    <Out>(parents: OneOrMore<FluidValue<number>> | FluidValue<number[]>, range: readonly number[], output: readonly Constrain<Out, Animatable>[], extrapolate?: ExtrapolateType): Interpolation<Animatable<Out>>;
++
++    
+ }
+ 
+ /** Advance all animations by the given time */
+@@ -1579,4 +1579,4 @@ declare function inferTo<T extends object>(props: T): InferTo<T>;
+ declare function lerp<T extends Animatable, U extends Animatable<T>>(from: T, to: U, progress: number): Animatable<T>;
+ declare function lerp<T>(from: T, to: NoInfer<T>, progress: number): T;
+ 
+-export { Animatable, Animated, AnimatedArray, AnimatedObject, AnimatedString, AnimatedType, AnimatedValue, AnimationProps, AnimationResult, AsyncResult, AsyncResultArray, BailSignal, Change, Controller, ControllerFlushFn, ControllerProps, ControllerUpdate, EasingFunction, EventProp, ExtrapolateType, ForwardProps, FrameValue, globals as Globals, GoalProp, GoalValue, GoalValues, HostConfig, InferTo, InlineToProps, Interpolated, Interpolation, Interpolator, InterpolatorArgs, InterpolatorConfig, InterpolatorFactory, InterpolatorFn, ItemKeys, LoopProp, MatchProp, OnChange, OnPause, OnProps, OnResolve, OnRest, OnResume, OnStart, Payload, PickAnimated, ReservedEventProps, ReservedProps, Spring, SpringChain, SpringComponentProps, SpringConfig, SpringContext, SpringPresets, SpringProps, SpringRef, SpringTo, SpringToFn, SpringUpdate, SpringUpdateFn, SpringValue, SpringValues, Springify, SpringsUpdate, ToProps, Trail, TrailComponentProps, Transition, TransitionComponentProps, TransitionFn, TransitionFrom, TransitionKey, TransitionRenderFn, TransitionState, TransitionTo, TransitionValues, UseSpringProps, UseSpringsProps, UseTrailProps, UseTransitionProps, VelocityProp, colors$1 as colors, createHost, createInterpolator, createStringInterpolator$1 as createStringInterpolator, getAnimated, getAnimatedType, getPayload, inferTo, interpolate, isAnimated, lerp, setAnimated, to$1 as to, update, useChain, useSpring, useSpringRef, useSprings, useTrail, useTransition };
++export { Animatable, Animated, AnimatedArray, AnimatedObject, AnimatedString, AnimatedType, AnimatedValue, AnimationProps, AnimationResult, AsyncResult, AsyncResultArray, BailSignal, Change, Controller, ControllerFlushFn, ControllerProps, ControllerUpdate, EasingFunction, EventProp, ExtrapolateType, ForwardProps, FrameValue, globals as Globals, GoalProp, GoalValue, GoalValues, HostConfig, InferTo, InlineToProps, Interpolated, Interpolation, Interpolator, InterpolatorArgs, InterpolatorFactory, InterpolatorFn, ItemKeys, LoopProp, MatchProp, OnChange, OnPause, OnProps, OnResolve, OnRest, OnResume, OnStart, Payload, PickAnimated, ReservedEventProps, ReservedProps, Spring, SpringChain, SpringComponentProps, SpringConfig, SpringContext, SpringPresets, SpringProps, SpringRef, SpringTo, SpringToFn, SpringUpdate, SpringUpdateFn, SpringValue, SpringValues, Springify, SpringsUpdate, ToProps, Trail, TrailComponentProps, Transition, TransitionComponentProps, TransitionFn, TransitionFrom, TransitionKey, TransitionRenderFn, TransitionState, TransitionTo, TransitionValues, UseSpringProps, UseSpringsProps, UseTrailProps, UseTransitionProps, VelocityProp, colors$1 as colors, createHost, createInterpolator, getAnimated, getAnimatedType, getPayload, inferTo, interpolate, isAnimated, lerp, setAnimated, to$1 as to, update, useChain, useSpring, useSpringRef, useSprings, useTrail, useTransition };
+diff --git a/react-haru.mjs b/react-haru.mjs
+index 758bc4c..a6b2935 100644
+--- a/react-haru.mjs
++++ b/react-haru.mjs
+@@ -98,7 +98,7 @@ const flushCalls = (
+ )
+ );
+ 
+-let createStringInterpolator;
++
+ let to;
+ let colors = {};
+ let skipAnimation = false;
+@@ -115,8 +115,8 @@ const assign = (
+     colors = globals.colors;
+   if (globals.skipAnimation != null)
+     skipAnimation = globals.skipAnimation;
+-  if (globals.createStringInterpolator)
+-    createStringInterpolator = globals.createStringInterpolator;
++
++
+   if (globals.requestAnimationFrame)
+     raf.use(
+       globals.requestAnimationFrame
+@@ -132,7 +132,7 @@ const assign = (
+ var globals = /*#__PURE__*/Object.freeze(
+   {
+   __proto__: null,
+-  get createStringInterpolator () { return createStringInterpolator; },
++
+   get to () { return to; },
+   get colors () { return colors; },
+   get skipAnimation () { return skipAnimation; },
+@@ -694,24 +694,24 @@ const isAnimatedString = (
+ const createInterpolator = (
+   range, 
+   output, 
+-  extrapolate
++
+ ) => {
+   if (is.function(
+     range
+   )) {
+     return range;
+   }
+-  if (is.array(
+-    range
+-  )) {
+-    return createInterpolator(
+-      {
+-      range,
+-      output,
+-      extrapolate
+-    }
+-    );
+-  }
++
++  
++  
++  
++  
++  
++  
++  
++  
++  
++  
+   if (is.string(
+     range.output[0]
+   )) {
+@@ -721,38 +721,38 @@ const createInterpolator = (
+   }
+   const config = range;
+   const outputRange = config.output;
+-  const inputRange = config.range 
+-    || [
+-    0, 
+-    1
+-  ];
+-  const extrapolateLeft = config.extrapolateLeft 
+-    || config.extrapolate 
+-    || "extend";
+-  const extrapolateRight = config.extrapolateRight 
+-    || config.extrapolate 
+-    || "extend";
+-  const easing = config.easing 
+-    || ((
+-    t
+-  ) => t);
++  
++
++
++
++
++
++
++
++
++
++
++  
++
++
++
+   return (
+     input
+   ) => {
+-    const range2 = findRange(
+-      input, 
+-      inputRange
+-    );
++    
++
++
++
+     return interpolate(
+       input, 
+-      inputRange[range2], 
+-      inputRange[range2 + 1], 
+-      outputRange[range2], 
+-      outputRange[range2 + 1], 
+-      easing, 
+-      extrapolateLeft, 
+-      extrapolateRight, 
+-      config.map
++      0, 
++      1, 
++      outputRange[0], 
++      outputRange[1], 
++      
++
++
++
+     );
+   };
+ };
+@@ -762,43 +762,43 @@ function interpolate(
+   inputMax, 
+   outputMin, 
+   outputMax, 
+-  easing, 
+-  extrapolateLeft, 
+-  extrapolateRight, 
+-  map
++
++  
++  
++  
+ ) {
+-  let result = map 
+-    ? map(
+-    input
+-  ) 
+-    : input;
+-  if (result < inputMin) {
+-    if (extrapolateLeft === "identity")
+-      return result;
+-    else if (extrapolateLeft === "clamp")
+-      result = inputMin;
+-  }
+-  if (result > inputMax) {
+-    if (extrapolateRight === "identity")
+-      return result;
+-    else if (extrapolateRight === "clamp")
+-      result = inputMax;
+-  }
++  let result = input 
++
++
++
++
++  
++
++
++
++
++
++
++
++
++
++
++
+   if (outputMin === outputMax)
+     return outputMin;
+-  if (inputMin === inputMax)
+-    return input <= inputMin 
+-      ? outputMin 
+-      : outputMax;
+-  if (inputMin === -Infinity)
+-    result = -result;
+-  else if (inputMax === Infinity)
+-    result = result - inputMin;
+-  else
++
++
++
++
++
++
++
++
++
+     result = (result - inputMin) / (inputMax - inputMin);
+-  result = easing(
+-    result
+-  );
++
++
++
+   if (outputMin === -Infinity)
+     result = -result;
+   else if (outputMax === Infinity)
+@@ -807,15 +807,15 @@ function interpolate(
+     result = result * (outputMax - outputMin) + outputMin;
+   return result;
+ }
+-function findRange(
+-  input, 
+-  inputRange
+-) {
+-  for (var i = 1; i < inputRange.length - 1; ++i)
+-    if (inputRange[i] >= input)
+-      break;
+-  return i - 1;
+-}
++
++
++
++
++
++
++
++
++
+ 
+ const numberRegex = /[+\-]?(?:0|[1-9]\d*)(?:\.\d*)?(?:[eE][+\-]?\d+)?/g;
+ const colorRegex = /(#(?:[0-9a-f]{2}){2,4}|(#[0-9a-f]{3})|(rgb|hsl)a?\((-?\d+%?[,\s]+){2,3}\s*[\d\.]+%?\))/gi;
+@@ -834,7 +834,7 @@ const rgbaRound = (
+ )}, ${Math.round(
+   p3
+ )}, ${p4})`;
+-const createStringInterpolator$1 = (
++const createStringInterpolator = (
+   config
+ ) => {
+   if (!namedColorRegex)
+@@ -889,7 +889,7 @@ const createStringInterpolator$1 = (
+     output2
+   ) => createInterpolator(
+     {
+-    ...config, 
++    
+     output: output2
+   }
+   )
+@@ -1139,10 +1139,10 @@ function computeGoal(
+   ) 
+     ? createStringInterpolator(
+     {
+-    range: [
+-      0, 
+-      1
+-    ],
++    
++
++
++    
+     output: [
+       value, 
+       value
+@@ -2621,10 +2621,10 @@ function lerp(
+   ) 
+     ? createStringInterpolator(
+     {
+-    range: [
+-      0, 
+-      1
+-    ],
++    
++
++
++    
+     output: [
+       from, 
+       to
+@@ -6093,7 +6093,7 @@ const interpolate$1 = (
+ 
+ assign(
+   {
+-  createStringInterpolator: createStringInterpolator$1,
++  
+   to: (
+     source, 
+     args
+@@ -6102,5 +6102,5 @@ assign(
+ );
+ const update = frameLoop.advance;
+ 
+-export { Animated, AnimatedArray, AnimatedObject, AnimatedString, AnimatedValue, BailSignal, Controller, FrameValue, globals as Globals, Interpolation, Spring, SpringContext, SpringPresets, SpringRef, SpringValue, Trail, Transition, colors$1 as colors, createHost, createInterpolator, createStringInterpolator$1 as createStringInterpolator, getAnimated, getAnimatedType, getPayload, inferTo, interpolate$1 as interpolate, isAnimated, lerp, setAnimated, to$1 as to, update, useChain, useSpring, useSpringRef, useSprings, useTrail, useTransition };
++export { Animated, AnimatedArray, AnimatedObject, AnimatedString, AnimatedValue, BailSignal, Controller, FrameValue, globals as Globals, Interpolation, Spring, SpringContext, SpringPresets, SpringRef, SpringValue, Trail, Transition, colors$1 as colors, createHost, createInterpolator, getAnimated, getAnimatedType, getPayload, inferTo, interpolate$1 as interpolate, isAnimated, lerp, setAnimated, to$1 as to, update, useChain, useSpring, useSpringRef, useSprings, useTrail, useTransition };
+ //# sourceMappingURL=react-haru.mjs.map
+diff --git a/web/index.mjs b/web/index.mjs
+index 64d1b39..a063bc5 100644
+--- a/web/index.mjs
++++ b/web/index.mjs
+@@ -1,5 +1,5 @@
+ import { unstable_batchedUpdates } from 'react-dom';
+-import { AnimatedObject, Globals, createStringInterpolator, colors, createHost } from '..';
++import { AnimatedObject, Globals, colors, createHost } from '..';
+ export * from '..';
+ import { is } from '@alloc/is';
+ import { FluidValue, getFluidValue, hasFluidValue, addFluidObserver, removeFluidObserver, callFluidObservers } from 'fluids';
+@@ -628,7 +628,7 @@ const primitives = [
+ Globals.assign(
+   {
+   batchedUpdates: unstable_batchedUpdates,
+-  createStringInterpolator,
++
+   colors
+ }
+ );
+-- 
+2.19.2

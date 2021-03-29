@@ -1,0 +1,325 @@
+From 23b0a3d4089ea58d058ef3e594f267c4936b3177 Mon Sep 17 00:00:00 2001
+From: Alec Larson <1925840+aleclarson@users.noreply.github.com>
+Date: Wed, 31 Mar 2021 14:25:56 -0400
+Subject: [PATCH] revert: SpringContext
+
+---
+ react-haru.d.ts |  32 +++----
+ react-haru.mjs  | 220 ++++++++++++++++++++++++------------------------
+ 2 files changed, 126 insertions(+), 126 deletions(-)
+
+diff --git a/react-haru.d.ts b/react-haru.d.ts
+index 14a8bb6..b6cc680 100644
+--- a/react-haru.d.ts
++++ b/react-haru.d.ts
+@@ -1522,21 +1522,21 @@ interface Interpolator {
+ /** Advance all animations by the given time */
+ declare const update: (dt: number) => boolean;
+ 
+-/**
+- * This context affects all new and existing `SpringValue` objects
+- * created with the hook API or the renderprops API.
+- */
+-interface SpringContext {
+-    /** Pause all new and existing animations. */
+-    pause?: boolean;
+-    /** Force all new and existing animations to be immediate. */
+-    immediate?: boolean;
+-}
+-declare const SpringContext: {
+-    ({ children, ...props }: PropsWithChildren<SpringContext>): JSX.Element;
+-    Provider: Provider<SpringContext>;
+-    Consumer: Consumer<SpringContext>;
+-};
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
+ 
+ /**
+  * Clone the given `props` and move all non-reserved props
+@@ -1547,4 +1547,4 @@ declare function inferTo<T extends object>(props: T): InferTo<T>;
+ declare function lerp<T extends Animatable, U extends Animatable<T>>(from: T, to: U, progress: number): Animatable<T>;
+ declare function lerp<T>(from: T, to: NoInfer<T>, progress: number): T;
+ 
+-export { Animatable, Animated, AnimatedArray, AnimatedObject, AnimatedString, AnimatedType, AnimatedValue, AnimationProps, AnimationResult, AsyncResult, AsyncResultArray, BailSignal, Change, Controller, ControllerFlushFn, ControllerProps, ControllerUpdate, EasingFunction, EventProp, ExtrapolateType, ForwardProps, FrameValue, G as Globals, GoalProp, GoalValue, GoalValues, HostConfig, InferTo, InlineToProps, Interpolated, Interpolation, Interpolator, InterpolatorArgs, InterpolatorConfig, InterpolatorFactory, InterpolatorFn, ItemKeys, LoopProp, MatchProp, OnChange, OnPause, OnProps, OnResolve, OnRest, OnResume, OnStart, Payload, PickAnimated, ReservedEventProps, ReservedProps, Spring, SpringChain, SpringComponentProps, SpringConfig, SpringContext, SpringPresets, SpringProps, SpringRef, SpringTo, SpringToFn, SpringUpdate, SpringUpdateFn, SpringValue, SpringValues, Springify, SpringsUpdate, ToProps, Trail, TrailComponentProps, Transition, TransitionComponentProps, TransitionFn, TransitionFrom, TransitionKey, TransitionRenderFn, TransitionState, TransitionTo, TransitionValues, UseSpringProps, UseSpringsProps, UseTrailProps, UseTransitionProps, VelocityProp, createHost, createInterpolator, defaultColors, defaultStringInterpolation, getAnimated, getAnimatedType, getPayload, inferTo, isAnimated, lerp, setAnimated, to, update, useChain, useSpring, useSpringRef, useSprings, useTrail, useTransition };
++export { Animatable, Animated, AnimatedArray, AnimatedObject, AnimatedString, AnimatedType, AnimatedValue, AnimationProps, AnimationResult, AsyncResult, AsyncResultArray, BailSignal, Change, Controller, ControllerFlushFn, ControllerProps, ControllerUpdate, EasingFunction, EventProp, ExtrapolateType, ForwardProps, FrameValue, G as Globals, GoalProp, GoalValue, GoalValues, HostConfig, InferTo, InlineToProps, Interpolated, Interpolation, Interpolator, InterpolatorArgs, InterpolatorConfig, InterpolatorFactory, InterpolatorFn, ItemKeys, LoopProp, MatchProp, OnChange, OnPause, OnProps, OnResolve, OnRest, OnResume, OnStart, Payload, PickAnimated, ReservedEventProps, ReservedProps, Spring, SpringChain, SpringComponentProps, SpringConfig, SpringPresets, SpringProps, SpringRef, SpringTo, SpringToFn, SpringUpdate, SpringUpdateFn, SpringValue, SpringValues, Springify, SpringsUpdate, ToProps, Trail, TrailComponentProps, Transition, TransitionComponentProps, TransitionFn, TransitionFrom, TransitionKey, TransitionRenderFn, TransitionState, TransitionTo, TransitionValues, UseSpringProps, UseSpringsProps, UseTrailProps, UseTransitionProps, VelocityProp, createHost, createInterpolator, defaultColors, defaultStringInterpolation, getAnimated, getAnimatedType, getPayload, inferTo, isAnimated, lerp, setAnimated, to, update, useChain, useSpring, useSpringRef, useSprings, useTrail, useTransition };
+diff --git a/react-haru.mjs b/react-haru.mjs
+index 9f4299e..d7f8c81 100644
+--- a/react-haru.mjs
++++ b/react-haru.mjs
+@@ -4983,60 +4983,60 @@ function prepareKeys(
+   );
+ }
+ 
+-const SpringContext = (
+-  {
+-  children,
+-  ...props
+-}
+-) => {
+-  const inherited = useContext(
+-    ctx
+-  );
+-  const pause = props.pause 
+-    || !!inherited.pause;
+-  const immediate = props.immediate 
+-    || !!inherited.immediate;
+-  props = useMemo(
+-    () => ({
+-    pause, 
+-    immediate
+-  }), 
+-    [
+-    pause, 
+-    immediate
+-  ]
+-  );
+-  const {
+-    Provider
+-  } = ctx;
+-  return /* @__PURE__ */ createElement(
+-    Provider, 
+-    {
+-    value: props
+-  }, 
+-    children
+-  );
+-};
+-const ctx = makeContext(
+-  SpringContext, 
+-  {}
+-);
+-SpringContext.Provider = ctx.Provider;
+-SpringContext.Consumer = ctx.Consumer;
+-function makeContext(
+-  target, 
+-  init
+-) {
+-  Object.assign(
+-    target, 
+-    createContext(
+-    init
+-  )
+-  );
+-  target.Provider._context = target;
+-  target.Consumer._context = target;
+-  return target;
+-}
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
+ 
+ function useSprings(
+   length, 
+@@ -5175,16 +5175,16 @@ function useSprings(
+     updates[i]
+   )
+   );
+-  const context = useContext(
+-    SpringContext
+-  );
+-  const prevContext = usePrev(
+-    context
+-  );
+-  const hasContext = context !== prevContext 
+-    && hasProps(
+-    context
+-  );
++
++
++
++
++
++
++
++
++
++
+   useLayoutEffect(
+     () => {
+     layoutId.current++;
+@@ -5229,13 +5229,13 @@ function useSprings(
+       ref?.add(
+         ctrl
+       );
+-      if (hasContext) {
+-        ctrl.start(
+-          {
+-          default: context
+-        }
+-        );
+-      }
++
++
++
++
++
++
++
+       const update = updates[i];
+       if (update) {
+         replaceRef(
+@@ -5790,36 +5790,36 @@ function useTransition(
+       forceUpdate();
+     }
+   }
+-  const context = useContext(
+-    SpringContext
+-  );
+-  const prevContext = usePrev(
+-    context
+-  );
+-  const hasContext = context !== prevContext 
+-    && hasProps(
+-    context
+-  );
+-  useLayoutEffect(
+-    () => {
+-    if (hasContext)
+-      each(
+-        transitions, 
+-        (
+-        t
+-      ) => {
+-        t.ctrl.start(
+-          {
+-          default: context
+-        }
+-        );
+-      }
+-      );
+-  }, 
+-    [
+-    context
+-  ]
+-  );
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
+   useLayoutEffect(
+     () => {
+     leadCountRef.current = leadCount;
+@@ -5861,14 +5861,14 @@ function useTransition(
+         t.item, 
+         phase
+       );
+-      if (hasContext 
+-        && phase == ENTER) {
+-        ctrl.start(
+-          {
+-          default: context
+-        }
+-        );
+-      }
++
++
++
++
++
++
++
++      
+       ctrl[ctrl.ref 
+         ? "update" 
+         : "start"](
+@@ -6073,7 +6073,7 @@ export {
+   G as Globals, 
+   Interpolation, 
+   Spring, 
+-  SpringContext, 
++
+   SpringPresets, 
+   SpringRef, 
+   SpringValue, 
+-- 
+2.19.2

@@ -1,0 +1,660 @@
+From 804dd7da44bf3d0aabc2e60b5297984b769e7f75 Mon Sep 17 00:00:00 2001
+From: Alec Larson <1925840+aleclarson@users.noreply.github.com>
+Date: Wed, 31 Mar 2021 14:26:42 -0400
+Subject: [PATCH] revert: Interpolation
+
+---
+ react-haru.d.ts |  98 +++++-----
+ react-haru.mjs  | 482 ++++++++++++++++++++++++------------------------
+ 2 files changed, 290 insertions(+), 290 deletions(-)
+
+diff --git a/react-haru.d.ts b/react-haru.d.ts
+index 14a8bb6..e9ac577 100644
+--- a/react-haru.d.ts
++++ b/react-haru.d.ts
+@@ -284,36 +284,36 @@ declare const defaultColors: {
+ 
+ declare const createInterpolator: InterpolatorFactory;
+ 
+-/**
+- * An `Interpolation` is a memoized value that's computed whenever one of its
+- * `FluidValue` dependencies has its value changed.
+- *
+- * Other `FrameValue` objects can depend on this. For example, passing an
+- * `Interpolation` as the `to` prop of a `useSpring` call will trigger an
+- * animation toward the memoized value.
+- */
+-declare class Interpolation<In = any, Out = any> extends FrameValue<Out> {
+-    /** The source of input values */
+-    readonly source: unknown;
+-    /** Useful for debugging. */
+-    key?: string;
+-    /** Equals false when in the frameloop */
+-    idle: boolean;
+-    /** The function that maps inputs values to output */
+-    readonly calc: InterpolatorFn<In, Out>;
+-    /** The inputs which are currently animating */
+-    protected _active: Set<FluidValue<any, AnyEvent>>;
+-    constructor(
+-    /** The source of input values */
+-    source: unknown, args: InterpolatorArgs<In, Out>);
+-    advance(_dt?: number): void;
+-    protected _get(): Out;
+-    protected _start(): void;
+-    protected _attach(): void;
+-    protected _detach(): void;
+-    /** @internal */
+-    eventObserved(event: FrameValue.Event): void;
+-}
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
+ 
+ /**
+  * A kind of `FluidValue` that manages an `AnimatedValue` node.
+@@ -329,8 +329,8 @@ declare abstract class FrameValue<T = any> extends FluidValue<T, FrameValue.Even
+     set priority(priority: number);
+     /** Get the current value */
+     get(): T;
+-    /** Create a spring that maps our value to another value */
+-    to<Out>(...args: InterpolatorArgs<T, Out>): Interpolation<T, Out>;
++
++
+     toJSON(): T;
+     protected observerAdded(count: number): void;
+     protected observerRemoved(count: number): void;
+@@ -1502,22 +1502,22 @@ declare function Transition<Item extends any, Props extends TransitionComponentP
+     items: readonly Item[];
+ } & ((Props & NeverProps<Props, TransitionComponentProps<Item>>) | TransitionComponentProps<Item, Props>)): JSX.Element;
+ 
+-/** Map the value of one or more dependencies */
+-declare const to: Interpolator;
+-/** Extract the raw value types that are being interpolated */
+-declare type Interpolated<T extends ReadonlyArray<any>> = {
+-    [P in keyof T]: T[P] extends infer Element ? Element extends FluidValue<infer U> ? U : Element : never;
+-};
+-/**
+- * This interpolates one or more `FluidValue` objects.
+- * The exported `interpolate` function uses this type.
+- */
+-interface Interpolator {
+-    <In extends ReadonlyArray<any>, Out>(parents: In, interpolator: (...args: Interpolated<In>) => Out): Interpolation<Out>;
+-    <In, Out>(parent: FluidValue<In> | In, interpolator: InterpolatorFn<In, Out>): Interpolation<Out>;
+-    <Out>(parents: OneOrMore<FluidValue>, config: InterpolatorConfig<Out>): Interpolation<Animatable<Out>>;
+-    <Out>(parents: OneOrMore<FluidValue<number>> | FluidValue<number[]>, range: readonly number[], output: readonly Constrain<Out, Animatable>[], extrapolate?: ExtrapolateType): Interpolation<Animatable<Out>>;
+-}
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
+ 
+ /** Advance all animations by the given time */
+ declare const update: (dt: number) => boolean;
+@@ -1547,4 +1547,4 @@ declare function inferTo<T extends object>(props: T): InferTo<T>;
+ declare function lerp<T extends Animatable, U extends Animatable<T>>(from: T, to: U, progress: number): Animatable<T>;
+ declare function lerp<T>(from: T, to: NoInfer<T>, progress: number): T;
+ 
+-export { Animatable, Animated, AnimatedArray, AnimatedObject, AnimatedString, AnimatedType, AnimatedValue, AnimationProps, AnimationResult, AsyncResult, AsyncResultArray, BailSignal, Change, Controller, ControllerFlushFn, ControllerProps, ControllerUpdate, EasingFunction, EventProp, ExtrapolateType, ForwardProps, FrameValue, G as Globals, GoalProp, GoalValue, GoalValues, HostConfig, InferTo, InlineToProps, Interpolated, Interpolation, Interpolator, InterpolatorArgs, InterpolatorConfig, InterpolatorFactory, InterpolatorFn, ItemKeys, LoopProp, MatchProp, OnChange, OnPause, OnProps, OnResolve, OnRest, OnResume, OnStart, Payload, PickAnimated, ReservedEventProps, ReservedProps, Spring, SpringChain, SpringComponentProps, SpringConfig, SpringContext, SpringPresets, SpringProps, SpringRef, SpringTo, SpringToFn, SpringUpdate, SpringUpdateFn, SpringValue, SpringValues, Springify, SpringsUpdate, ToProps, Trail, TrailComponentProps, Transition, TransitionComponentProps, TransitionFn, TransitionFrom, TransitionKey, TransitionRenderFn, TransitionState, TransitionTo, TransitionValues, UseSpringProps, UseSpringsProps, UseTrailProps, UseTransitionProps, VelocityProp, createHost, createInterpolator, defaultColors, defaultStringInterpolation, getAnimated, getAnimatedType, getPayload, inferTo, isAnimated, lerp, setAnimated, to, update, useChain, useSpring, useSpringRef, useSprings, useTrail, useTransition };
++export { Animatable, Animated, AnimatedArray, AnimatedObject, AnimatedString, AnimatedType, AnimatedValue, AnimationProps, AnimationResult, AsyncResult, AsyncResultArray, BailSignal, Change, Controller, ControllerFlushFn, ControllerProps, ControllerUpdate, EasingFunction, EventProp, ExtrapolateType, ForwardProps, FrameValue, G as Globals, GoalProp, GoalValue, GoalValues, HostConfig, InferTo, InlineToProps, InterpolatorArgs, InterpolatorConfig, InterpolatorFactory, InterpolatorFn, ItemKeys, LoopProp, MatchProp, OnChange, OnPause, OnProps, OnResolve, OnRest, OnResume, OnStart, Payload, PickAnimated, ReservedEventProps, ReservedProps, Spring, SpringChain, SpringComponentProps, SpringConfig, SpringContext, SpringPresets, SpringProps, SpringRef, SpringTo, SpringToFn, SpringUpdate, SpringUpdateFn, SpringValue, SpringValues, Springify, SpringsUpdate, ToProps, Trail, TrailComponentProps, Transition, TransitionComponentProps, TransitionFn, TransitionFrom, TransitionKey, TransitionRenderFn, TransitionState, TransitionTo, TransitionValues, UseSpringProps, UseSpringsProps, UseTrailProps, UseTransitionProps, VelocityProp, createHost, createInterpolator, defaultColors, defaultStringInterpolation, getAnimated, getAnimatedType, getPayload, inferTo, isAnimated, lerp, setAnimated, update, useChain, useSpring, useSpringRef, useSprings, useTrail, useTransition };
+diff --git a/react-haru.mjs b/react-haru.mjs
+index 9f4299e..b02a044 100644
+--- a/react-haru.mjs
++++ b/react-haru.mjs
+@@ -2633,236 +2633,236 @@ function lerp(
+     : from;
+ }
+ 
+-class Interpolation extends FrameValue {
+-  constructor(
+-    source, 
+-    args
+-  ) {
+-    super();
+-    this.source = source;
+-    this.idle = true;
+-    this._active = new Set();
+-    this.calc = createInterpolator(
+-      ...args
+-    );
+-    const value = this._get();
+-    const nodeType = getAnimatedType(
+-      value
+-    );
+-    setAnimated(
+-      this, 
+-      nodeType.create(
+-      value
+-    )
+-    );
+-  }
+-  advance(
+-    _dt
+-  ) {
+-    const value = this._get();
+-    const oldValue = this.get();
+-    if (!isEqual(
+-      value, 
+-      oldValue
+-    )) {
+-      getAnimated(
+-        this
+-      ).setValue(
+-        value
+-      );
+-      this._onChange(
+-        value, 
+-        this.idle
+-      );
+-    }
+-    if (!this.idle 
+-      && checkIdle(
+-      this._active
+-    )) {
+-      becomeIdle(
+-        this
+-      );
+-    }
+-  }
+-  _get() {
+-    const inputs = is.array(
+-      this.source
+-    ) 
+-      ? this.source.map(
+-      getFluidValue
+-    ) 
+-      : toArray(
+-      getFluidValue(
+-      this.source
+-    )
+-    );
+-    return this.calc(
+-      ...inputs
+-    );
+-  }
+-  _start() {
+-    if (this.idle 
+-      && !checkIdle(
+-      this._active
+-    )) {
+-      this.idle = false;
+-      each(
+-        getPayload(
+-        this
+-      ), 
+-        (
+-        node
+-      ) => {
+-        node.done = false;
+-      }
+-      );
+-      if (G.skipAnimation) {
+-        raf.batchedUpdates(
+-          () => this.advance()
+-        );
+-        becomeIdle(
+-          this
+-        );
+-      } else {
+-        frameLoop.start(
+-          this
+-        );
+-      }
+-    }
+-  }
+-  _attach() {
+-    let priority = 1;
+-    each(
+-      toArray(
+-      this.source
+-    ), 
+-      (
+-      source
+-    ) => {
+-      if (hasFluidValue(
+-        source
+-      )) {
+-        addFluidObserver(
+-          source, 
+-          this
+-        );
+-      }
+-      if (isFrameValue(
+-        source
+-      )) {
+-        if (!source.idle) {
+-          this._active.add(
+-            source
+-          );
+-        }
+-        priority = Math.max(
+-          priority, 
+-          source.priority + 1
+-        );
+-      }
+-    }
+-    );
+-    this.priority = priority;
+-    this._start();
+-  }
+-  _detach() {
+-    each(
+-      toArray(
+-      this.source
+-    ), 
+-      (
+-      source
+-    ) => {
+-      if (hasFluidValue(
+-        source
+-      )) {
+-        removeFluidObserver(
+-          source, 
+-          this
+-        );
+-      }
+-    }
+-    );
+-    this._active.clear();
+-    becomeIdle(
+-      this
+-    );
+-  }
+-  eventObserved(
+-    event
+-  ) {
+-    if (event.type == "change") {
+-      if (event.idle) {
+-        this.advance();
+-      } else {
+-        this._active.add(
+-          event.parent
+-        );
+-        this._start();
+-      }
+-    } else if (event.type == "idle") {
+-      this._active.delete(
+-        event.parent
+-      );
+-    } else if (event.type == "priority") {
+-      this.priority = toArray(
+-        this.source
+-      ).reduce(
+-        (
+-        highest, 
+-        parent
+-      ) => Math.max(
+-        highest, 
+-        (isFrameValue(
+-        parent
+-      ) 
+-        ? parent.priority 
+-        : 0) + 1
+-      ), 
+-        0
+-      );
+-    }
+-  }
+-}
+-function isIdle(
+-  source
+-) {
+-  return source.idle !== false;
+-}
+-function checkIdle(
+-  active
+-) {
+-  return !active.size 
+-    || Array.from(
+-    active
+-  ).every(
+-    isIdle
+-  );
+-}
+-function becomeIdle(
+-  self
+-) {
+-  if (!self.idle) {
+-    self.idle = true;
+-    each(
+-      getPayload(
+-      self
+-    ), 
+-      (
+-      node
+-    ) => {
+-      node.done = true;
+-    }
+-    );
+-    callFluidObservers(
+-      self, 
+-      {
+-      type: "idle",
+-      parent: self
+-    }
+-    );
+-  }
+-}
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
+ 
+ const isFrameValue = (
+   value
+@@ -2896,11 +2896,11 @@ class FrameValue extends FluidValue {
+     return node 
+       && node.getValue();
+   }
+-  to(
+-    ...args
+-  ) {
+-    return new Interpolation(this, args);
+-  }
++
++
++
++
++
+   toJSON() {
+     return this.get();
+   }
+@@ -6054,10 +6054,10 @@ function Transition(
+   );
+ }
+ 
+-const to = (
+-  source, 
+-  ...args
+-) => new Interpolation(source, args);
++
++
++
++
+ 
+ const update = frameLoop.advance;
+ 
+@@ -6071,7 +6071,7 @@ export {
+   Controller, 
+   FrameValue, 
+   G as Globals, 
+-  Interpolation, 
++
+   Spring, 
+   SpringContext, 
+   SpringPresets, 
+@@ -6090,7 +6090,7 @@ export {
+   isAnimated, 
+   lerp, 
+   setAnimated, 
+-  to, 
++
+   update, 
+   useChain, 
+   useSpring, 
+-- 
+2.19.2

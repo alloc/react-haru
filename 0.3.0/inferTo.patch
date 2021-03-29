@@ -1,0 +1,218 @@
+From d776926bc602b03cc70c20f6582ad3bd1470e0d5 Mon Sep 17 00:00:00 2001
+From: Alec Larson <1925840+aleclarson@users.noreply.github.com>
+Date: Wed, 31 Mar 2021 14:25:57 -0400
+Subject: [PATCH] revert: inferTo
+
+---
+ react-haru.d.ts |  28 +++++------
+ react-haru.mjs  | 124 ++++++++++++++++++++++++------------------------
+ 2 files changed, 76 insertions(+), 76 deletions(-)
+
+diff --git a/react-haru.d.ts b/react-haru.d.ts
+index 14a8bb6..1364637 100644
+--- a/react-haru.d.ts
++++ b/react-haru.d.ts
+@@ -1088,12 +1088,12 @@ interface Change {
+     payload: ControllerUpdate;
+ }
+ 
+-/**
+- * Move all non-reserved props into the `to` prop.
+- */
+-declare type InferTo<T extends object> = Merge<{
+-    to: ForwardProps<T>;
+-}, Pick<T, keyof T & keyof ReservedProps>>;
++
++
++
++
++
++
+ /**
+  * The props of a `useSpring` call or its async `update` function.
+  *
+@@ -1280,7 +1280,7 @@ interface AnimationProps<T = any> {
+ /**
+  * Extract the custom props that are treated like `to` values
+  */
+-declare type ForwardProps<T extends object> = RawValues<Omit<Constrain<T, {}>, keyof ReservedProps>>;
++declare type ForwardProps<T extends object> = RawValues<Constrain<T, {}>>;
+ /**
+  * Property names that are reserved for animation config
+  */
+@@ -1320,7 +1320,7 @@ declare type PickAnimated<Props extends object, Fwd = true> = unknown & ([Props]
+ /**
+  * Pick the values of the `to` prop. Forward props are *not* included.
+  */
+-declare type ToValues<Props extends object, AndForward = true> = unknown & (AndForward extends true ? ForwardProps<Props> : unknown) & (Props extends {
++declare type ToValues<Props extends object> = unknown & (Props extends {
+     to?: any;
+ } ? Exclude<Props['to'], Function | ReadonlyArray<any>> extends infer To ? ForwardProps<[To] extends [object] ? To : Partial<Extract<To, object>>> : never : unknown);
+ /**
+@@ -1538,13 +1538,13 @@ declare const SpringContext: {
+     Consumer: Consumer<SpringContext>;
+ };
+ 
+-/**
+- * Clone the given `props` and move all non-reserved props
+- * into the `to` prop.
+- */
+-declare function inferTo<T extends object>(props: T): InferTo<T>;
++
++
++
++
++
+ 
+ declare function lerp<T extends Animatable, U extends Animatable<T>>(from: T, to: U, progress: number): Animatable<T>;
+ declare function lerp<T>(from: T, to: NoInfer<T>, progress: number): T;
+ 
+-export { Animatable, Animated, AnimatedArray, AnimatedObject, AnimatedString, AnimatedType, AnimatedValue, AnimationProps, AnimationResult, AsyncResult, AsyncResultArray, BailSignal, Change, Controller, ControllerFlushFn, ControllerProps, ControllerUpdate, EasingFunction, EventProp, ExtrapolateType, ForwardProps, FrameValue, G as Globals, GoalProp, GoalValue, GoalValues, HostConfig, InferTo, InlineToProps, Interpolated, Interpolation, Interpolator, InterpolatorArgs, InterpolatorConfig, InterpolatorFactory, InterpolatorFn, ItemKeys, LoopProp, MatchProp, OnChange, OnPause, OnProps, OnResolve, OnRest, OnResume, OnStart, Payload, PickAnimated, ReservedEventProps, ReservedProps, Spring, SpringChain, SpringComponentProps, SpringConfig, SpringContext, SpringPresets, SpringProps, SpringRef, SpringTo, SpringToFn, SpringUpdate, SpringUpdateFn, SpringValue, SpringValues, Springify, SpringsUpdate, ToProps, Trail, TrailComponentProps, Transition, TransitionComponentProps, TransitionFn, TransitionFrom, TransitionKey, TransitionRenderFn, TransitionState, TransitionTo, TransitionValues, UseSpringProps, UseSpringsProps, UseTrailProps, UseTransitionProps, VelocityProp, createHost, createInterpolator, defaultColors, defaultStringInterpolation, getAnimated, getAnimatedType, getPayload, inferTo, isAnimated, lerp, setAnimated, to, update, useChain, useSpring, useSpringRef, useSprings, useTrail, useTransition };
++export { Animatable, Animated, AnimatedArray, AnimatedObject, AnimatedString, AnimatedType, AnimatedValue, AnimationProps, AnimationResult, AsyncResult, AsyncResultArray, BailSignal, Change, Controller, ControllerFlushFn, ControllerProps, ControllerUpdate, EasingFunction, EventProp, ExtrapolateType, FrameValue, G as Globals, GoalProp, GoalValue, GoalValues, HostConfig, InlineToProps, Interpolated, Interpolation, Interpolator, InterpolatorArgs, InterpolatorConfig, InterpolatorFactory, InterpolatorFn, ItemKeys, LoopProp, MatchProp, OnChange, OnPause, OnProps, OnResolve, OnRest, OnResume, OnStart, Payload, PickAnimated, ReservedEventProps, ReservedProps, Spring, SpringChain, SpringComponentProps, SpringConfig, SpringContext, SpringPresets, SpringProps, SpringRef, SpringTo, SpringToFn, SpringUpdate, SpringUpdateFn, SpringValue, SpringValues, Springify, SpringsUpdate, ToProps, Trail, TrailComponentProps, Transition, TransitionComponentProps, TransitionFn, TransitionFrom, TransitionKey, TransitionRenderFn, TransitionState, TransitionTo, TransitionValues, UseSpringProps, UseSpringsProps, UseTrailProps, UseTransitionProps, VelocityProp, createHost, createInterpolator, defaultColors, defaultStringInterpolation, getAnimated, getAnimatedType, getPayload, isAnimated, lerp, setAnimated, to, update, useChain, useSpring, useSpringRef, useSprings, useTrail, useTransition };
+diff --git a/react-haru.mjs b/react-haru.mjs
+index 9f4299e..4c6bf6d 100644
+--- a/react-haru.mjs
++++ b/react-haru.mjs
+@@ -1047,70 +1047,70 @@ const DEFAULT_PROPS = [
+   "onResume",
+   "onRest"
+ ];
+-const RESERVED_PROPS = {
+-  config: 1,
+-  from: 1,
+-  to: 1,
+-  ref: 1,
+-  loop: 1,
+-  reset: 1,
+-  pause: 1,
+-  cancel: 1,
+-  reverse: 1,
+-  immediate: 1,
+-  default: 1,
+-  delay: 1,
+-  onProps: 1,
+-  onStart: 1,
+-  onChange: 1,
+-  onPause: 1,
+-  onResume: 1,
+-  onRest: 1,
+-  onResolve: 1,
+-  keys: 1,
+-  parentId: 1
+-};
+-function getForwardProps(
+-  props
+-) {
+-  const forward = {};
+-  let count = 0;
+-  eachProp(
+-    props, 
+-    (
+-    value, 
+-    prop
+-  ) => {
+-    if (!RESERVED_PROPS[prop]) {
+-      forward[prop] = value;
+-      count++;
+-    }
+-  }
+-  );
+-  if (count) {
+-    return forward;
+-  }
+-}
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
+ function inferTo(
+   props
+ ) {
+-  const to = getForwardProps(
+-    props
+-  );
+-  if (to) {
+-    const out = {
+-      to
+-    };
+-    eachProp(
+-      props, 
+-      (
+-      val, 
+-      key
+-    ) => key in to 
+-      || (out[key] = val)
+-    );
+-    return out;
+-  }
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
+   return {
+     ...props
+   };
+@@ -6086,7 +6086,7 @@ export {
+   getAnimated, 
+   getAnimatedType, 
+   getPayload, 
+-  inferTo, 
++
+   isAnimated, 
+   lerp, 
+   setAnimated, 
+-- 
+2.19.2

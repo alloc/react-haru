@@ -1,0 +1,284 @@
+From 59992837e9f004d73b8cfca5b0ec4c556fb99141 Mon Sep 17 00:00:00 2001
+From: Alec Larson <1925840+aleclarson@users.noreply.github.com>
+Date: Wed, 31 Mar 2021 14:26:43 -0400
+Subject: [PATCH] revert: AnimatedArray
+
+---
+ react-haru.d.ts |  34 +++++------
+ react-haru.mjs  | 147 ++++++++++++++++++++++++------------------------
+ 2 files changed, 91 insertions(+), 90 deletions(-)
+
+diff --git a/react-haru.d.ts b/react-haru.d.ts
+index 14a8bb6..f6829ab 100644
+--- a/react-haru.d.ts
++++ b/react-haru.d.ts
+@@ -5,9 +5,9 @@ import { raf, Timeout } from 'rafz';
+ import { ReactNode, PropsWithChildren, Provider, Consumer } from 'react';
+ 
+ /** These types can be animated */
+-declare type Animatable<T = any> = T extends number ? number : T extends string ? string : T extends ReadonlyArray<number | string> ? Array<number | string> extends T ? ReadonlyArray<number | string> : {
+-    [P in keyof T]: Animatable<T[P]>;
+-} : never;
++declare type Animatable<T = any> = T extends number ? number : T extends string ? string
++
++: never;
+ 
+ /** Ensure each type of `T` is an array */
+ declare type Arrify<T> = [T, T] extends [infer T, infer DT] ? DT extends ReadonlyArray<any> ? Array<DT[number]> extends DT ? ReadonlyArray<T extends ReadonlyArray<infer U> ? U : T> : DT : ReadonlyArray<T extends ReadonlyArray<infer U> ? U : T> : never;
+@@ -433,20 +433,20 @@ declare class AnimatedObject extends Animated {
+     protected _addToPayload(this: Set<AnimatedValue>, source: any): void;
+ }
+ 
+-declare type Value$1 = number | string;
+-declare type Source = AnimatedValue<Value$1>[];
+-/** An array of animated nodes */
+-declare class AnimatedArray<T extends ReadonlyArray<Value$1> = Value$1[]> extends AnimatedObject {
+-    protected source: Source;
+-    constructor(source: T);
+-    /** @internal */
+-    static create<T extends ReadonlyArray<Value$1>>(source: T): AnimatedArray<T>;
+-    getValue(): T;
+-    setValue(source: T): boolean;
+-}
++
++
++
++
++
++
++
++
++
++
++
+ 
+ declare type AnimatedType<T = any> = Function & {
+-    create: (from: any, goal?: any) => T extends ReadonlyArray<number | string> ? AnimatedArray<T> : AnimatedValue<T>;
++    create: (from: any, goal?: any) => AnimatedValue<T>;
+ };
+ 
+ /** Return the `Animated` node constructor for a given value */
+@@ -1232,7 +1232,7 @@ interface ControllerProps<State extends Lookup = Lookup> extends AnimationProps<
+     onResolve?: OnResolve<State>;
+ }
+ declare type LoopProp<T extends object> = boolean | T | (() => boolean | T);
+-declare type VelocityProp<T = any> = [unknown] extends [T] ? number | number[] : T extends ReadonlyArray<number | string> ? number[] : number;
++declare type VelocityProp<T = any> = [unknown] extends [T] ? number | number[] : number;
+ /** For props that can be set on a per-key basis. */
+ declare type MatchProp<T> = boolean | OneOrMore<StringKeys<T>> | ((key: StringKeys<T>) => boolean);
+ /** Event props can be customized per-key. */
+@@ -1547,4 +1547,4 @@ declare function inferTo<T extends object>(props: T): InferTo<T>;
+ declare function lerp<T extends Animatable, U extends Animatable<T>>(from: T, to: U, progress: number): Animatable<T>;
+ declare function lerp<T>(from: T, to: NoInfer<T>, progress: number): T;
+ 
+-export { Animatable, Animated, AnimatedArray, AnimatedObject, AnimatedString, AnimatedType, AnimatedValue, AnimationProps, AnimationResult, AsyncResult, AsyncResultArray, BailSignal, Change, Controller, ControllerFlushFn, ControllerProps, ControllerUpdate, EasingFunction, EventProp, ExtrapolateType, ForwardProps, FrameValue, G as Globals, GoalProp, GoalValue, GoalValues, HostConfig, InferTo, InlineToProps, Interpolated, Interpolation, Interpolator, InterpolatorArgs, InterpolatorConfig, InterpolatorFactory, InterpolatorFn, ItemKeys, LoopProp, MatchProp, OnChange, OnPause, OnProps, OnResolve, OnRest, OnResume, OnStart, Payload, PickAnimated, ReservedEventProps, ReservedProps, Spring, SpringChain, SpringComponentProps, SpringConfig, SpringContext, SpringPresets, SpringProps, SpringRef, SpringTo, SpringToFn, SpringUpdate, SpringUpdateFn, SpringValue, SpringValues, Springify, SpringsUpdate, ToProps, Trail, TrailComponentProps, Transition, TransitionComponentProps, TransitionFn, TransitionFrom, TransitionKey, TransitionRenderFn, TransitionState, TransitionTo, TransitionValues, UseSpringProps, UseSpringsProps, UseTrailProps, UseTransitionProps, VelocityProp, createHost, createInterpolator, defaultColors, defaultStringInterpolation, getAnimated, getAnimatedType, getPayload, inferTo, isAnimated, lerp, setAnimated, to, update, useChain, useSpring, useSpringRef, useSprings, useTrail, useTransition };
++export { Animatable, Animated, AnimatedObject, AnimatedString, AnimatedType, AnimatedValue, AnimationProps, AnimationResult, AsyncResult, AsyncResultArray, BailSignal, Change, Controller, ControllerFlushFn, ControllerProps, ControllerUpdate, EasingFunction, EventProp, ExtrapolateType, ForwardProps, FrameValue, G as Globals, GoalProp, GoalValue, GoalValues, HostConfig, InferTo, InlineToProps, Interpolated, Interpolation, Interpolator, InterpolatorArgs, InterpolatorConfig, InterpolatorFactory, InterpolatorFn, ItemKeys, LoopProp, MatchProp, OnChange, OnPause, OnProps, OnResolve, OnRest, OnResume, OnStart, Payload, PickAnimated, ReservedEventProps, ReservedProps, Spring, SpringChain, SpringComponentProps, SpringConfig, SpringContext, SpringPresets, SpringProps, SpringRef, SpringTo, SpringToFn, SpringUpdate, SpringUpdateFn, SpringValue, SpringValues, Springify, SpringsUpdate, ToProps, Trail, TrailComponentProps, Transition, TransitionComponentProps, TransitionFn, TransitionFrom, TransitionKey, TransitionRenderFn, TransitionState, TransitionTo, TransitionValues, UseSpringProps, UseSpringsProps, UseTrailProps, UseTransitionProps, VelocityProp, createHost, createInterpolator, defaultColors, defaultStringInterpolation, getAnimated, getAnimatedType, getPayload, inferTo, isAnimated, lerp, setAnimated, to, update, useChain, useSpring, useSpringRef, useSprings, useTrail, useTransition };
+diff --git a/react-haru.mjs b/react-haru.mjs
+index 9f4299e..fa13d2b 100644
+--- a/react-haru.mjs
++++ b/react-haru.mjs
+@@ -670,20 +670,21 @@ function isEqual(
+   a, 
+   b
+ ) {
+-  if (is.array(
+-    a
+-  )) {
+-    if (!is.array(
+-      b
+-    ) 
+-      || a.length !== b.length)
+-      return false;
+-    for (let i = 0; i < a.length; i++) {
+-      if (a[i] !== b[i])
+-        return false;
+-    }
+-    return true;
+-  }
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
+   return a === b;
+ }
+ const each = (
+@@ -1121,9 +1122,9 @@ function computeGoal(
+   value = getFluidValue(
+     value
+   );
+-  return is.array(
+-    value
+-  ) 
++  return false
++
++
+     ? value.map(
+     computeGoal
+   ) 
+@@ -1558,48 +1559,48 @@ class AnimatedObject extends Animated {
+   }
+ }
+ 
+-class AnimatedArray extends AnimatedObject {
+-  constructor(
+-    source
+-  ) {
+-    super(
+-      source
+-    );
+-  }
+-  static create(
+-    source
+-  ) {
+-    return new AnimatedArray(source);
+-  }
+-  getValue() {
+-    return this.source.map(
+-      (
+-      node
+-    ) => node.getValue()
+-    );
+-  }
+-  setValue(
+-    source
+-  ) {
+-    const payload = this.getPayload();
+-    if (source.length == payload.length) {
+-      return payload.some(
+-        (
+-        node, 
+-        i
+-      ) => node.setValue(
+-        source[i]
+-      )
+-      );
+-    }
+-    super.setValue(
+-      source.map(
+-      makeAnimated
+-    )
+-    );
+-    return true;
+-  }
+-}
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
+ function makeAnimated(
+   value
+ ) {
+@@ -1621,10 +1622,10 @@ function getAnimatedType(
+   );
+   return parentNode 
+     ? parentNode.constructor 
+-    : is.array(
+-    value
+-  ) 
+-    ? AnimatedArray 
++
++
++
++
+     : isAnimatedString(
+     value
+   ) 
+@@ -2594,9 +2595,9 @@ function lerp(
+   to, 
+   progress
+ ) {
+-  return is.array(
+-    from
+-  ) 
++  return false
++
++
+     ? from.map(
+     (
+     from2, 
+@@ -3110,9 +3111,9 @@ class SpringValue extends FrameValue {
+         const from = anim.fromValues[i];
+         const v0 = node2.v0 != null 
+           ? node2.v0 
+-          : node2.v0 = is.array(
+-          config.velocity
+-        ) 
++          : node2.v0 = false
++
++
+           ? config.velocity[i] 
+           : config.velocity;
+         let velocity;
+@@ -3701,9 +3702,9 @@ class SpringValue extends FrameValue {
+     const isAnimatable = is.number(
+       goal
+     ) 
+-      || is.array(
+-      goal
+-    ) 
++
++
++
+       || isAnimatedString(
+       goal
+     );
+@@ -6063,7 +6064,7 @@ const update = frameLoop.advance;
+ 
+ export { 
+   Animated, 
+-  AnimatedArray, 
++
+   AnimatedObject, 
+   AnimatedString, 
+   AnimatedValue, 
+-- 
+2.19.2

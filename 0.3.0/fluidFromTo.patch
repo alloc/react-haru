@@ -1,0 +1,370 @@
+From 4ca5a1443293f58b4be87fb9692fc510ac78c357 Mon Sep 17 00:00:00 2001
+From: Alec Larson <1925840+aleclarson@users.noreply.github.com>
+Date: Wed, 31 Mar 2021 14:26:43 -0400
+Subject: [PATCH] revert: fluidFromTo
+
+---
+ react-haru.d.ts |  24 +++----
+ react-haru.mjs  | 166 ++++++++++++++++++++++++------------------------
+ 2 files changed, 95 insertions(+), 95 deletions(-)
+
+diff --git a/react-haru.d.ts b/react-haru.d.ts
+index 14a8bb6..434f7e7 100644
+--- a/react-haru.d.ts
++++ b/react-haru.d.ts
+@@ -637,8 +637,8 @@ interface AnimationTarget<T = any> extends Readable<T> {
+ }
+ /** @internal */
+ interface AnimationRange<T> {
+-    to: T | FluidValue<T> | undefined;
+-    from: T | FluidValue<T> | undefined;
++    to: T | undefined;
++    from: T | undefined;
+ }
+ /** @internal */
+ declare type AnimationResolver<T extends Readable> = (result: AnimationResult<T> | AsyncResult<T>) => void;
+@@ -655,8 +655,8 @@ declare class Animation<T = any> {
+     values: readonly AnimatedValue[];
+     toValues: readonly number[] | null;
+     fromValues: readonly number[];
+-    to: T | FluidValue<T>;
+-    from: T | FluidValue<T>;
++    to: T;
++    from: T;
+     config: AnimationConfig;
+     immediate: boolean;
+ }
+@@ -737,7 +737,7 @@ declare class SpringValue<T = any> extends FrameValue<T> {
+     /** Advance the current animation by a number of milliseconds */
+     advance(dt: number): void;
+     /** Set the current value, while stopping the current animation */
+-    set(value: T | FluidValue<T>): this;
++    set(value: T): this;
+     /**
+      * Freeze the active animation in time, as well as any updates merged
+      * before `resume` is called.
+@@ -788,15 +788,15 @@ declare class SpringValue<T = any> extends FrameValue<T> {
+     protected _update({ ...props }: SpringProps<T>, isLoop?: boolean): AsyncResult<SpringValue<T>>;
+     /** Merge props into the current animation */
+     protected _merge(range: AnimationRange<T>, props: RunAsyncProps<SpringValue<T>>, resolve: AnimationResolver<SpringValue<T>>): void;
+-    /** Update the `animation.to` value, which might be a `FluidValue` */
+-    protected _focus(value: T | FluidValue<T>): void;
++
++
+     protected _attach(): void;
+     protected _detach(): void;
+     /**
+      * Update the current value from outside the frameloop,
+      * and return the `Animated` node.
+      */
+-    protected _set(arg: T | FluidValue<T>, idle?: boolean): Animated | undefined;
++    protected _set(arg: T, idle?: boolean): Animated | undefined;
+     protected _onStart(): void;
+     protected _onChange(value: T, idle?: boolean): void;
+     protected _start(reset?: boolean): void;
+@@ -1153,7 +1153,7 @@ declare type ToProps<T = any> = {
+  */
+ declare type GoalProp<T> = [T] extends [IsPlainObject<T>] ? GoalValues<T> | Falsy : GoalValue<T>;
+ /** A set of values for a `Controller` to animate from/to. */
+-declare type GoalValues<T extends Lookup> = FluidProps<T> extends infer Props ? {
++declare type GoalValues<T extends Lookup> = T extends infer Props ? {
+     [P in keyof Props]?: Props[P] | null;
+ } : never;
+ /**
+@@ -1162,7 +1162,7 @@ declare type GoalValues<T extends Lookup> = FluidProps<T> extends infer Props ?
+  * The `UnknownProps` type lets you pass in { a: 1 } if the `key`
+  * property of `SpringValue` equals "a".
+  */
+-declare type GoalValue<T> = T | FluidValue<T> | UnknownProps | null | undefined;
++declare type GoalValue<T> = T | UnknownProps | null | undefined;
+ /**
+  * Where `to` is inferred from non-reserved props
+  *
+@@ -1178,7 +1178,7 @@ interface SpringChain<T = any> extends Array<[
+ ] extends [IsPlainObject<T>] ? ControllerUpdate<T> : SpringTo<T> | SpringUpdate<T>> {
+ }
+ /** A value that any `SpringValue` or `Controller` can animate to. */
+-declare type SpringTo<T = any> = ([T] extends [IsPlainObject<T>] ? never : T | FluidValue<T>) | SpringChain<T> | SpringToFn<T> | Falsy;
++declare type SpringTo<T = any> = ([T] extends [IsPlainObject<T>] ? never : T) | SpringChain<T> | SpringToFn<T> | Falsy;
+ declare type ControllerUpdate<State extends Lookup = Lookup> = unknown & ToProps<State> & ControllerProps<State>;
+ /**
+  * Props for `Controller` methods and constructor.
+@@ -1371,7 +1371,7 @@ declare type RefProps<T> = T extends IsPlainObject<T> ? ControllerProps<T> : Spr
+ declare type RefUpdate<T> = T extends IsPlainObject<T> ? ControllerUpdate<T> : SpringUpdate<T>;
+ declare type RefUpdater<T> = T extends IsPlainObject<T> ? (i: number, ctrl: Controller<T>) => ControllerUpdate<T> | Falsy : (i: number, spring: SpringValue<T>) => SpringUpdate<T> | Falsy;
+ interface SpringSetFn<T> {
+-    (value: T | FluidValue<T>): SpringRef<T>;
++    (value: T): SpringRef<T>;
+ }
+ interface SpringPauseFn<T> {
+     /** Pause animation. */
+diff --git a/react-haru.mjs b/react-haru.mjs
+index 9f4299e..c2b9576 100644
+--- a/react-haru.mjs
++++ b/react-haru.mjs
+@@ -3030,7 +3030,7 @@ class SpringValue extends FrameValue {
+     );
+   }
+   get goal() {
+-    return getFluidValue(
++    return (
+       this.animation.to
+     );
+   }
+@@ -3076,16 +3076,16 @@ class SpringValue extends FrameValue {
+     const payload = getPayload(
+       anim.to
+     );
+-    if (!payload 
+-      && hasFluidValue(
+-      anim.to
+-    )) {
+-      toValues = toArray(
+-        getFluidValue(
+-        anim.to
+-      )
+-      );
+-    }
++
++
++
++
++
++
++
++
++
++
+     anim.values.forEach(
+       (
+       node2, 
+@@ -3234,7 +3234,7 @@ class SpringValue extends FrameValue {
+       this
+     );
+     if (idle) {
+-      const value = getFluidValue(
++      const value = (
+         anim.to
+       );
+       if (node.setValue(
+@@ -3258,7 +3258,7 @@ class SpringValue extends FrameValue {
+     raf.batchedUpdates(
+       () => {
+       this._stop();
+-      this._focus(
++      this.animation.to = (
+         value
+       );
+       this._set(
+@@ -3363,7 +3363,7 @@ class SpringValue extends FrameValue {
+     const {
+       to
+     } = this.animation;
+-    this._focus(
++    this.animation.to = (
+       this.get()
+     );
+     stopAsync(
+@@ -3435,9 +3435,9 @@ class SpringValue extends FrameValue {
+           from, 
+           to
+         ];
+-      from = getFluidValue(
+-        from
+-      );
++
++
++
+       if (is.defined(
+         from
+       )) {
+@@ -3638,15 +3638,15 @@ class SpringValue extends FrameValue {
+     if (hasFromChanged) {
+       anim.from = from;
+     }
+-    from = getFluidValue(
+-      from
+-    );
++
++
++
+     const hasToChanged = !isEqual(
+       to, 
+       prevTo
+     );
+     if (hasToChanged) {
+-      this._focus(
++      anim.to = (
+         to
+       );
+     }
+@@ -3744,9 +3744,9 @@ class SpringValue extends FrameValue {
+         progress = 0
+       } = anim.config;
+       value = progress > 0 
+-        && !hasFluidValue(
+-        to
+-      ) 
++
++
++
+         ? lerp(
+         from, 
+         to, 
+@@ -3767,9 +3767,9 @@ class SpringValue extends FrameValue {
+       Boolean
+     );
+     let started = hasVelocity 
+-      || hasFluidValue(
+-      to
+-    );
++
++
++
+     if (!started) {
+       const hasValueChanged = reset 
+         || !hasAnimated(
+@@ -3802,12 +3802,12 @@ class SpringValue extends FrameValue {
+     }
+     if (!hasAsyncTo) {
+       if (started 
+-        || hasFluidValue(
+-        prevTo
++        || (
++        false
+       )) {
+         anim.values = node.getPayload();
+-        anim.toValues = hasFluidValue(
+-          to
++        anim.toValues = (
++          false
+         ) 
+           ? null 
+           : node.constructor == AnimatedString 
+@@ -3924,64 +3924,64 @@ class SpringValue extends FrameValue {
+       );
+     }
+   }
+-  _focus(
+-    value
+-  ) {
+-    const anim = this.animation;
+-    if (value !== anim.to) {
+-      if (getFluidObservers(
+-        this
+-      )) {
+-        this._detach();
+-      }
+-      anim.to = value;
+-      if (getFluidObservers(
+-        this
+-      )) {
+-        this._attach();
+-      }
+-    }
+-  }
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
+   _attach() {
+-    let priority = 0;
+-    const {
+-      to
+-    } = this.animation;
+-    if (hasFluidValue(
+-      to
+-    )) {
+-      addFluidObserver(
+-        to, 
+-        this
+-      );
+-      if (isFrameValue(
+-        to
+-      )) {
+-        priority = to.priority + 1;
+-      }
+-    }
+-    this.priority = priority;
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
+   }
+   _detach() {
+-    const {
+-      to
+-    } = this.animation;
+-    if (hasFluidValue(
+-      to
+-    )) {
+-      removeFluidObserver(
+-        to, 
+-        this
+-      );
+-    }
++
++
++
++
++
++
++
++
++
++
++
+   }
+   _set(
+-    arg, 
++    value, 
+     idle = true
+   ) {
+-    const value = getFluidValue(
+-      arg
+-    );
++
++
++
+     if (is.defined(
+       value
+     )) {
+@@ -4063,7 +4063,7 @@ class SpringValue extends FrameValue {
+   ) {
+     const anim = this.animation;
+     const to = toArray(
+-      getFluidValue(
++      (
+       anim.to
+     )
+     );
+-- 
+2.19.2

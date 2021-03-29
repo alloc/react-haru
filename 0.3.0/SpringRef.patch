@@ -1,0 +1,1685 @@
+From 83b2d2b67ed9a705b96aace8709877559ed3b8dd Mon Sep 17 00:00:00 2001
+From: Alec Larson <1925840+aleclarson@users.noreply.github.com>
+Date: Wed, 31 Mar 2021 14:26:43 -0400
+Subject: [PATCH] revert: SpringRef
+
+---
+ react-haru.d.ts |  312 +++++++--------
+ react-haru.mjs  | 1020 +++++++++++++++++++++++------------------------
+ 2 files changed, 666 insertions(+), 666 deletions(-)
+
+diff --git a/react-haru.d.ts b/react-haru.d.ts
+index 14a8bb6..d63a8ca 100644
+--- a/react-haru.d.ts
++++ b/react-haru.d.ts
+@@ -663,7 +663,7 @@ declare class Animation<T = any> {
+ interface Animation<T> extends PickEventFns<SpringProps<T>> {
+ }
+ 
+-declare type AsyncTo<T> = SpringChain<T> | SpringToFn<T>;
++declare type AsyncTo<T> = SpringChain<T>;
+ /** @internal */
+ declare type RunAsyncProps<T extends AnimationTarget = any> = InferProps<T> & {
+     callId: number;
+@@ -821,11 +821,11 @@ declare class Controller<State extends Lookup = Lookup> {
+     springs: SpringValues<State>;
+     /** The queue of props passed to the `update` method. */
+     queue: ControllerQueue<State>;
+-    /**
+-     * The injected ref. When defined, render-based updates are pushed
+-     * onto the `queue` instead of being auto-started.
+-     */
+-    ref?: SpringRef<State>;
++
++
++
++
++
+     /** Custom handler for flushing update queues */
+     protected _flush?: ControllerFlushFn<this>;
+     /** The tracker is notified of every `start` call */
+@@ -927,16 +927,16 @@ declare type StringKeys<T> = T extends IsPlainObject<T> ? string & keyof T : str
+ 
+ /** The flush function that handles `start` calls */
+ declare type ControllerFlushFn<T extends Controller<any> = Controller> = (ctrl: T, queue: ControllerQueue<InferState<T>>) => AsyncResult<T>;
+-/**
+- * An async function that can update or stop the animations of a spring.
+- * Typically defined as the `to` prop.
+- *
+- * The `T` parameter can be a set of animated values (as an object type)
+- * or a primitive type for a single animated value.
+- */
+-interface SpringToFn<T = any> {
+-    (ref: SpringRef<T>): PromiseLike<any> | void;
+-}
++
++
++
++
++
++
++
++
++
++
+ /**
+  * Update the props of an animation.
+  *
+@@ -946,9 +946,9 @@ interface SpringToFn<T = any> {
+ declare type SpringUpdateFn<T = any> = T extends IsPlainObject<T> ? UpdateValuesFn<T> : UpdateValueFn<T>;
+ interface AnyUpdateFn<T extends SpringValue | Controller<any>, Props extends object = InferProps<T>, State = InferState<T>> {
+     (to: SpringTo<State>, props?: Props): AsyncResult<T>;
+-    (props: {
+-        to?: SpringToFn<T> | Falsy;
+-    } & Props): AsyncResult<T>;
++
++
++
+     (props: {
+         to?: SpringChain<State> | Falsy;
+     } & Props): AsyncResult<T>;
+@@ -1052,12 +1052,12 @@ declare type UseTransitionProps<Item = any> = Merge<ControllerProps<UnknownProps
+      * Called after a transition item is unmounted.
+      */
+     onDestroyed?: (item: Item, key: unknown) => void;
+-    /**
+-     * Used to access the imperative API.
+-     *
+-     * Animations never auto-start when `ref` is defined.
+-     */
+-    ref?: SpringRef;
++
++
++
++
++
++
+ }>;
+ declare type TransitionComponentProps<Item, Props extends object = any> = unknown & UseTransitionProps<Item> & {
+     keys?: ItemKeys<NoInfer<Item>>;
+@@ -1081,7 +1081,7 @@ interface TransitionState<Item = any, State extends Lookup = Lookup> {
+     expirationId?: number;
+ }
+ declare type TransitionFrom<Item> = Falsy | GoalProp<UnknownProps> | ((item: Item, index: number) => GoalProp<UnknownProps> | Falsy);
+-declare type TransitionTo<Item, State extends Lookup = Lookup> = Falsy | OneOrMore<ControllerUpdate<State>> | Function | ((item: Item, index: number) => ControllerUpdate<State> | SpringChain<State> | SpringToFn<State> | Falsy);
++declare type TransitionTo<Item, State extends Lookup = Lookup> = Falsy | OneOrMore<ControllerUpdate<State>> | Function | ((item: Item, index: number) => ControllerUpdate<State> | SpringChain<State> | Falsy);
+ interface Change {
+     phase: TransitionPhase;
+     springs: SpringValues<UnknownProps>;
+@@ -1143,7 +1143,7 @@ interface SpringProps<T = any> extends AnimationProps<T> {
+  * or a primitive type for a single animated value.
+  */
+ declare type ToProps<T = any> = {
+-    to?: GoalProp<T> | SpringToFn<T> | SpringChain<T>;
++    to?: GoalProp<T> | SpringChain<T>;
+ } | ([T] extends [IsPlainObject<T>] ? InlineToProps<T> : never);
+ /**
+  * A value or set of values that can be animated from/to.
+@@ -1178,13 +1178,13 @@ interface SpringChain<T = any> extends Array<[
+ ] extends [IsPlainObject<T>] ? ControllerUpdate<T> : SpringTo<T> | SpringUpdate<T>> {
+ }
+ /** A value that any `SpringValue` or `Controller` can animate to. */
+-declare type SpringTo<T = any> = ([T] extends [IsPlainObject<T>] ? never : T | FluidValue<T>) | SpringChain<T> | SpringToFn<T> | Falsy;
++declare type SpringTo<T = any> = ([T] extends [IsPlainObject<T>] ? never : T | FluidValue<T>) | SpringChain<T> | Falsy;
+ declare type ControllerUpdate<State extends Lookup = Lookup> = unknown & ToProps<State> & ControllerProps<State>;
+ /**
+  * Props for `Controller` methods and constructor.
+  */
+ interface ControllerProps<State extends Lookup = Lookup> extends AnimationProps<State> {
+-    ref?: SpringRef<State>;
++
+     from?: GoalValues<State> | Falsy;
+     loop?: LoopProp<ControllerUpdate>;
+     /**
+@@ -1330,160 +1330,160 @@ declare type FromValues<Props extends object> = ForwardProps<Props extends {
+     from?: infer From;
+ } ? ObjectType<From> : object>;
+ 
+-declare class SpringRef<T = any> {
+-    readonly current: RefTarget<T>[];
+-    protected defaultProps?: any;
+-    protected resolveProps: ResolveProps<T>;
+-    /** Set default props for `start` calls made with this SpringRef. */
+-    use(props: RefProps<T>): void;
+-    /** Add a target to this ref */
+-    add(target: RefTarget<T>): void;
+-    /** Remove a target from this ref */
+-    delete(target: RefTarget<T>): void;
+-    /** Start the queued animations of each target. */
+-    start(): AsyncResultArray<RefTarget<T>>;
+-    /** Update every target with the same props. */
+-    start(props: RefUpdate<T>): AsyncResultArray<RefTarget<T>>;
+-    /** Update targets based on their state. */
+-    start(props: RefUpdater<T>): AsyncResultArray<RefTarget<T>>;
+-    /** Start animating each target. */
+-    start(props?: RefUpdate<T> | RefUpdater<T>): AsyncResultArray<RefTarget<T>>;
+-    /** Add the same props to each controller's update queue. */
+-    update(props: RefUpdate<T>): SpringRef<T>;
+-    /** Generate separate props for each controller's update queue. */
+-    update(props: RefUpdater<T>): SpringRef<T>;
+-    /** Add props to each controller's update queue. */
+-    update(props: RefUpdate<T> | RefUpdater<T>): SpringRef<T>;
+-    /** Overridden by `runAsync` to enforce pausing and cancellation */
+-    protected _start(target: RefTarget<T>, props: any, i: number): any;
+-}
+-interface SpringRef<T> {
+-    set: T extends IsPlainObject<T> ? ControllerSetFn<T> : SpringSetFn<T>;
+-    stop: T extends IsPlainObject<T> ? ControllerStopFn<T> : SpringStopFn<T>;
+-    pause: T extends IsPlainObject<T> ? ControllerPauseFn<T> : SpringPauseFn<T>;
+-    resume: T extends IsPlainObject<T> ? ControllerResumeFn<T> : SpringResumeFn<T>;
+-}
+-interface ResolveProps<T> {
+-    (this: SpringRef<T>, arg: RefUpdate<T> | RefUpdater<T>, target: any, index: number): RefUpdate<T> | Falsy;
+-}
+-declare type RefTarget<T = any> = [unknown] extends [T] ? Controller | SpringValue : T extends IsPlainObject<T> ? Controller<T> : SpringValue<T>;
+-declare type RefProps<T> = T extends IsPlainObject<T> ? ControllerProps<T> : SpringProps<T>;
+-declare type RefUpdate<T> = T extends IsPlainObject<T> ? ControllerUpdate<T> : SpringUpdate<T>;
+-declare type RefUpdater<T> = T extends IsPlainObject<T> ? (i: number, ctrl: Controller<T>) => ControllerUpdate<T> | Falsy : (i: number, spring: SpringValue<T>) => SpringUpdate<T> | Falsy;
+-interface SpringSetFn<T> {
+-    (value: T | FluidValue<T>): SpringRef<T>;
+-}
+-interface SpringPauseFn<T> {
+-    /** Pause animation. */
+-    (): SpringRef<T>;
+-}
+-interface SpringResumeFn<T> {
+-    /** Resume animation. */
+-    (): SpringRef<T>;
+-}
+-interface SpringStopFn<T> {
+-    /** Stop the active animation. */
+-    (): SpringRef<T>;
+-    /** Cancel the active animation. */
+-    (cancel?: boolean): SpringRef<T>;
+-}
+-interface ControllerSetFn<T> {
+-    (state: Partial<T>): SpringRef<T>;
+-}
+-interface ControllerPauseFn<T> {
+-    /** Pause all animations. */
+-    (): SpringRef<T>;
+-    /** Pause animations for the given keys. */
+-    (keys: OneOrMore<string>): SpringRef<T>;
+-    /** Pause some or all animations. */
+-    (keys?: OneOrMore<string>): SpringRef<T>;
+-}
+-interface ControllerResumeFn<T> {
+-    /** Resume all animations. */
+-    (): SpringRef<T>;
+-    /** Resume animations for the given keys. */
+-    (keys: OneOrMore<string>): SpringRef<T>;
+-    /** Resume some or all animations. */
+-    (keys?: OneOrMore<string>): SpringRef<T>;
+-}
+-interface ControllerStopFn<T> {
+-    /** Stop all animations. */
+-    (): SpringRef<T>;
+-    /** Stop animations for the given keys. */
+-    (keys: OneOrMore<string>): SpringRef<T>;
+-    /** Cancel all animations. */
+-    (cancel: boolean): SpringRef<T>;
+-    /** Cancel animations for the given keys. */
+-    (cancel: boolean, keys: OneOrMore<string>): SpringRef<T>;
+-    /** Stop some or all animations. */
+-    (keys?: OneOrMore<string>): SpringRef<T>;
+-    /** Cancel some or all animations. */
+-    (cancel: boolean, keys?: OneOrMore<string>): SpringRef<T>;
+-}
+ 
+-declare function useChain(refs: ReadonlyArray<SpringRef>, timeSteps?: number[], timeFrame?: number): void;
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
+ 
+ /**
+  * The props that `useSpring` recognizes.
+  */
+ declare type UseSpringProps<Props extends object = any> = unknown & PickAnimated<Props> extends infer State ? Remap<ControllerUpdate<State> & {
+-    /**
+-     * Used to access the imperative API.
+-     *
+-     * When defined, the render animation won't auto-start.
+-     */
+-    ref?: SpringRef<State>;
++
++
++
++
++
++
+ }> : never;
+-/**
+- * The `props` function is only called on the first render, unless
+- * `deps` change (when defined). State is inferred from forward props.
+- */
+-declare function useSpring<Props extends object>(props: Function | (() => (Props & NeverProps<Props, UseSpringProps<Props>>) | UseSpringProps), deps?: readonly any[] | undefined): PickAnimated<Props> extends infer State ? [SpringValues<State>, SpringRef<State>] : never;
++
++
++
++
++
+ /**
+  * Updated on every render, with state inferred from forward props.
+  */
+ declare function useSpring<Props extends object>(props: (Props & NeverProps<Props, UseSpringProps<Props>>) | UseSpringProps): SpringValues<PickAnimated<Props>>;
+-/**
+- * Updated only when `deps` change, with state inferred from forwad props.
+- */
+-declare function useSpring<Props extends object>(props: (Props & NeverProps<Props, UseSpringProps<Props>>) | UseSpringProps, deps: readonly any[] | undefined): PickAnimated<Props> extends infer State ? [SpringValues<State>, SpringRef<State>] : never;
++
++
++
++
+ 
+ declare type UseSpringsProps<State extends Lookup = Lookup> = unknown & ControllerUpdate<State> & {
+-    ref?: SpringRef<State>;
++
+ };
+-/**
+- * When the `deps` argument exists, the `props` function is called whenever
+- * the `deps` change on re-render.
+- *
+- * Without the `deps` argument, the `props` function is only called once.
+- */
+-declare function useSprings<Props extends UseSpringProps>(length: number, props: (i: number, ctrl: Controller) => Props, deps?: readonly any[]): PickAnimated<Props> extends infer State ? [SpringValues<State>[], SpringRef<State>] : never;
++
++
++
++
++
++
++
+ /**
+  * Animations are updated on re-render.
+  */
+ declare function useSprings<Props extends UseSpringsProps>(length: number, props: Props[] & UseSpringsProps<PickAnimated<Props>>[]): SpringValues<PickAnimated<Props>>[];
+-/**
+- * When the `deps` argument exists, you get the `update` and `stop` function.
+- */
+-declare function useSprings<Props extends UseSpringsProps>(length: number, props: Props[] & UseSpringsProps<PickAnimated<Props>>[], deps: readonly any[] | undefined): PickAnimated<Props> extends infer State ? [SpringValues<State>[], SpringRef<State>] : never;
+ 
+-declare function useSpringRef<T = Lookup>(): SpringRef<T>;
+-declare function useSpringRef<T = Lookup>(props: RefProps<T>): SpringRef<T>;
+ 
+-declare type UseTrailProps<Props extends object = any> = UseSpringProps<Props>;
+-declare function useTrail<Props extends object>(length: number, props: Function | ((i: number, ctrl: Controller) => UseTrailProps | (Props & NeverProps<Props, UseTrailProps<Props>>)), deps?: readonly any[]): PickAnimated<Props> extends infer State ? [SpringValues<State>[], SpringRef<State>] : never;
+-declare function useTrail<Props extends object>(length: number, props: UseTrailProps | (Props & NeverProps<Props, UseTrailProps<Props>>)): SpringValues<PickAnimated<Props>>[];
+-declare function useTrail<Props extends object>(length: number, props: UseTrailProps | (Props & NeverProps<Props, UseTrailProps<Props>>), deps: readonly any[]): PickAnimated<Props> extends infer State ? [SpringValues<State>[], SpringRef<State>] : never;
++
++
++
++
++
++
++
++
++
++
+ 
+ declare function useTransition<Item, Props extends object>(data: OneOrMore<Item>, props: UseTransitionProps<Item> | (Props & NeverProps<Props, UseTransitionProps<Item>>)): TransitionFn<Item, PickAnimated<Props>>;
+-declare function useTransition<Item, Props extends object>(data: OneOrMore<Item>, props: UseTransitionProps<Item> | (Props & NeverProps<Props, UseTransitionProps<Item>>), deps: any[] | undefined): PickAnimated<Props> extends infer State ? [TransitionFn<Item, State>, SpringRef<State>] : never;
++
+ 
+ declare type SpringComponentProps<State extends object = UnknownProps> = unknown & UseSpringProps<State> & {
+     children: (values: SpringValues<State>) => JSX.Element | null;
+ };
+ declare function Spring<State extends object>(props: {
+     from: State;
+-    to?: SpringChain<NoInfer<State>> | SpringToFn<NoInfer<State>>;
++    to?: SpringChain<NoInfer<State>>;
+ } & Omit<SpringComponentProps<NoInfer<State>>, 'from' | 'to'>): JSX.Element | null;
+ declare function Spring<State extends object>(props: {
+     to: State;
+@@ -1547,4 +1547,4 @@ declare function inferTo<T extends object>(props: T): InferTo<T>;
+ declare function lerp<T extends Animatable, U extends Animatable<T>>(from: T, to: U, progress: number): Animatable<T>;
+ declare function lerp<T>(from: T, to: NoInfer<T>, progress: number): T;
+ 
+-export { Animatable, Animated, AnimatedArray, AnimatedObject, AnimatedString, AnimatedType, AnimatedValue, AnimationProps, AnimationResult, AsyncResult, AsyncResultArray, BailSignal, Change, Controller, ControllerFlushFn, ControllerProps, ControllerUpdate, EasingFunction, EventProp, ExtrapolateType, ForwardProps, FrameValue, G as Globals, GoalProp, GoalValue, GoalValues, HostConfig, InferTo, InlineToProps, Interpolated, Interpolation, Interpolator, InterpolatorArgs, InterpolatorConfig, InterpolatorFactory, InterpolatorFn, ItemKeys, LoopProp, MatchProp, OnChange, OnPause, OnProps, OnResolve, OnRest, OnResume, OnStart, Payload, PickAnimated, ReservedEventProps, ReservedProps, Spring, SpringChain, SpringComponentProps, SpringConfig, SpringContext, SpringPresets, SpringProps, SpringRef, SpringTo, SpringToFn, SpringUpdate, SpringUpdateFn, SpringValue, SpringValues, Springify, SpringsUpdate, ToProps, Trail, TrailComponentProps, Transition, TransitionComponentProps, TransitionFn, TransitionFrom, TransitionKey, TransitionRenderFn, TransitionState, TransitionTo, TransitionValues, UseSpringProps, UseSpringsProps, UseTrailProps, UseTransitionProps, VelocityProp, createHost, createInterpolator, defaultColors, defaultStringInterpolation, getAnimated, getAnimatedType, getPayload, inferTo, isAnimated, lerp, setAnimated, to, update, useChain, useSpring, useSpringRef, useSprings, useTrail, useTransition };
++export { Animatable, Animated, AnimatedArray, AnimatedObject, AnimatedString, AnimatedType, AnimatedValue, AnimationProps, AnimationResult, AsyncResult, AsyncResultArray, BailSignal, Change, Controller, ControllerFlushFn, ControllerProps, ControllerUpdate, EasingFunction, EventProp, ExtrapolateType, ForwardProps, FrameValue, G as Globals, GoalProp, GoalValue, GoalValues, HostConfig, InferTo, InlineToProps, Interpolated, Interpolation, Interpolator, InterpolatorArgs, InterpolatorConfig, InterpolatorFactory, InterpolatorFn, ItemKeys, LoopProp, MatchProp, OnChange, OnPause, OnProps, OnResolve, OnRest, OnResume, OnStart, Payload, PickAnimated, ReservedEventProps, ReservedProps, Spring, SpringChain, SpringComponentProps, SpringConfig, SpringContext, SpringPresets, SpringProps, SpringTo, SpringUpdate, SpringUpdateFn, SpringValue, SpringValues, Springify, SpringsUpdate, ToProps, Trail, TrailComponentProps, Transition, TransitionComponentProps, TransitionFn, TransitionFrom, TransitionKey, TransitionRenderFn, TransitionState, TransitionTo, TransitionValues, UseSpringProps, UseSpringsProps, UseTrailProps, UseTransitionProps, VelocityProp, createHost, createInterpolator, defaultColors, defaultStringInterpolation, getAnimated, getAnimatedType, getPayload, inferTo, isAnimated, lerp, setAnimated, to, update, useSpring, useSprings, useTransition };
+diff --git a/react-haru.mjs b/react-haru.mjs
+index 9f4299e..20296a6 100644
+--- a/react-haru.mjs
++++ b/react-haru.mjs
+@@ -1051,7 +1051,7 @@ const RESERVED_PROPS = {
+   config: 1,
+   from: 1,
+   to: 1,
+-  ref: 1,
++
+   loop: 1,
+   reset: 1,
+   pause: 1,
+@@ -1153,32 +1153,32 @@ function hasProps(
+     return true;
+   return false;
+ }
+-function detachRefs(
+-  ctrl, 
+-  ref
+-) {
+-  ctrl.ref?.delete(
+-    ctrl
+-  );
+-  ref?.delete(
+-    ctrl
+-  );
+-}
+-function replaceRef(
+-  ctrl, 
+-  ref
+-) {
+-  if (ref 
+-    && ctrl.ref !== ref) {
+-    ctrl.ref?.delete(
+-      ctrl
+-    );
+-    ref.add(
+-      ctrl
+-    );
+-    ctrl.ref = ref;
+-  }
+-}
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
+ function assignDefined(
+   dest, 
+   from
+@@ -1193,101 +1193,101 @@ function assignDefined(
+   return dest;
+ }
+ 
+-function useChain(
+-  refs, 
+-  timeSteps, 
+-  timeFrame = 1e3
+-) {
+-  useLayoutEffect(
+-    () => {
+-    if (timeSteps) {
+-      let prevDelay = 0;
+-      each(
+-        refs, 
+-        (
+-        ref, 
+-        i
+-      ) => {
+-        const targets = ref.current;
+-        if (targets.length) {
+-          let delay = timeFrame * timeSteps[i];
+-          if (isNaN(
+-            delay
+-          ))
+-            delay = prevDelay;
+-          else
+-            prevDelay = delay;
+-          each(
+-            targets, 
+-            (
+-            target
+-          ) => {
+-            if (target.queue) {
+-              each(
+-                target.queue, 
+-                (
+-                props
+-              ) => {
+-                props.delay = (
+-                  key
+-                ) => delay + callProp(
+-                  props.delay 
+-                  || 0, 
+-                  key
+-                );
+-              }
+-              );
+-              target.start();
+-            }
+-          }
+-          );
+-        }
+-      }
+-      );
+-    } else {
+-      let p = Promise.resolve();
+-      each(
+-        refs, 
+-        (
+-        ref
+-      ) => {
+-        const targets = ref.current;
+-        if (targets.length) {
+-          const queues = targets.map(
+-            (
+-            target
+-          ) => {
+-            const {
+-              queue = []
+-            } = target;
+-            target.queue = [];
+-            return queue;
+-          }
+-          );
+-          p = p.then(
+-            () => {
+-            each(
+-              targets, 
+-              (
+-              target, 
+-              i
+-            ) => {
+-              target.queue = queues[i].concat(
+-                target.queue 
+-                || []
+-              );
+-            }
+-            );
+-            return ref.start();
+-          }
+-          );
+-        }
+-      }
+-      );
+-    }
+-  }
+-  );
+-}
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
+ 
+ const $node = Symbol.for(
+   "Animated:node"
+@@ -2051,157 +2051,157 @@ const getCancelledResult = (
+   target
+ });
+ 
+-class SpringRef {
+-  constructor() {
+-    this.current = [];
+-    this.resolveProps = resolveProps;
+-  }
+-  use(
+-    props
+-  ) {
+-    this.defaultProps = props;
+-  }
+-  add(
+-    target
+-  ) {
+-    if (!this.current.includes(
+-      target
+-    )) {
+-      this.current.push(
+-        target
+-      );
+-    }
+-  }
+-  delete(
+-    target
+-  ) {
+-    const i = this.current.indexOf(
+-      target
+-    );
+-    if (~i)
+-      this.current.splice(
+-        i, 
+-        1
+-      );
+-  }
+-  start(
+-    props
+-  ) {
+-    const results = this.current.map(
+-      (
+-      target, 
+-      i
+-    ) => this._start(
+-      target, 
+-      props, 
+-      i
+-    )
+-    );
+-    results.then = (
+-      onFulfill, 
+-      onError
+-    ) => Promise.all(
+-      results
+-    ).then(
+-      onFulfill, 
+-      onError
+-    );
+-    return results;
+-  }
+-  update(
+-    props
+-  ) {
+-    each(
+-      this.current, 
+-      (
+-      target, 
+-      i
+-    ) => target.update(
+-      this.resolveProps(
+-      props, 
+-      target, 
+-      i
+-    )
+-    )
+-    );
+-    return this;
+-  }
+-  _start(
+-    target, 
+-    props, 
+-    i
+-  ) {
+-    if (is.defined(
+-      props
+-    )) {
+-      const update = this.resolveProps(
+-        props, 
+-        target, 
+-        i
+-      );
+-      return update 
+-        ? target.start(
+-        update
+-      ) 
+-        : Promise.resolve(
+-        getNoopResult(
+-        target
+-      )
+-      );
+-    }
+-    return target.start();
+-  }
+-}
+-each(
+-  [
+-  "set", 
+-  "stop", 
+-  "pause", 
+-  "resume"
+-], 
+-  (
+-  key
+-) => {
+-  SpringRef.prototype[key] = function() {
+-    each(
+-      this.current, 
+-      (
+-      target
+-    ) => target[key](
+-      ...arguments
+-    )
+-    );
+-    return this;
+-  };
+-}
+-);
+-function resolveProps(
+-  arg, 
+-  target, 
+-  index
+-) {
+-  const props = is.function(
+-    arg
+-  ) 
+-    ? arg(
+-    index, 
+-    target
+-  ) 
+-    : arg;
+-  return this.defaultProps 
+-    ? props 
+-    && {
+-    ...this.defaultProps, 
+-    ...props
+-  } 
+-    : props;
+-}
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
+ 
+ const isAsyncTo = (
+   to
+-) => is.function(
+-  to
+-) 
++) => false
++
++
+   || is.array(
+   to
+ ) 
+@@ -2275,21 +2275,21 @@ function runAsync(
+         state.bail = 
+           bail = 
+           noop;
+-        ref.revoke(
+-          bailSignal
+-        );
++
++
++
+         reject(
+           bailSignal
+         );
+       };
+     });
+-    const ref = new AsyncRef(async (
++    const animate = async (
+       props2, 
+-      bailSignal, 
+-      next
++
++
+     ) => {
+       props2.parentId = callId;
+-      const result2 = await next();
++      const result2 = await target.start(props2);
+       if (result2.cancelled) {
+         bail(
+           result2, 
+@@ -2309,10 +2309,10 @@ function runAsync(
+         });
+       }
+       return result2;
+-    });
+-    ref.add(
+-      target
+-    );
++    };
++
++
++
+     let result;
+     try {
+       let animating;
+@@ -2323,9 +2323,9 @@ function runAsync(
+           queue
+         ) => {
+           for (const props2 of queue) {
+-            result = await ref.start(
++            result = await animate(
+               props2
+-            )[0];
++            );
+             if (!result.finished) {
+               break;
+             }
+@@ -2333,12 +2333,12 @@ function runAsync(
+         })(
+           to
+         );
+-      } else {
+-        animating = Promise.resolve(
+-          to(
+-          ref
+-        )
+-        );
++
++
++
++
++
++
+       }
+       await Promise.all(
+         [
+@@ -2411,47 +2411,47 @@ class BailSignal extends Error {
+     );
+   }
+ }
+-class AsyncRef extends SpringRef {
+-  constructor(
+-    flush2
+-  ) {
+-    super();
+-    this.flush = flush2;
+-  }
+-  _start(
+-    target, 
+-    {
+-    ...props
+-  }, 
+-    i
+-  ) {
+-    return this.flush(
+-      props, 
+-      new BailSignal(), 
+-      () => {
+-      return super._start(
+-        target, 
+-        props, 
+-        i
+-      );
+-    }
+-    );
+-  }
+-  revoke(
+-    error
+-  ) {
+-    this.revoke = noop;
+-    this.pause = 
+-      this.resume = 
+-      this.start = 
+-      this.stop = 
+-      this.update = 
+-      revoked;
+-    function revoked() {
+-      throw error;
+-    }
+-  }
+-}
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
+ 
+ function scheduleProps(
+   callId, 
+@@ -5041,22 +5041,22 @@ function makeContext(
+ function useSprings(
+   length, 
+   props, 
+-  deps
++
+ ) {
+-  const propsFn = is.function(
+-    props
+-  ) 
+-    && props;
+-  if (propsFn 
+-    && !deps)
+-    deps = [];
+-  const ref = useMemo(
+-    () => propsFn 
+-    || arguments.length == 3 
+-    ? new SpringRef() 
+-    : void 0, 
+-    []
+-  );
++
++
++
++
++
++
++
++
++
++
++
++
++
++
+   const layoutId = useRef(
+     0
+   );
+@@ -5134,8 +5134,8 @@ function useSprings(
+     length
+   ]
+   );
+-  useMemo(
+-    () => {
++
++
+     declareUpdates(
+       0, 
+       Math.min(
+@@ -5143,9 +5143,9 @@ function useSprings(
+       length
+     )
+     );
+-  }, 
+-    deps
+-  );
++
++
++
+   function declareUpdates(
+     startIndex, 
+     endIndex
+@@ -5153,7 +5153,7 @@ function useSprings(
+     for (let i = startIndex; i < endIndex; i++) {
+       const ctrl = ctrls[i] 
+         || (ctrls[i] = new Controller(null, state.flush));
+-      const update = propsFn 
++      const update = false 
+         ? propsFn(
+         i, 
+         ctrl
+@@ -5206,10 +5206,10 @@ function useSprings(
+       (
+       ctrl
+     ) => {
+-      detachRefs(
+-        ctrl, 
+-        ref
+-      );
++
++
++
++
+       ctrl.stop(
+         true
+       );
+@@ -5226,9 +5226,9 @@ function useSprings(
+         ctrl, 
+         values2
+       );
+-      ref?.add(
+-        ctrl
+-      );
++
++
++
+       if (hasContext) {
+         ctrl.start(
+           {
+@@ -5238,14 +5238,14 @@ function useSprings(
+       }
+       const update = updates[i];
+       if (update) {
+-        replaceRef(
+-          ctrl, 
+-          update.ref
+-        );
+-        if (ctrl.ref) {
+-          ctrl.queue.push(
+-            update
+-          );
++
++
++
++
++        if (false) {
++
++
++
+         } else {
+           ctrl.start(
+             update
+@@ -5273,7 +5273,7 @@ function useSprings(
+     ...x
+   })
+   );
+-  return ref 
++  return false 
+     ? [
+     values, 
+     ref
+@@ -5283,25 +5283,25 @@ function useSprings(
+ 
+ function useSpring(
+   props, 
+-  deps
++
+ ) {
+-  const isFn = is.function(
+-    props
+-  );
+-  const [[values], ref] = useSprings(
++
++
++
++  const [values] = useSprings(
+     1, 
+-    isFn 
++    false 
+     ? props 
+     : [
+     props
+   ], 
+-    isFn 
+-    ? deps 
+-    || [] 
+-    : deps
++
++
++
++
+   );
+-  return isFn 
+-    || arguments.length == 2 
++  return false 
++
+     ? [
+     values, 
+     ref
+@@ -5309,106 +5309,106 @@ function useSpring(
+     : values;
+ }
+ 
+-function useSpringRef(
+-  props
+-) {
+-  const ref = useMemo(
+-    () => new SpringRef(), 
+-    []
+-  );
+-  props 
+-    && useLayoutEffect(
+-    () => ref.use(
+-    props
+-  )
+-  );
+-  return ref;
+-}
+ 
+-function useTrail(
+-  length, 
+-  propsArg, 
+-  deps
+-) {
+-  const propsFn = is.function(
+-    propsArg
+-  ) 
+-    && propsArg;
+-  if (propsFn 
+-    && !deps)
+-    deps = [];
+-  let reverse = true;
+-  const result = useSprings(
+-    length, 
+-    (
+-    i, 
+-    ctrl
+-  ) => {
+-    const props = propsFn 
+-      ? propsFn(
+-      i, 
+-      ctrl
+-    ) 
+-      : propsArg;
+-    reverse = reverse 
+-      && props.reverse;
+-    return props;
+-  }, 
+-    deps 
+-    || [
+-    {}
+-  ]
+-  );
+-  const ref = result[1];
+-  useLayoutEffect(
+-    () => {
+-    each(
+-      ref.current, 
+-      (
+-      ctrl, 
+-      i
+-    ) => {
+-      const parent = ref.current[i + (reverse 
+-        ? 1 
+-        : -1)];
+-      if (parent)
+-        ctrl.start(
+-          {
+-          to: parent.springs
+-        }
+-        );
+-    }
+-    );
+-  }, 
+-    deps
+-  );
+-  if (propsFn 
+-    || arguments.length == 3) {
+-    ref.resolveProps = resolveTrailProps;
+-    return result;
+-  }
+-  return result[0];
+-}
+-const resolveTrailProps = function(
+-  propsArg, 
+-  target, 
+-  index
+-) {
+-  const props = resolveProps.call(
+-    this, 
+-    propsArg, 
+-    target, 
+-    index
+-  );
+-  if (props) {
+-    const parent = this.current[index + (props.reverse 
+-      ? 1 
+-      : -1)];
+-    if (parent)
+-      props.to = parent.springs;
+-    return props;
+-  }
+-};
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
+ 
+ const MOUNT = "mount";
+ const ENTER = "enter";
+@@ -5418,7 +5418,7 @@ const LEAVE = "leave";
+ function useTransition(
+   data, 
+   props, 
+-  deps
++
+ ) {
+   const {
+     reset,
+@@ -5430,12 +5430,12 @@ function useTransition(
+     onProps
+   } = props;
+   props.onProps = void 0;
+-  const ref = useMemo(
+-    () => arguments.length == 3 
+-    ? new SpringRef() 
+-    : void 0, 
+-    []
+-  );
++
++
++
++
++
++
+   const items = toArray(
+     data
+   );
+@@ -5462,10 +5462,10 @@ function useTransition(
+         t.expirationId
+       );
+     }
+-    detachRefs(
+-      t.ctrl, 
+-      ref
+-    );
++
++
++
++
+     t.ctrl.destroy();
+   }
+   )
+@@ -5488,10 +5488,10 @@ function useTransition(
+     key
+   }
+   ) => {
+-    detachRefs(
+-      ctrl, 
+-      ref
+-    );
++
++
++
++
+     callProp(
+       onDestroyed, 
+       item, 
+@@ -5593,7 +5593,7 @@ function useTransition(
+   const defaultProps = getDefaultProps(
+     props
+   );
+-  defaultProps.ref = props.ref;
++
+   if (!is.plainObject(
+     props.default
+   ))
+@@ -5845,13 +5845,13 @@ function useTransition(
+         ctrl
+       } = t;
+       t.phase = phase;
+-      ref?.add(
+-        ctrl
+-      );
+-      replaceRef(
+-        ctrl, 
+-        payload.ref
+-      );
++
++
++
++
++
++
++
+       setSprings(
+         ctrl, 
+         springs
+@@ -5869,7 +5869,7 @@ function useTransition(
+         }
+         );
+       }
+-      ctrl[ctrl.ref 
++      ctrl[false 
+         ? "update" 
+         : "start"](
+         payload
+@@ -5877,9 +5877,9 @@ function useTransition(
+     }
+     );
+   }, 
+-    reset 
+-    ? void 0 
+-    : deps
++
++
++
+   );
+   const activeTransitions = props.lead == LEAVE 
+     && leadCount > 0 
+@@ -5940,7 +5940,7 @@ function useTransition(
+       elems
+     );
+   };
+-  return ref 
++  return false 
+     ? [
+     renderTransitions, 
+     ref
+@@ -6075,7 +6075,7 @@ export {
+   Spring, 
+   SpringContext, 
+   SpringPresets, 
+-  SpringRef, 
++
+   SpringValue, 
+   Trail, 
+   Transition, 
+@@ -6092,11 +6092,11 @@ export {
+   setAnimated, 
+   to, 
+   update, 
+-  useChain, 
++
+   useSpring, 
+-  useSpringRef, 
++
+   useSprings, 
+-  useTrail, 
++
+   useTransition, 
+ };
+ //# sourceMappingURL=react-haru.mjs.map
+-- 
+2.19.2

@@ -1,0 +1,53 @@
+From bab7b1ac7695dfe1a475a83a66218ec06570c9ec Mon Sep 17 00:00:00 2001
+From: Alec Larson <1925840+aleclarson@users.noreply.github.com>
+Date: Wed, 31 Mar 2021 14:26:44 -0400
+Subject: [PATCH] revert: rafzGlobals
+
+---
+ react-haru.d.ts |  4 ++--
+ react-haru.mjs  | 12 ++++++------
+ 2 files changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/react-haru.d.ts b/react-haru.d.ts
+index 14a8bb6..5ca5cf5 100644
+--- a/react-haru.d.ts
++++ b/react-haru.d.ts
+@@ -124,9 +124,9 @@ declare const G: {
+ };
+ 
+ interface AnimatedGlobals extends Partial<Omit<typeof G, 'assign'>> {
+-    now?: typeof raf.now;
++
+     batchedUpdates?: typeof raf.batchedUpdates;
+-    requestAnimationFrame?: (cb: () => void) => void;
++
+ }
+ 
+ declare const defaultColors: {
+diff --git a/react-haru.mjs b/react-haru.mjs
+index 9f4299e..c5e036a 100644
+--- a/react-haru.mjs
++++ b/react-haru.mjs
+@@ -754,14 +754,14 @@ const G = {
+   assign(
+     globals
+   ) {
+-    if (globals.now)
+-      raf.now = globals.now;
++
++
+     if (globals.batchedUpdates)
+       raf.batchedUpdates = globals.batchedUpdates;
+-    if (globals.requestAnimationFrame)
+-      raf.use(
+-        globals.requestAnimationFrame
+-      );
++
++
++
++
+     if (globals.createStringInterpolator)
+       G.createStringInterpolator = globals.createStringInterpolator;
+     if (globals.colors)
+-- 
+2.19.2

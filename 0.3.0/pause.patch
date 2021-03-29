@@ -1,0 +1,959 @@
+From fea5a5cecc3ce97e16f6aa0a0afc0fdfa395dc21 Mon Sep 17 00:00:00 2001
+From: Alec Larson <1925840+aleclarson@users.noreply.github.com>
+Date: Wed, 31 Mar 2021 14:26:41 -0400
+Subject: [PATCH] revert: pause
+
+---
+ react-haru.d.ts | 132 ++++++-------
+ react-haru.mjs  | 486 ++++++++++++++++++++++++------------------------
+ 2 files changed, 309 insertions(+), 309 deletions(-)
+
+diff --git a/react-haru.d.ts b/react-haru.d.ts
+index 14a8bb6..efb3195 100644
+--- a/react-haru.d.ts
++++ b/react-haru.d.ts
+@@ -673,9 +673,9 @@ declare type RunAsyncProps<T extends AnimationTarget = any> = InferProps<T> & {
+ };
+ /** @internal */
+ interface RunAsyncState<T extends AnimationTarget = any> {
+-    paused: boolean;
+-    pauseQueue: Set<() => void>;
+-    resumeQueue: Set<() => void>;
++
++
++
+     timeouts: Set<Timeout>;
+     asyncId?: number;
+     asyncTo?: AsyncTo<InferState<T>>;
+@@ -692,7 +692,7 @@ declare class BailSignal extends Error {
+     constructor();
+ }
+ 
+-interface DefaultSpringProps<T> extends Pick<SpringProps<T>, 'pause' | 'cancel' | 'immediate' | 'config'>, PickEventFns<SpringProps<T>> {
++interface DefaultSpringProps<T> extends Pick<SpringProps<T>, 'cancel' | 'immediate' | 'config'>, PickEventFns<SpringProps<T>> {
+ }
+ /**
+  * Only numbers, strings, and arrays of numbers/strings are supported.
+@@ -730,21 +730,21 @@ declare class SpringValue<T = any> extends FrameValue<T> {
+      * which is either active or paused.
+      */
+     get isAnimating(): boolean;
+-    /**
+-     * When true, all current and future animations are paused.
+-     */
+-    get isPaused(): boolean;
++
++
++
++
+     /** Advance the current animation by a number of milliseconds */
+     advance(dt: number): void;
+     /** Set the current value, while stopping the current animation */
+     set(value: T | FluidValue<T>): this;
+-    /**
+-     * Freeze the active animation in time, as well as any updates merged
+-     * before `resume` is called.
+-     */
+-    pause(): void;
+-    /** Resume the animation if paused. */
+-    resume(): void;
++
++
++
++
++
++
++
+     /** Skip to the end of the current animation. */
+     finish(): this;
+     /** Push props into the pending queue. */
+@@ -880,10 +880,10 @@ declare class Controller<State extends Lookup = Lookup> {
+     stop(keys?: OneOrMore<string>): this;
+     /** Cancel some or all animations. */
+     stop(cancel: boolean, keys?: OneOrMore<string>): this;
+-    /** Freeze the active animation in time */
+-    pause(keys?: OneOrMore<string>): this;
+-    /** Resume the animation if paused. */
+-    resume(keys?: OneOrMore<string>): this;
++
++
++
++
+     /** Call a function once per spring value */
+     each(iterator: (spring: SpringValue, key: string) => void): void;
+     /** @internal Called at the end of every animation frame */
+@@ -981,8 +981,8 @@ interface UpdateValueFn<T = any> extends AnyUpdateFn<SpringValue<T>> {
+ declare type OnStart<T = unknown> = (spring: SpringValue<T>) => void;
+ /** Called when a `SpringValue` changes */
+ declare type OnChange<T = unknown> = (value: T, source: SpringValue<T>) => void;
+-declare type OnPause<T = unknown> = OnStart<T>;
+-declare type OnResume<T = unknown> = OnStart<T>;
++
++
+ /** Called once the animation comes to a halt */
+ declare type OnRest<T extends Readable = any> = (result: AnimationResult<T>) => void;
+ declare type OnResolve<T = unknown> = (result: AnimationResult<Controller<T>>) => void;
+@@ -1126,8 +1126,8 @@ interface SpringProps<T = any> extends AnimationProps<T> {
+      * Called when a spring has its value changed.
+      */
+     onChange?: EventProp<OnChange<T>>;
+-    onPause?: EventProp<OnPause<T>>;
+-    onResume?: EventProp<OnResume<T>>;
++
++
+     /**
+      * Called when all animations come to a stand-still.
+      */
+@@ -1211,12 +1211,12 @@ interface ControllerProps<State extends Lookup = Lookup> extends AnimationProps<
+     onChange?: ((values: State) => void) | {
+         [P in keyof State]?: OnChange<State[P]>;
+     };
+-    onPause?: OnPause | {
+-        [P in keyof State]?: OnPause<State[P]>;
+-    };
+-    onResume?: OnResume | {
+-        [P in keyof State]?: OnResume<State[P]>;
+-    };
++
++
++
++
++
++
+     /**
+      * Called after an animation is updated by new props.
+      * Useful for manipulation
+@@ -1259,11 +1259,11 @@ interface AnimationProps<T = any> {
+      * or an array of keys.
+      */
+     cancel?: MatchProp<T>;
+-    /**
+-     * Pause all animations by using `true`, or some animations by using a key
+-     * or an array of keys.
+-     */
+-    pause?: MatchProp<T>;
++
++
++
++
++
+     /**
+      * Start the next animations at their values in the `from` prop.
+      */
+@@ -1292,7 +1292,7 @@ interface ReservedProps extends ReservedEventProps {
+     from?: any;
+     immediate?: any;
+     loop?: any;
+-    pause?: any;
++
+     ref?: any;
+     reset?: any;
+     reverse?: any;
+@@ -1302,11 +1302,11 @@ interface ReservedProps extends ReservedEventProps {
+ }
+ interface ReservedEventProps {
+     onChange?: any;
+-    onPause?: any;
++
+     onProps?: any;
+     onResolve?: any;
+     onRest?: any;
+-    onResume?: any;
++
+     onStart?: any;
+ }
+ /**
+@@ -1360,8 +1360,8 @@ declare class SpringRef<T = any> {
+ interface SpringRef<T> {
+     set: T extends IsPlainObject<T> ? ControllerSetFn<T> : SpringSetFn<T>;
+     stop: T extends IsPlainObject<T> ? ControllerStopFn<T> : SpringStopFn<T>;
+-    pause: T extends IsPlainObject<T> ? ControllerPauseFn<T> : SpringPauseFn<T>;
+-    resume: T extends IsPlainObject<T> ? ControllerResumeFn<T> : SpringResumeFn<T>;
++
++
+ }
+ interface ResolveProps<T> {
+     (this: SpringRef<T>, arg: RefUpdate<T> | RefUpdater<T>, target: any, index: number): RefUpdate<T> | Falsy;
+@@ -1373,14 +1373,14 @@ declare type RefUpdater<T> = T extends IsPlainObject<T> ? (i: number, ctrl: Cont
+ interface SpringSetFn<T> {
+     (value: T | FluidValue<T>): SpringRef<T>;
+ }
+-interface SpringPauseFn<T> {
+-    /** Pause animation. */
+-    (): SpringRef<T>;
+-}
+-interface SpringResumeFn<T> {
+-    /** Resume animation. */
+-    (): SpringRef<T>;
+-}
++
++
++
++
++
++
++
++
+ interface SpringStopFn<T> {
+     /** Stop the active animation. */
+     (): SpringRef<T>;
+@@ -1390,22 +1390,22 @@ interface SpringStopFn<T> {
+ interface ControllerSetFn<T> {
+     (state: Partial<T>): SpringRef<T>;
+ }
+-interface ControllerPauseFn<T> {
+-    /** Pause all animations. */
+-    (): SpringRef<T>;
+-    /** Pause animations for the given keys. */
+-    (keys: OneOrMore<string>): SpringRef<T>;
+-    /** Pause some or all animations. */
+-    (keys?: OneOrMore<string>): SpringRef<T>;
+-}
+-interface ControllerResumeFn<T> {
+-    /** Resume all animations. */
+-    (): SpringRef<T>;
+-    /** Resume animations for the given keys. */
+-    (keys: OneOrMore<string>): SpringRef<T>;
+-    /** Resume some or all animations. */
+-    (keys?: OneOrMore<string>): SpringRef<T>;
+-}
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
+ interface ControllerStopFn<T> {
+     /** Stop all animations. */
+     (): SpringRef<T>;
+@@ -1527,8 +1527,8 @@ declare const update: (dt: number) => boolean;
+  * created with the hook API or the renderprops API.
+  */
+ interface SpringContext {
+-    /** Pause all new and existing animations. */
+-    pause?: boolean;
++
++    
+     /** Force all new and existing animations to be immediate. */
+     immediate?: boolean;
+ }
+@@ -1547,4 +1547,4 @@ declare function inferTo<T extends object>(props: T): InferTo<T>;
+ declare function lerp<T extends Animatable, U extends Animatable<T>>(from: T, to: U, progress: number): Animatable<T>;
+ declare function lerp<T>(from: T, to: NoInfer<T>, progress: number): T;
+ 
+-export { Animatable, Animated, AnimatedArray, AnimatedObject, AnimatedString, AnimatedType, AnimatedValue, AnimationProps, AnimationResult, AsyncResult, AsyncResultArray, BailSignal, Change, Controller, ControllerFlushFn, ControllerProps, ControllerUpdate, EasingFunction, EventProp, ExtrapolateType, ForwardProps, FrameValue, G as Globals, GoalProp, GoalValue, GoalValues, HostConfig, InferTo, InlineToProps, Interpolated, Interpolation, Interpolator, InterpolatorArgs, InterpolatorConfig, InterpolatorFactory, InterpolatorFn, ItemKeys, LoopProp, MatchProp, OnChange, OnPause, OnProps, OnResolve, OnRest, OnResume, OnStart, Payload, PickAnimated, ReservedEventProps, ReservedProps, Spring, SpringChain, SpringComponentProps, SpringConfig, SpringContext, SpringPresets, SpringProps, SpringRef, SpringTo, SpringToFn, SpringUpdate, SpringUpdateFn, SpringValue, SpringValues, Springify, SpringsUpdate, ToProps, Trail, TrailComponentProps, Transition, TransitionComponentProps, TransitionFn, TransitionFrom, TransitionKey, TransitionRenderFn, TransitionState, TransitionTo, TransitionValues, UseSpringProps, UseSpringsProps, UseTrailProps, UseTransitionProps, VelocityProp, createHost, createInterpolator, defaultColors, defaultStringInterpolation, getAnimated, getAnimatedType, getPayload, inferTo, isAnimated, lerp, setAnimated, to, update, useChain, useSpring, useSpringRef, useSprings, useTrail, useTransition };
++export { Animatable, Animated, AnimatedArray, AnimatedObject, AnimatedString, AnimatedType, AnimatedValue, AnimationProps, AnimationResult, AsyncResult, AsyncResultArray, BailSignal, Change, Controller, ControllerFlushFn, ControllerProps, ControllerUpdate, EasingFunction, EventProp, ExtrapolateType, ForwardProps, FrameValue, G as Globals, GoalProp, GoalValue, GoalValues, HostConfig, InferTo, InlineToProps, Interpolated, Interpolation, Interpolator, InterpolatorArgs, InterpolatorConfig, InterpolatorFactory, InterpolatorFn, ItemKeys, LoopProp, MatchProp, OnChange, OnProps, OnResolve, OnRest, OnStart, Payload, PickAnimated, ReservedEventProps, ReservedProps, Spring, SpringChain, SpringComponentProps, SpringConfig, SpringContext, SpringPresets, SpringProps, SpringRef, SpringTo, SpringToFn, SpringUpdate, SpringUpdateFn, SpringValue, SpringValues, Springify, SpringsUpdate, ToProps, Trail, TrailComponentProps, Transition, TransitionComponentProps, TransitionFn, TransitionFrom, TransitionKey, TransitionRenderFn, TransitionState, TransitionTo, TransitionValues, UseSpringProps, UseSpringsProps, UseTrailProps, UseTransitionProps, VelocityProp, createHost, createInterpolator, defaultColors, defaultStringInterpolation, getAnimated, getAnimatedType, getPayload, inferTo, isAnimated, lerp, setAnimated, to, update, useChain, useSpring, useSpringRef, useSprings, useTrail, useTransition };
+diff --git a/react-haru.mjs b/react-haru.mjs
+index 9f4299e..4b0d3b6 100644
+--- a/react-haru.mjs
++++ b/react-haru.mjs
+@@ -1043,8 +1043,8 @@ const DEFAULT_PROPS = [
+   "onProps",
+   "onStart",
+   "onChange",
+-  "onPause",
+-  "onResume",
++
++
+   "onRest"
+ ];
+ const RESERVED_PROPS = {
+@@ -1054,7 +1054,7 @@ const RESERVED_PROPS = {
+   ref: 1,
+   loop: 1,
+   reset: 1,
+-  pause: 1,
++
+   cancel: 1,
+   reverse: 1,
+   immediate: 1,
+@@ -1063,8 +1063,8 @@ const RESERVED_PROPS = {
+   onProps: 1,
+   onStart: 1,
+   onChange: 1,
+-  onPause: 1,
+-  onResume: 1,
++
++
+   onRest: 1,
+   onResolve: 1,
+   keys: 1,
+@@ -2156,8 +2156,8 @@ each(
+   [
+   "set", 
+   "stop", 
+-  "pause", 
+-  "resume"
++
++
+ ], 
+   (
+   key
+@@ -2234,21 +2234,21 @@ function runAsync(
+     if (!parentId) {
+       state.bail?.();
+     }
+-    if (state.paused) {
+-      await new Promise((
+-        resume
+-      ) => {
+-        state.resumeQueue.add(
+-          resume
+-        );
+-      });
+-      if (callId !== state.asyncId) {
+-        return getFinishedResult(
+-          target, 
+-          false
+-        );
+-      }
+-    }
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
+     let preventBail;
+     let bail;
+     const bailPromise = new Promise((
+@@ -2299,15 +2299,15 @@ function runAsync(
+       if (bail == noop) {
+         throw bailSignal;
+       }
+-      if (state.paused) {
+-        await new Promise((
+-          resume
+-        ) => {
+-          state.resumeQueue.add(
+-            resume
+-          );
+-        });
+-      }
++
++
++
++
++
++
++
++
++
+       return result2;
+     });
+     ref.add(
+@@ -2395,8 +2395,8 @@ function stopAsync(
+     t
+   ) => t.cancel()
+   );
+-  state.resumeQueue.clear();
+-  state.pauseQueue.clear();
++
++
+   state.bail?.();
+   state.bail = 
+     state.asyncId = 
+@@ -2441,8 +2441,8 @@ class AsyncRef extends SpringRef {
+     error
+   ) {
+     this.revoke = noop;
+-    this.pause = 
+-      this.resume = 
++
++
+       this.start = 
+       this.stop = 
+       this.update = 
+@@ -2483,33 +2483,33 @@ function scheduleProps(
+         key
+       );
+       if (delay > 0 
+-        && state.paused) {
+-        state.resumeQueue.add(
+-          onResume
+-        );
++        && false) {
++
++
++
+       } else {
+         onResume();
+       }
+     }
+-    function onPause() {
+-      state.resumeQueue.add(
+-        onResume
+-      );
+-      state.timeouts.delete(
+-        timeout
+-      );
+-      timeout.cancel();
+-      delay = timeout.time - raf.now();
+-    }
++
++
++
++
++
++
++
++
++
++
+     function onResume() {
+       if (delay > 0) {
+         timeout = raf.setTimeout(
+           onStart, 
+           delay
+         );
+-        state.pauseQueue.add(
+-          onPause
+-        );
++
++
++
+         state.timeouts.add(
+           timeout
+         );
+@@ -2518,9 +2518,9 @@ function scheduleProps(
+       }
+     }
+     function onStart() {
+-      state.pauseQueue.delete(
+-        onPause
+-      );
++
++
++
+       state.timeouts.delete(
+         timeout
+       );
+@@ -2546,48 +2546,48 @@ function scheduleProps(
+   });
+ }
+ 
+-function updatePaused(
+-  state, 
+-  props, 
+-  context
+-) {
+-  state.pausedByProps = isPaused(
+-    state.pausedByProps, 
+-    props.pause, 
+-    state.key
+-  );
+-  if (context)
+-    state.pausedByContext = isPaused(
+-      state.pausedByContext, 
+-      context.pause, 
+-      state.key
+-    );
+-  const paused = !!(state.pausedByProps 
+-    || state.pausedByContext);
+-  if (paused !== state.paused) {
+-    state.paused = paused;
+-    return true;
+-  }
+-  return false;
+-}
+-const isPaused = (
+-  current, 
+-  pauseProp, 
+-  key
+-) => is.undefined(
+-  pauseProp
+-) 
+-  ? current 
+-  : is.boolean(
+-  pauseProp
+-) 
+-  ? pauseProp 
+-  : key 
+-  ? matchProp(
+-  pauseProp, 
+-  key
+-) 
+-  : current;
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
+ 
+ function lerp(
+   from, 
+@@ -2954,28 +2954,28 @@ const $P = Symbol.for(
+ );
+ const HAS_ANIMATED = 1;
+ const IS_ANIMATING = 2;
+-const IS_PAUSED = 4;
++
+ const hasAnimated = (
+   target
+ ) => (target[$P] & HAS_ANIMATED) > 0;
+ const isAnimating = (
+   target
+ ) => (target[$P] & IS_ANIMATING) > 0;
+-const isPaused$1 = (
+-  target
+-) => (target[$P] & IS_PAUSED) > 0;
++
++
++
+ const setActiveBit = (
+   target, 
+   active
+ ) => active 
+   ? target[$P] |= IS_ANIMATING | HAS_ANIMATED 
+   : target[$P] &= ~IS_ANIMATING;
+-const setPausedBit = (
+-  target, 
+-  paused
+-) => paused 
+-  ? target[$P] |= IS_PAUSED 
+-  : target[$P] &= ~IS_PAUSED;
++
++
++
++
++
++
+ 
+ class SpringValue extends FrameValue {
+   constructor(
+@@ -2986,9 +2986,9 @@ class SpringValue extends FrameValue {
+     this.animation = new Animation();
+     this.defaultProps = {};
+     this._state = {
+-      paused: false,
+-      pauseQueue: new Set(),
+-      resumeQueue: new Set(),
++
++
++
+       timeouts: new Set()
+     };
+     this._pendingCalls = new Set();
+@@ -3025,9 +3025,9 @@ class SpringValue extends FrameValue {
+       this
+     ) 
+       || this._state.asyncTo) 
+-      || isPaused$1(
+-      this
+-    );
++
++
++
+   }
+   get goal() {
+     return getFluidValue(
+@@ -3058,11 +3058,11 @@ class SpringValue extends FrameValue {
+       this
+     );
+   }
+-  get isPaused() {
+-    return isPaused$1(
+-      this
+-    );
+-  }
++
++
++
++
++
+   advance(
+     dt
+   ) {
+@@ -3268,20 +3268,20 @@ class SpringValue extends FrameValue {
+     );
+     return this;
+   }
+-  pause() {
+-    this._update(
+-      {
+-      pause: true
+-    }
+-    );
+-  }
+-  resume() {
+-    this._update(
+-      {
+-      pause: false
+-    }
+-    );
+-  }
++
++
++
++
++
++
++
++
++
++
++
++
++
++
+   finish() {
+     if (isAnimating(
+       this
+@@ -3504,40 +3504,40 @@ class SpringValue extends FrameValue {
+       );
+     }
+     const state = this._state;
+-    if (updatePaused(
+-      state, 
+-      props, 
+-      defaultProps
+-    )) {
+-      setPausedBit(
+-        this, 
+-        state.paused
+-      );
+-      if (state.paused) {
+-        flushCalls(
+-          state.pauseQueue
+-        );
+-        sendEvent(
+-          this, 
+-          "onPause", 
+-          this
+-        );
+-      } else {
+-        if (isAnimating(
+-          this
+-        )) {
+-          this._resume();
+-        }
+-        flushCalls(
+-          state.resumeQueue
+-        );
+-        sendEvent(
+-          this, 
+-          "onResume", 
+-          this
+-        );
+-      }
+-    }
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
+     return scheduleProps(
+       ++this._lastCallId, 
+       {
+@@ -4105,11 +4105,11 @@ class SpringValue extends FrameValue {
+         this, 
+         true
+       );
+-      if (!isPaused$1(
+-        this
+-      )) {
++
++
++
+         this._resume();
+-      }
++
+     }
+   }
+   _resume() {
+@@ -4143,8 +4143,8 @@ class SpringValue extends FrameValue {
+       );
+       if (anim.toValues) {
+         anim.onChange = 
+-          anim.onPause = 
+-          anim.onResume = 
++
++
+           void 0;
+       }
+       callFluidObservers(
+@@ -4227,7 +4227,7 @@ function createLoopUpdate(
+       ...props,
+       loop,
+       default: false,
+-      pause: void 0,
++      
+       to: !reverse 
+         || isAsyncTo(
+         to
+@@ -4308,8 +4308,8 @@ const ACTIVE_EVENTS = [
+   "onStart",
+   "onRest",
+   "onChange",
+-  "onPause",
+-  "onResume"
++
++
+ ];
+ function mergeActiveFn(
+   target, 
+@@ -4359,9 +4359,9 @@ class Controller {
+     this._changed = new Set();
+     this._started = false;
+     this._state = {
+-      paused: false,
+-      pauseQueue: new Set(),
+-      resumeQueue: new Set(),
++
++
++
+       timeouts: new Set()
+     };
+     this._events = {
+@@ -4507,54 +4507,54 @@ class Controller {
+     }
+     return this;
+   }
+-  pause(
+-    keys
+-  ) {
+-    if (is.undefined(
+-      keys
+-    )) {
+-      this.start(
+-        {
+-        pause: true
+-      }
+-      );
+-    } else {
+-      const springs = this.springs;
+-      each(
+-        toArray(
+-        keys
+-      ), 
+-        (
+-        key
+-      ) => springs[key].pause()
+-      );
+-    }
+-    return this;
+-  }
+-  resume(
+-    keys
+-  ) {
+-    if (is.undefined(
+-      keys
+-    )) {
+-      this.start(
+-        {
+-        pause: false
+-      }
+-      );
+-    } else {
+-      const springs = this.springs;
+-      each(
+-        toArray(
+-        keys
+-      ), 
+-        (
+-        key
+-      ) => springs[key].resume()
+-      );
+-    }
+-    return this;
+-  }
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
+   each(
+     iterator
+   ) {
+@@ -4754,18 +4754,18 @@ async function flushUpdate(
+     );
+   }
+   const state = ctrl["_state"];
+-  if (updatePaused(
+-    state, 
+-    props, 
+-    defaultProps
+-  )) {
+-    flushCalls(
+-      state.paused 
+-      ? state.pauseQueue 
+-      : state.resumeQueue
+-    );
+-    props.pause = state.paused;
+-  }
++
++
++
++
++
++
++
++
++
++
++
++
+   const promises = (keys 
+     || Object.keys(
+     ctrl.springs
+@@ -4992,17 +4992,17 @@ const SpringContext = (
+   const inherited = useContext(
+     ctx
+   );
+-  const pause = props.pause 
+-    || !!inherited.pause;
++
++
+   const immediate = props.immediate 
+     || !!inherited.immediate;
+   props = useMemo(
+     () => ({
+-    pause, 
++
+     immediate
+   }), 
+     [
+-    pause, 
++
+     immediate
+   ]
+   );
+@@ -5601,7 +5601,7 @@ function useTransition(
+       [
+       "immediate", 
+       "cancel", 
+-      "pause"
++      
+     ], 
+       (
+       key
+-- 
+2.19.2

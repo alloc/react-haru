@@ -1,0 +1,189 @@
+From a4088e68f0e5bb43ccdcea56c4d24731c9ef4a73 Mon Sep 17 00:00:00 2001
+From: Alec Larson <1925840+aleclarson@users.noreply.github.com>
+Date: Wed, 31 Mar 2021 14:26:42 -0400
+Subject: [PATCH] revert: duration
+
+---
+ react-haru.d.ts | 46 +++++++++++++++---------------
+ react-haru.mjs  | 74 ++++++++++++++++++++++++-------------------------
+ 2 files changed, 60 insertions(+), 60 deletions(-)
+
+diff --git a/react-haru.d.ts b/react-haru.d.ts
+index 14a8bb6..19fd35a 100644
+--- a/react-haru.d.ts
++++ b/react-haru.d.ts
+@@ -530,29 +530,29 @@ interface AnimationConfig {
+      * value too (unless `restVelocity` is defined).
+      */
+     precision?: number;
+-    /**
+-     * For `duration` animations only. Note: The `duration` is not affected
+-     * by this property.
+-     *
+-     * Defaults to `0`, which means "start from the beginning".
+-     *
+-     * Setting to `1+` makes an immediate animation.
+-     *
+-     * Setting to `0.5` means "start from the middle of the easing function".
+-     *
+-     * Any number `>= 0` and `<= 1` makes sense here.
+-     */
+-    progress?: number;
+-    /**
+-     * Animation length in number of milliseconds.
+-     */
+-    duration?: number;
+-    /**
+-     * The animation curve. Only used when `duration` is defined.
+-     *
+-     * Defaults to quadratic ease-in-out.
+-     */
+-    easing: (t: number) => number;
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
+     /**
+      * Avoid overshooting by ending abruptly at the goal value.
+      */
+diff --git a/react-haru.mjs b/react-haru.mjs
+index 9f4299e..1a2e597 100644
+--- a/react-haru.mjs
++++ b/react-haru.mjs
+@@ -1890,9 +1890,9 @@ const SpringPresets = {
+   default: defaultPreset
+ };
+ 
+-const linear = (
+-  t
+-) => t;
++
++
++
+ function makeConfig(
+   configProp, 
+   defaultConfig
+@@ -1901,7 +1901,7 @@ function makeConfig(
+     ...SpringPresets.default,
+     mass: 1,
+     damping: 1,
+-    easing: linear,
++
+     velocity: 0
+   };
+   if (defaultConfig) {
+@@ -1910,7 +1910,7 @@ function makeConfig(
+         ...defaultConfig
+       };
+       if (configProp.decay) {
+-        defaultConfig.duration = void 0;
++
+       } else {
+         const isTensionConfig = is.defined(
+           configProp.tension
+@@ -1928,7 +1928,7 @@ function makeConfig(
+           || is.defined(
+           configProp.mass
+         )) {
+-          defaultConfig.duration = void 0;
++
+           defaultConfig.decay = void 0;
+         }
+         if (isTensionConfig) {
+@@ -3116,24 +3116,24 @@ class SpringValue extends FrameValue {
+           ? config.velocity[i] 
+           : config.velocity;
+         let velocity;
+-        if (is.defined(
+-          config.duration
+-        )) {
+-          let p = 1;
+-          if (config.duration > 0) {
+-            p = (config.progress 
+-              || 0) + elapsed / config.duration;
+-            p = p > 1 
+-              ? 1 
+-              : p < 0 
+-              ? 0 
+-              : p;
+-          }
+-          position = from + config.easing(
+-            p
+-          ) * (to - from);
+-          velocity = (position - node2.lastPosition) / dt;
+-          finished = p == 1;
++        if (false) {
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
+         } else if (config.decay) {
+           const decay = config.decay === true 
+             ? 0.998 
+@@ -3740,19 +3740,19 @@ class SpringValue extends FrameValue {
+     }
+     let value;
+     if (reset) {
+-      const {
+-        progress = 0
+-      } = anim.config;
+-      value = progress > 0 
+-        && !hasFluidValue(
+-        to
+-      ) 
+-        ? lerp(
+-        from, 
+-        to, 
+-        progress
+-      ) 
+-        : from;
++
++
++
++      value = from
++
++
++
++
++
++
++
++
++
+     } else {
+       value = this.get();
+     }
+-- 
+2.19.2

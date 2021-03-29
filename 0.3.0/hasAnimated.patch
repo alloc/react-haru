@@ -1,0 +1,72 @@
+From e4d1d8ebe6287c5186174d95d744ef3f1a57649f Mon Sep 17 00:00:00 2001
+From: Alec Larson <1925840+aleclarson@users.noreply.github.com>
+Date: Wed, 31 Mar 2021 14:26:44 -0400
+Subject: [PATCH] revert: hasAnimated
+
+---
+ react-haru.d.ts | 18 +++++++++---------
+ react-haru.mjs  | 20 ++++++++++----------
+ 2 files changed, 19 insertions(+), 19 deletions(-)
+
+diff --git a/react-haru.d.ts b/react-haru.d.ts
+index 14a8bb6..ca13314 100644
+--- a/react-haru.d.ts
++++ b/react-haru.d.ts
+@@ -721,15 +721,15 @@ declare class SpringValue<T = any> extends FrameValue<T> {
+     get idle(): boolean;
+     get goal(): T;
+     get velocity(): VelocityProp<T>;
+-    /**
+-     * When true, this value has been animated at least once.
+-     */
+-    get hasAnimated(): boolean;
+-    /**
+-     * When true, this value has an unfinished animation,
+-     * which is either active or paused.
+-     */
+-    get isAnimating(): boolean;
++
++
++
++
++
++
++
++
++
+     /**
+      * When true, all current and future animations are paused.
+      */
+diff --git a/react-haru.mjs b/react-haru.mjs
+index 9f4299e..064b7a9 100644
+--- a/react-haru.mjs
++++ b/react-haru.mjs
+@@ -3048,16 +3048,16 @@ class SpringValue extends FrameValue {
+       || 0
+     );
+   }
+-  get hasAnimated() {
+-    return hasAnimated(
+-      this
+-    );
+-  }
+-  get isAnimating() {
+-    return isAnimating(
+-      this
+-    );
+-  }
++
++
++
++
++
++
++
++
++
++
+   get isPaused() {
+     return isPaused$1(
+       this
+-- 
+2.19.2

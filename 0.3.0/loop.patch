@@ -1,0 +1,283 @@
+From 9c78f34bc5dec9f645c3d7a51a1ac211380c1371 Mon Sep 17 00:00:00 2001
+From: Alec Larson <1925840+aleclarson@users.noreply.github.com>
+Date: Wed, 31 Mar 2021 14:26:42 -0400
+Subject: [PATCH] revert: loop
+
+---
+ react-haru.d.ts |   8 +--
+ react-haru.mjs  | 176 ++++++++++++++++++++++++------------------------
+ 2 files changed, 92 insertions(+), 92 deletions(-)
+
+diff --git a/react-haru.d.ts b/react-haru.d.ts
+index 14a8bb6..88e479e 100644
+--- a/react-haru.d.ts
++++ b/react-haru.d.ts
+@@ -1112,7 +1112,7 @@ declare type SpringsUpdate<State extends Lookup = UnknownProps> = OneOrMore<Cont
+  */
+ interface SpringProps<T = any> extends AnimationProps<T> {
+     from?: GoalValue<T>;
+-    loop?: LoopProp<SpringUpdate>;
++
+     /**
+      * Called after an animation is updated by new props,
+      * even if the animation remains idle.
+@@ -1186,7 +1186,7 @@ declare type ControllerUpdate<State extends Lookup = Lookup> = unknown & ToProps
+ interface ControllerProps<State extends Lookup = Lookup> extends AnimationProps<State> {
+     ref?: SpringRef<State>;
+     from?: GoalValues<State> | Falsy;
+-    loop?: LoopProp<ControllerUpdate>;
++
+     /**
+      * Called when the # of animating values exceeds 0
+      *
+@@ -1231,7 +1231,7 @@ interface ControllerProps<State extends Lookup = Lookup> extends AnimationProps<
+      */
+     onResolve?: OnResolve<State>;
+ }
+-declare type LoopProp<T extends object> = boolean | T | (() => boolean | T);
++
+ declare type VelocityProp<T = any> = [unknown] extends [T] ? number | number[] : T extends ReadonlyArray<number | string> ? number[] : number;
+ /** For props that can be set on a per-key basis. */
+ declare type MatchProp<T> = boolean | OneOrMore<StringKeys<T>> | ((key: StringKeys<T>) => boolean);
+@@ -1547,4 +1547,4 @@ declare function inferTo<T extends object>(props: T): InferTo<T>;
+ declare function lerp<T extends Animatable, U extends Animatable<T>>(from: T, to: U, progress: number): Animatable<T>;
+ declare function lerp<T>(from: T, to: NoInfer<T>, progress: number): T;
+ 
+-export { Animatable, Animated, AnimatedArray, AnimatedObject, AnimatedString, AnimatedType, AnimatedValue, AnimationProps, AnimationResult, AsyncResult, AsyncResultArray, BailSignal, Change, Controller, ControllerFlushFn, ControllerProps, ControllerUpdate, EasingFunction, EventProp, ExtrapolateType, ForwardProps, FrameValue, G as Globals, GoalProp, GoalValue, GoalValues, HostConfig, InferTo, InlineToProps, Interpolated, Interpolation, Interpolator, InterpolatorArgs, InterpolatorConfig, InterpolatorFactory, InterpolatorFn, ItemKeys, LoopProp, MatchProp, OnChange, OnPause, OnProps, OnResolve, OnRest, OnResume, OnStart, Payload, PickAnimated, ReservedEventProps, ReservedProps, Spring, SpringChain, SpringComponentProps, SpringConfig, SpringContext, SpringPresets, SpringProps, SpringRef, SpringTo, SpringToFn, SpringUpdate, SpringUpdateFn, SpringValue, SpringValues, Springify, SpringsUpdate, ToProps, Trail, TrailComponentProps, Transition, TransitionComponentProps, TransitionFn, TransitionFrom, TransitionKey, TransitionRenderFn, TransitionState, TransitionTo, TransitionValues, UseSpringProps, UseSpringsProps, UseTrailProps, UseTransitionProps, VelocityProp, createHost, createInterpolator, defaultColors, defaultStringInterpolation, getAnimated, getAnimatedType, getPayload, inferTo, isAnimated, lerp, setAnimated, to, update, useChain, useSpring, useSpringRef, useSprings, useTrail, useTransition };
++export { Animatable, Animated, AnimatedArray, AnimatedObject, AnimatedString, AnimatedType, AnimatedValue, AnimationProps, AnimationResult, AsyncResult, AsyncResultArray, BailSignal, Change, Controller, ControllerFlushFn, ControllerProps, ControllerUpdate, EasingFunction, EventProp, ExtrapolateType, ForwardProps, FrameValue, G as Globals, GoalProp, GoalValue, GoalValues, HostConfig, InferTo, InlineToProps, Interpolated, Interpolation, Interpolator, InterpolatorArgs, InterpolatorConfig, InterpolatorFactory, InterpolatorFn, ItemKeys, MatchProp, OnChange, OnPause, OnProps, OnResolve, OnRest, OnResume, OnStart, Payload, PickAnimated, ReservedEventProps, ReservedProps, Spring, SpringChain, SpringComponentProps, SpringConfig, SpringContext, SpringPresets, SpringProps, SpringRef, SpringTo, SpringToFn, SpringUpdate, SpringUpdateFn, SpringValue, SpringValues, Springify, SpringsUpdate, ToProps, Trail, TrailComponentProps, Transition, TransitionComponentProps, TransitionFn, TransitionFrom, TransitionKey, TransitionRenderFn, TransitionState, TransitionTo, TransitionValues, UseSpringProps, UseSpringsProps, UseTrailProps, UseTransitionProps, VelocityProp, createHost, createInterpolator, defaultColors, defaultStringInterpolation, getAnimated, getAnimatedType, getPayload, inferTo, isAnimated, lerp, setAnimated, to, update, useChain, useSpring, useSpringRef, useSprings, useTrail, useTransition };
+diff --git a/react-haru.mjs b/react-haru.mjs
+index 9f4299e..5a9ecef 100644
+--- a/react-haru.mjs
++++ b/react-haru.mjs
+@@ -1052,7 +1052,7 @@ const RESERVED_PROPS = {
+   from: 1,
+   to: 1,
+   ref: 1,
+-  loop: 1,
++
+   reset: 1,
+   pause: 1,
+   cancel: 1,
+@@ -3458,7 +3458,7 @@ class SpringValue extends FrameValue {
+     {
+     ...props
+   }, 
+-    isLoop
++
+   ) {
+     const {
+       key, 
+@@ -3550,26 +3550,26 @@ class SpringValue extends FrameValue {
+         range
+       )
+     }
+-    ).then(
+-      (
+-      result
+-    ) => {
+-      if (props.loop 
+-        && result.finished 
+-        && !(isLoop 
+-        && result.noop)) {
+-        const nextProps = createLoopUpdate(
+-          props
+-        );
+-        if (nextProps) {
+-          return this._update(
+-            nextProps, 
+-            true
+-          );
+-        }
+-      }
+-      return result;
+-    }
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
+     );
+   }
+   _merge(
+@@ -4205,44 +4205,44 @@ function checkFinished(
+     goal
+   );
+ }
+-function createLoopUpdate(
+-  props, 
+-  loop = props.loop, 
+-  to = props.to
+-) {
+-  let loopRet = callProp(
+-    loop
+-  );
+-  if (loopRet) {
+-    const overrides = loopRet !== true 
+-      && inferTo(
+-      loopRet
+-    );
+-    const reverse = (overrides 
+-      || props).reverse;
+-    const reset = !overrides 
+-      || overrides.reset;
+-    return createUpdate(
+-      {
+-      ...props,
+-      loop,
+-      default: false,
+-      pause: void 0,
+-      to: !reverse 
+-        || isAsyncTo(
+-        to
+-      ) 
+-        ? to 
+-        : void 0,
+-      from: reset 
+-        ? props.from 
+-        : void 0,
+-      reset,
+-      ...overrides
+-    }
+-    );
+-  }
+-}
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
+ function createUpdate(
+   props
+ ) {
+@@ -4669,13 +4669,13 @@ function flushUpdateQueue(
+ async function flushUpdate(
+   ctrl, 
+   props, 
+-  isLoop
++
+ ) {
+   const {
+     keys, 
+     to, 
+     from, 
+-    loop, 
++
+     onRest, 
+     onResolve
+   } = props;
+@@ -4685,9 +4685,9 @@ async function flushUpdate(
+     getDefaultProps(
+     props
+   );
+-  if (loop) {
+-    props.loop = false;
+-  }
++
++
++
+   if (to === false)
+     props.to = null;
+   if (from === false)
+@@ -4824,29 +4824,29 @@ async function flushUpdate(
+     promises
+   )
+   );
+-  if (loop 
+-    && result.finished 
+-    && !(isLoop 
+-    && result.noop)) {
+-    const nextProps = createLoopUpdate(
+-      props, 
+-      loop, 
+-      to
+-    );
+-    if (nextProps) {
+-      prepareKeys(
+-        ctrl, 
+-        [
+-        nextProps
+-      ]
+-      );
+-      return flushUpdate(
+-        ctrl, 
+-        nextProps, 
+-        true
+-      );
+-    }
+-  }
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
+   if (onResolve) {
+     raf.batchedUpdates(
+       () => onResolve(
+-- 
+2.19.2

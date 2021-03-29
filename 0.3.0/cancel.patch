@@ -1,0 +1,582 @@
+From 7b450868eb2d42595acb56334fe335c81d12aaa5 Mon Sep 17 00:00:00 2001
+From: Alec Larson <1925840+aleclarson@users.noreply.github.com>
+Date: Wed, 31 Mar 2021 14:26:40 -0400
+Subject: [PATCH] revert: cancel
+
+---
+ react-haru.d.ts |  54 ++++++------
+ react-haru.mjs  | 224 ++++++++++++++++++++++++------------------------
+ 2 files changed, 139 insertions(+), 139 deletions(-)
+
+diff --git a/react-haru.d.ts b/react-haru.d.ts
+index 14a8bb6..ee09f73 100644
+--- a/react-haru.d.ts
++++ b/react-haru.d.ts
+@@ -595,8 +595,8 @@ interface AnimationResult<T extends Readable = any> {
+     noop?: boolean;
+     /** When true, the animation was neither cancelled nor stopped prematurely. */
+     finished?: boolean;
+-    /** When true, the animation was cancelled before it could finish. */
+-    cancelled?: boolean;
++
++
+ }
+ /** The promised result of an animation. */
+ declare type AsyncResult<T extends Readable = any> = Promise<AnimationResult<T>>;
+@@ -668,7 +668,7 @@ declare type AsyncTo<T> = SpringChain<T> | SpringToFn<T>;
+ declare type RunAsyncProps<T extends AnimationTarget = any> = InferProps<T> & {
+     callId: number;
+     parentId?: number;
+-    cancel: boolean;
++
+     to?: any;
+ };
+ /** @internal */
+@@ -680,7 +680,7 @@ interface RunAsyncState<T extends AnimationTarget = any> {
+     asyncId?: number;
+     asyncTo?: AsyncTo<InferState<T>>;
+     promise?: AsyncResult<T>;
+-    cancelId?: number;
++
+     bail?: BailFn;
+ }
+ interface BailFn {
+@@ -692,7 +692,7 @@ declare class BailSignal extends Error {
+     constructor();
+ }
+ 
+-interface DefaultSpringProps<T> extends Pick<SpringProps<T>, 'pause' | 'cancel' | 'immediate' | 'config'>, PickEventFns<SpringProps<T>> {
++interface DefaultSpringProps<T> extends Pick<SpringProps<T>, 'pause' | 'immediate' | 'config'>, PickEventFns<SpringProps<T>> {
+ }
+ /**
+  * Only numbers, strings, and arrays of numbers/strings are supported.
+@@ -764,7 +764,7 @@ declare class SpringValue<T = any> extends FrameValue<T> {
+      *
+      * Pass `true` to call `onRest` with `cancelled: true`.
+      */
+-    stop(cancel?: boolean): this;
++    stop(): this;
+     /** Restart the animation. */
+     reset(): void;
+     /** @internal */
+@@ -806,7 +806,7 @@ declare class SpringValue<T = any> extends FrameValue<T> {
+      *
+      * Always wrap `_stop` calls with `batchedUpdates`.
+      */
+-    protected _stop(goal?: any, cancel?: boolean): void;
++    protected _stop(goal?: any): void;
+ }
+ 
+ /** Queue of pending updates for a `Controller` instance. */
+@@ -872,14 +872,14 @@ declare class Controller<State extends Lookup = Lookup> {
+     stop(): this;
+     /** Stop animations for the given keys. */
+     stop(keys: OneOrMore<string>): this;
+-    /** Cancel all animations. */
+-    stop(cancel: boolean): this;
+-    /** Cancel animations for the given keys. */
+-    stop(cancel: boolean, keys: OneOrMore<string>): this;
++
++
++
++
+     /** Stop some or all animations. */
+     stop(keys?: OneOrMore<string>): this;
+-    /** Cancel some or all animations. */
+-    stop(cancel: boolean, keys?: OneOrMore<string>): this;
++    
++    
+     /** Freeze the active animation in time */
+     pause(keys?: OneOrMore<string>): this;
+     /** Resume the animation if paused. */
+@@ -1254,11 +1254,11 @@ interface AnimationProps<T = any> {
+      * When true, props jump to their goal values instead of animating.
+      */
+     immediate?: MatchProp<T>;
+-    /**
+-     * Cancel all animations by using `true`, or some animations by using a key
+-     * or an array of keys.
+-     */
+-    cancel?: MatchProp<T>;
++    
++
++
++
++    
+     /**
+      * Pause all animations by using `true`, or some animations by using a key
+      * or an array of keys.
+@@ -1285,7 +1285,7 @@ declare type ForwardProps<T extends object> = RawValues<Omit<Constrain<T, {}>, k
+  * Property names that are reserved for animation config
+  */
+ interface ReservedProps extends ReservedEventProps {
+-    cancel?: any;
++
+     config?: any;
+     default?: any;
+     delay?: any;
+@@ -1384,8 +1384,8 @@ interface SpringResumeFn<T> {
+ interface SpringStopFn<T> {
+     /** Stop the active animation. */
+     (): SpringRef<T>;
+-    /** Cancel the active animation. */
+-    (cancel?: boolean): SpringRef<T>;
++
++
+ }
+ interface ControllerSetFn<T> {
+     (state: Partial<T>): SpringRef<T>;
+@@ -1411,14 +1411,14 @@ interface ControllerStopFn<T> {
+     (): SpringRef<T>;
+     /** Stop animations for the given keys. */
+     (keys: OneOrMore<string>): SpringRef<T>;
+-    /** Cancel all animations. */
+-    (cancel: boolean): SpringRef<T>;
+-    /** Cancel animations for the given keys. */
+-    (cancel: boolean, keys: OneOrMore<string>): SpringRef<T>;
++
++
++
++
+     /** Stop some or all animations. */
+     (keys?: OneOrMore<string>): SpringRef<T>;
+-    /** Cancel some or all animations. */
+-    (cancel: boolean, keys?: OneOrMore<string>): SpringRef<T>;
++
++    
+ }
+ 
+ declare function useChain(refs: ReadonlyArray<SpringRef>, timeSteps?: number[], timeFrame?: number): void;
+diff --git a/react-haru.mjs b/react-haru.mjs
+index 9f4299e..cebdfe3 100644
+--- a/react-haru.mjs
++++ b/react-haru.mjs
+@@ -1055,7 +1055,7 @@ const RESERVED_PROPS = {
+   loop: 1,
+   reset: 1,
+   pause: 1,
+-  cancel: 1,
++  
+   reverse: 1,
+   immediate: 1,
+   default: 1,
+@@ -2000,14 +2000,14 @@ const getCombinedResult = (
+ ) => results.length == 1 
+   && target == results[0].target 
+   ? results[0] 
+-  : results.some(
+-  (
+-  result
+-) => result.cancelled
+-) 
+-  ? getCancelledResult(
+-  target
+-) 
++
++
++
++
++
++
++
++
+   : results.every(
+   (
+   result
+@@ -2042,14 +2042,14 @@ const getFinishedResult = (
+   finished,
+   target
+ });
+-const getCancelledResult = (
+-  target, 
+-  value = target.get()
+-) => ({
+-  value,
+-  cancelled: true,
+-  target
+-});
++
++
++
++
++
++
++
++
+ 
+ class SpringRef {
+   constructor() {
+@@ -2263,14 +2263,14 @@ function runAsync(
+         bailSignal = new BailSignal()
+       ) => {
+         bailSignal.result = bailResult 
+-          || (callId <= (state.cancelId 
+-          || 0) 
+-          ? getCancelledResult(
+-          target
+-        ) 
++          || (false 
++
++          ? undefined
++
++
+           : getFinishedResult(
+-          target, 
+-          false
++           target, 
++           false
+         ));
+         state.bail = 
+           bail = 
+@@ -2290,12 +2290,12 @@ function runAsync(
+     ) => {
+       props2.parentId = callId;
+       const result2 = await next();
+-      if (result2.cancelled) {
+-        bail(
+-          result2, 
+-          bailSignal
+-        );
+-      }
++
++
++
++
++
++
+       if (bail == noop) {
+         throw bailSignal;
+       }
+@@ -2385,10 +2385,10 @@ function runAsync(
+ }
+ function stopAsync(
+   state, 
+-  cancelId
++
+ ) {
+-  if (cancelId)
+-    state.cancelId = cancelId;
++
++
+   flush(
+     state.timeouts, 
+     (
+@@ -2469,13 +2469,13 @@ function scheduleProps(
+   ) => {
+     let delay;
+     let timeout;
+-    let cancel = matchProp(
+-      props.cancel 
+-      ?? defaultProps?.cancel, 
+-      key
+-    );
+-    if (cancel) {
+-      onStart();
++
++
++
++
++
++
++    if (false) {
+     } else {
+       delay = callProp(
+         props.delay 
+@@ -2524,16 +2524,16 @@ function scheduleProps(
+       state.timeouts.delete(
+         timeout
+       );
+-      if (callId <= (state.cancelId 
+-        || 0)) {
+-        cancel = true;
+-      }
++
++
++
++
+       try {
+         start(
+           {
+           ...props, 
+           callId, 
+-          cancel
++
+         }, 
+           resolve
+         );
+@@ -2993,7 +2993,7 @@ class SpringValue extends FrameValue {
+     };
+     this._pendingCalls = new Set();
+     this._lastCallId = 0;
+-    this._lastToId = 0;
++
+     if (is.defined(
+       arg1
+     ) 
+@@ -3358,7 +3358,7 @@ class SpringValue extends FrameValue {
+     );
+   }
+   stop(
+-    cancel
++
+   ) {
+     const {
+       to
+@@ -3368,13 +3368,13 @@ class SpringValue extends FrameValue {
+     );
+     stopAsync(
+       this._state, 
+-      cancel 
+-      && this._lastCallId
++
++
+     );
+     raf.batchedUpdates(
+       () => this._stop(
+       to, 
+-      cancel
++
+     )
+     );
+     return this;
+@@ -3577,34 +3577,34 @@ class SpringValue extends FrameValue {
+     props, 
+     resolve
+   ) {
+-    if (props.cancel) {
+-      this.stop(
+-        true
+-      );
+-      return resolve(
+-        getCancelledResult(
+-        this
+-      )
+-      );
+-    }
++
++
++
++
++
++
++
++
++
++
+     const hasToProp = is.defined(
+       range.to
+     );
+     const hasFromProp = is.defined(
+       range.from
+     );
+-    if (hasToProp 
+-      || hasFromProp) {
+-      if (props.callId > this._lastToId) {
+-        this._lastToId = props.callId;
+-      } else {
+-        return resolve(
+-          getCancelledResult(
+-          this
+-        )
+-        );
+-      }
+-    }
++
++
++
++
++
++
++
++
++
++
++
++
+     const {
+       key, 
+       defaultProps, 
+@@ -4123,7 +4123,7 @@ class SpringValue extends FrameValue {
+   }
+   _stop(
+     goal, 
+-    cancel
++
+   ) {
+     if (isAnimating(
+       this
+@@ -4155,10 +4155,10 @@ class SpringValue extends FrameValue {
+       }
+       );
+       let result;
+-      if (cancel) {
+-        result = getCancelledResult(
+-          this
+-        );
++
++
++
++      if (false) {
+       } else {
+         const finished = checkFinished(
+           this, 
+@@ -4471,11 +4471,11 @@ class Controller {
+     arg, 
+     keys
+   ) {
+-    let cancel = false;
+-    if (is.boolean(
+-      arg
+-    )) {
+-      cancel = arg;
++    
++
++
++
++    if (false) {
+     } else {
+       keys = arg;
+     }
+@@ -4488,20 +4488,20 @@ class Controller {
+         (
+         key
+       ) => springs[key].stop(
+-        cancel
++
+       )
+       );
+     } else {
+       stopAsync(
+         this._state, 
+-        cancel 
+-        && this._lastAsyncId
++
++
+       );
+       this.each(
+         (
+         spring
+       ) => spring.stop(
+-        cancel
++
+       )
+       );
+     }
+@@ -4639,7 +4639,7 @@ class Controller {
+       }
+       );
+       this.stop(
+-        true
++        
+       );
+     }
+   }
+@@ -4722,7 +4722,7 @@ async function flushUpdate(
+           props[key] = (
+             {
+             finished, 
+-            cancelled
++
+           }
+           ) => {
+             const result2 = queue.get(
+@@ -4731,8 +4731,8 @@ async function flushUpdate(
+             if (result2) {
+               if (!finished)
+                 result2.finished = false;
+-              if (cancelled)
+-                result2.cancelled = true;
++
++
+             } else {
+               queue.set(
+                 handler, 
+@@ -4740,7 +4740,7 @@ async function flushUpdate(
+                 target: ctrl,
+                 value: null,
+                 finished,
+-                cancelled
++
+               }
+               );
+             }
+@@ -4776,11 +4776,11 @@ async function flushUpdate(
+     props
+   )
+   );
+-  const cancel = props.cancel === true 
+-    || (defaultProps 
+-    && defaultProps.cancel) === true;
++
++
++
+   if (asyncTo 
+-    || cancel 
++    || false 
+     && state.asyncId) {
+     promises.push(
+       scheduleProps(
+@@ -4792,16 +4792,16 @@ async function flushUpdate(
+         props2, 
+         resolve
+       ) {
+-        if (cancel) {
+-          stopAsync(
+-            state, 
+-            ctrl["_lastAsyncId"]
+-          );
+-          resolve(
+-            getCancelledResult(
+-            ctrl
+-          )
+-          );
++
++
++
++
++
++
++
++
++
++        if (false) {
+         } else {
+           props2.onRest = onRest;
+           resolve(
+@@ -5211,7 +5211,7 @@ function useSprings(
+         ref
+       );
+       ctrl.stop(
+-        true
++        
+       );
+     }
+     );
+@@ -5600,7 +5600,7 @@ function useTransition(
+     each(
+       [
+       "immediate", 
+-      "cancel", 
++
+       "pause"
+     ], 
+       (
+@@ -5731,11 +5731,11 @@ function useTransition(
+           forceUpdate();
+         }
+       }
+-      if (result.cancelled 
+-        && t2.phase != UPDATE) {
+-        t2.phase = prevPhase;
+-        return;
+-      }
++
++
++
++
++      
+       if (t2.ctrl.idle) {
+         if (t2.phase == LEAVE) {
+           const expiry = callProp(
+-- 
+2.19.2

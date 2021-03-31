@@ -1,0 +1,569 @@
+From 74a2bda85b036da751ace43c6f44bf80cdb370c3 Mon Sep 17 00:00:00 2001
+From: Alec Larson <1925840+aleclarson@users.noreply.github.com>
+Date: Wed, 31 Mar 2021 16:44:40 -0400
+Subject: [PATCH] revert: shorthandTransform
+
+---
+ web/index.mjs | 540 +++++++++++++++++++++++++-------------------------
+ 1 file changed, 270 insertions(+), 270 deletions(-)
+
+diff --git a/web/index.mjs b/web/index.mjs
+index 8b45bdb..b210e85 100644
+--- a/web/index.mjs
++++ b/web/index.mjs
+@@ -234,275 +234,275 @@ isUnitlessNumber = Object.keys(
+   isUnitlessNumber
+ );
+ 
+-const domTransforms = /^(matrix|translate|scale|rotate|skew)/;
+-const pxTransforms = /^(translate)/;
+-const degTransforms = /^(rotate|skew)/;
+-const addUnit = (
+-  value, 
+-  unit
+-) => is.number(
+-  value
+-) 
+-  && value !== 0 
+-  ? value + unit 
+-  : value;
+-const isValueIdentity = (
+-  value, 
+-  id
+-) => is.array(
+-  value
+-) 
+-  ? value.every(
+-  (
+-  v
+-) => isValueIdentity(
+-  v, 
+-  id
+-)
+-) 
+-  : is.number(
+-  value
+-) 
+-  ? value === id 
+-  : parseFloat(
+-  value
+-) === id;
+-class AnimatedStyle extends AnimatedObject {
+-  constructor(
+-    {
+-    x, 
+-    y, 
+-    z, 
+-    ...style
+-  }
+-  ) {
+-    const inputs = [];
+-    const transforms = [];
+-    if (x 
+-      || y 
+-      || z) {
+-      inputs.push(
+-        [
+-        x 
+-        || 0, 
+-        y 
+-        || 0, 
+-        z 
+-        || 0
+-      ]
+-      );
+-      transforms.push(
+-        (
+-        xyz
+-      ) => [
+-        `translate3d(${xyz.map(
+-          (
+-          v
+-        ) => addUnit(
+-          v, 
+-          "px"
+-        )
+-        ).join(
+-          ","
+-        )})`,
+-        isValueIdentity(
+-          xyz, 
+-          0
+-        )
+-      ]
+-      );
+-    }
+-    eachProp(
+-      style, 
+-      (
+-      value, 
+-      key
+-    ) => {
+-      if (key === "transform") {
+-        inputs.push(
+-          [
+-          value 
+-          || ""
+-        ]
+-        );
+-        transforms.push(
+-          (
+-          transform
+-        ) => [
+-          transform, 
+-          transform === ""
+-        ]
+-        );
+-      } else if (domTransforms.test(
+-        key
+-      )) {
+-        delete style[key];
+-        if (is.undefined(
+-          value
+-        ))
+-          return;
+-        const unit = pxTransforms.test(
+-          key
+-        ) 
+-          ? "px" 
+-          : degTransforms.test(
+-          key
+-        ) 
+-          ? "deg" 
+-          : "";
+-        inputs.push(
+-          toArray(
+-          value
+-        )
+-        );
+-        transforms.push(
+-          key === "rotate3d" 
+-          ? (
+-          [x2, y2, z2, deg]
+-        ) => [
+-          `rotate3d(${x2},${y2},${z2},${addUnit(
+-            deg, 
+-            unit
+-          )})`,
+-          isValueIdentity(
+-            deg, 
+-            0
+-          )
+-        ] 
+-          : (
+-          input
+-        ) => [
+-          `${key}(${input.map(
+-            (
+-            v
+-          ) => addUnit(
+-            v, 
+-            unit
+-          )
+-          ).join(
+-            ","
+-          )})`,
+-          isValueIdentity(
+-            input, 
+-            key.startsWith(
+-            "scale"
+-          ) 
+-            ? 1 
+-            : 0
+-          )
+-        ]
+-        );
+-      }
+-    }
+-    );
+-    if (inputs.length) {
+-      style.transform = new FluidTransform(inputs, transforms);
+-    }
+-    super(
+-      style
+-    );
+-  }
+-}
+-class FluidTransform extends FluidValue {
+-  constructor(
+-    inputs, 
+-    transforms
+-  ) {
+-    super();
+-    this.inputs = inputs;
+-    this.transforms = transforms;
+-    this._value = null;
+-  }
+-  get() {
+-    return this._value 
+-      || (this._value = this._get());
+-  }
+-  _get() {
+-    let transform = "";
+-    let identity = true;
+-    each(
+-      this.inputs, 
+-      (
+-      input, 
+-      i
+-    ) => {
+-      const arg1 = getFluidValue(
+-        input[0]
+-      );
+-      const [t, id] = this.transforms[i](
+-        is.array(
+-        arg1
+-      ) 
+-        ? arg1 
+-        : input.map(
+-        getFluidValue
+-      )
+-      );
+-      transform += " " + t;
+-      identity = identity 
+-        && id;
+-    }
+-    );
+-    return identity 
+-      ? "none" 
+-      : transform;
+-  }
+-  observerAdded(
+-    count
+-  ) {
+-    if (count == 1)
+-      each(
+-        this.inputs, 
+-        (
+-        input
+-      ) => each(
+-        input, 
+-        (
+-        value
+-      ) => hasFluidValue(
+-        value
+-      ) 
+-        && addFluidObserver(
+-        value, 
+-        this
+-      )
+-      )
+-      );
+-  }
+-  observerRemoved(
+-    count
+-  ) {
+-    if (count == 0)
+-      each(
+-        this.inputs, 
+-        (
+-        input
+-      ) => each(
+-        input, 
+-        (
+-        value
+-      ) => hasFluidValue(
+-        value
+-      ) 
+-        && removeFluidObserver(
+-        value, 
+-        this
+-      )
+-      )
+-      );
+-  }
+-  eventObserved(
+-    event
+-  ) {
+-    if (event.type == "change") {
+-      this._value = null;
+-    }
+-    callFluidObservers(
+-      this, 
+-      event
+-    );
+-  }
+-}
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
+ 
+ const primitives = [
+   "a",
+@@ -651,7 +651,7 @@ const host = createHost(
+   applyAnimatedValues,
+   createAnimatedStyle: (
+     style
+-  ) => new AnimatedStyle(style),
++  ) => new AnimatedObject(style),
+   getComponentProps: (
+     {
+     scrollTop, 
+-- 
+2.19.2

@@ -1,0 +1,78 @@
+From fe8e270793b5b6ab4848a7c2507996e9be42df5b Mon Sep 17 00:00:00 2001
+From: Alec Larson <1925840+aleclarson@users.noreply.github.com>
+Date: Wed, 31 Mar 2021 16:47:25 -0400
+Subject: [PATCH] revert: round
+
+---
+ react-haru.d.ts | 12 ++++++------
+ react-haru.mjs  | 20 ++++++++++----------
+ 2 files changed, 16 insertions(+), 16 deletions(-)
+
+diff --git a/react-haru.d.ts b/react-haru.d.ts
+index 9bcaaf3..88b192b 100644
+--- a/react-haru.d.ts
++++ b/react-haru.d.ts
+@@ -576,12 +576,12 @@ interface AnimationConfig {
+      * animation.
+      */
+     decay?: boolean | number;
+-    /**
+-     * While animating, round to the nearest multiple of this number.
+-     * The `from` and `to` values are never rounded, as well as any value
+-     * passed to the `set` method of an animated value.
+-     */
+-    round?: number;
++
++
++
++
++
++
+ }
+ 
+ /** The object type of the `config` prop. */
+diff --git a/react-haru.mjs b/react-haru.mjs
+index 3ec00dc..251edbf 100644
+--- a/react-haru.mjs
++++ b/react-haru.mjs
+@@ -1028,20 +1028,20 @@ class AnimatedValue extends Animated {
+   }
+   setValue(
+     value, 
+-    step
++
+   ) {
+     if (is.number(
+       value
+     )) {
+       this.lastPosition = value;
+-      if (step) {
+-        value = Math.round(
+-          value / step
+-        ) * step;
+-        if (this.done) {
+-          this.lastPosition = value;
+-        }
+-      }
++
++
++
++
++
++
++
++
+     }
+     if (this._value === value) {
+       return false;
+@@ -3224,7 +3224,7 @@ class SpringValue extends FrameValue {
+       }
+       if (node2.setValue(
+         position, 
+-        config.round
++
+       )) {
+         changed = true;
+       }
+-- 
+2.19.2

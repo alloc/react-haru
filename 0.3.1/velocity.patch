@@ -1,0 +1,183 @@
+From 44d52260b049caf20e404e5c5c3d73cc2b1279af Mon Sep 17 00:00:00 2001
+From: Alec Larson <1925840+aleclarson@users.noreply.github.com>
+Date: Wed, 31 Mar 2021 16:47:26 -0400
+Subject: [PATCH] revert: velocity
+
+---
+ react-haru.d.ts | 10 +++---
+ react-haru.mjs  | 90 ++++++++++++++++++++++++-------------------------
+ 2 files changed, 50 insertions(+), 50 deletions(-)
+
+diff --git a/react-haru.d.ts b/react-haru.d.ts
+index 9bcaaf3..62d9dcb 100644
+--- a/react-haru.d.ts
++++ b/react-haru.d.ts
+@@ -512,10 +512,10 @@ interface AnimationConfig {
+      * Defaults to 1, which works fine most of the time.
+      */
+     mass: number;
+-    /**
+-     * The initial velocity of one or more values.
+-     */
+-    velocity: number | number[];
++
++
++
++
+     /**
+      * The smallest velocity before the animation is considered "not moving".
+      *
+@@ -720,7 +720,7 @@ declare class SpringValue<T = any> extends FrameValue<T> {
+     /** Equals true when not advancing on each frame. */
+     get idle(): boolean;
+     get goal(): T;
+-    get velocity(): VelocityProp<T>;
++
+     /**
+      * When true, this value has been animated at least once.
+      */
+diff --git a/react-haru.mjs b/react-haru.mjs
+index 3ec00dc..7338c99 100644
+--- a/react-haru.mjs
++++ b/react-haru.mjs
+@@ -1064,7 +1064,7 @@ class AnimatedValue extends Animated {
+       this.lastPosition = from;
+       if (done)
+         this.lastVelocity = null;
+-      this.v0 = null;
++
+     }
+   }
+ }
+@@ -2218,7 +2218,7 @@ function makeConfig(
+     mass: 1,
+     damping: 1,
+     easing: linear,
+-    velocity: 0
++
+   };
+   if (defaultConfig) {
+     if (configProp) {
+@@ -3034,20 +3034,20 @@ class SpringValue extends FrameValue {
+       this.animation.to
+     );
+   }
+-  get velocity() {
+-    const node = getAnimated(
+-      this
+-    );
+-    return node instanceof AnimatedValue 
+-      ? node.lastVelocity 
+-      || 0 
+-      : node.getPayload().map(
+-      (
+-      node2
+-    ) => node2.lastVelocity 
+-      || 0
+-    );
+-  }
++
++
++
++
++
++
++
++
++
++
++
++
++
++
+   get hasAnimated() {
+     return hasAnimated(
+       this
+@@ -3108,13 +3108,13 @@ class SpringValue extends FrameValue {
+         }
+         const elapsed = node2.elapsedTime += dt;
+         const from = anim.fromValues[i];
+-        const v0 = node2.v0 != null 
+-          ? node2.v0 
+-          : node2.v0 = is.array(
+-          config.velocity
+-        ) 
+-          ? config.velocity[i] 
+-          : config.velocity;
++        const v0 = 0;
++
++
++
++
++
++
+         let velocity;
+         if (is.defined(
+           config.duration
+@@ -3166,9 +3166,9 @@ class SpringValue extends FrameValue {
+           const canBounce = is.defined(
+             bounceFactor
+           );
+-          const isGrowing = from == to 
+-            ? node2.v0 > 0 
+-            : from < to;
++          const isGrowing = from < to 
++
++
+           let isMoving;
+           let isBouncing = false;
+           const step = 1;
+@@ -3756,17 +3756,17 @@ class SpringValue extends FrameValue {
+     } else {
+       value = this.get();
+     }
+-    const hasVelocity = (!props.default 
+-      || props.config !== getDefaultProp(
+-      props, 
+-      "config"
+-    )) 
+-      && toArray(
+-      nextConfig?.velocity
+-    ).some(
+-      Boolean
+-    );
+-    let started = hasVelocity 
++
++
++
++
++
++
++
++
++
++
++    let started = false 
+       || hasFluidValue(
+       to
+     );
+@@ -3817,14 +3817,14 @@ class SpringValue extends FrameValue {
+           : toArray(
+           goal
+         );
+-        if (hasVelocity) {
+-          each(
+-            anim.values, 
+-            (
+-            node2
+-          ) => node2.lastVelocity = null
+-          );
+-        }
++
++
++
++
++
++
++
++
+       }
+       if (anim.immediate != immediate) {
+         anim.immediate = immediate;
+-- 
+2.19.2

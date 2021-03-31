@@ -1,0 +1,105 @@
+From 80c4910461d3e7a4eb7e6ca903668ff0a2d04b9c Mon Sep 17 00:00:00 2001
+From: Alec Larson <1925840+aleclarson@users.noreply.github.com>
+Date: Wed, 31 Mar 2021 16:47:25 -0400
+Subject: [PATCH] revert: introspection
+
+---
+ react-haru.d.ts |  8 ++++----
+ react-haru.mjs  | 28 ++++++++++++++--------------
+ 2 files changed, 18 insertions(+), 18 deletions(-)
+
+diff --git a/react-haru.d.ts b/react-haru.d.ts
+index 9bcaaf3..7b65912 100644
+--- a/react-haru.d.ts
++++ b/react-haru.d.ts
+@@ -115,8 +115,8 @@ declare const G: {
+     };
+     createStringInterpolator: StringInterpolation;
+     skipAnimation: boolean;
+-    willAdvance: (animation: OpaqueAnimation) => void;
+-    tracker: any;
++
++
+     /**
+      * https://react-haru.com/globals
+      */
+@@ -828,8 +828,8 @@ declare class Controller<State extends Lookup = Lookup> {
+     ref?: SpringRef<State>;
+     /** Custom handler for flushing update queues */
+     protected _flush?: ControllerFlushFn<this>;
+-    /** The tracker is notified of every `start` call */
+-    protected _tracker?: Tracker;
++
++
+     /** These props are used by all future spring values */
+     protected _initialProps?: Lookup;
+     /** The counter for tracking `scheduleProps` calls */
+diff --git a/react-haru.mjs b/react-haru.mjs
+index 3ec00dc..4bfeefa 100644
+--- a/react-haru.mjs
++++ b/react-haru.mjs
+@@ -749,8 +749,8 @@ const G = {
+   colors: defaultColors,
+   createStringInterpolator: defaultStringInterpolation,
+   skipAnimation: false,
+-  willAdvance: noop,
+-  tracker: null,
++
++
+   assign(
+     globals
+   ) {
+@@ -768,10 +768,10 @@ const G = {
+       G.colors = globals.colors;
+     if (globals.skipAnimation != null)
+       G.skipAnimation = globals.skipAnimation;
+-    if (globals.willAdvance)
+-      G.willAdvance = globals.willAdvance;
+-    if (globals.tracker)
+-      G.tracker = globals.tracker;
++
++
++
++
+   }
+ };
+ 
+@@ -874,9 +874,9 @@ function advance(
+     const animation = currentFrame[i];
+     priority = animation.priority;
+     if (!animation.idle) {
+-      G.willAdvance(
+-        animation
+-      );
++
++
++
+       animation.advance(
+         dt
+       );
+@@ -4353,7 +4353,7 @@ class Controller {
+     this.id = nextId$1++;
+     this.springs = {};
+     this.queue = [];
+-    this._tracker = G.tracker;
++
+     this._lastAsyncId = 0;
+     this._active = new Set();
+     this._changed = new Set();
+@@ -4461,10 +4461,10 @@ class Controller {
+         queue
+       );
+     }
+-    this._tracker?.(
+-      this, 
+-      result
+-    );
++
++
++
++
+     return result;
+   }
+   stop(
+-- 
+2.19.2

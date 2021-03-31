@@ -1,0 +1,128 @@
+From f123796a385c43cb5e5ca002a22a3330c4a84eb7 Mon Sep 17 00:00:00 2001
+From: Alec Larson <1925840+aleclarson@users.noreply.github.com>
+Date: Wed, 31 Mar 2021 16:44:41 -0400
+Subject: [PATCH] revert: decay
+
+---
+ react-haru.d.ts | 22 +++++++++++-----------
+ react-haru.mjs  | 40 ++++++++++++++++++++--------------------
+ 2 files changed, 31 insertions(+), 31 deletions(-)
+
+diff --git a/react-haru.d.ts b/react-haru.d.ts
+index 9bcaaf3..c452b67 100644
+--- a/react-haru.d.ts
++++ b/react-haru.d.ts
+@@ -565,17 +565,17 @@ interface AnimationConfig {
+      * in addition to any friction.
+      */
+     bounce?: number;
+-    /**
+-     * "Decay animations" decelerate without an explicit goal value.
+-     * Useful for scrolling animations.
+-     *
+-     * Use `true` for the default exponential decay factor (`0.998`).
+-     *
+-     * When a `number` between `0` and `1` is given, a lower number makes the
+-     * animation slow down faster. And setting to `1` would make an unending
+-     * animation.
+-     */
+-    decay?: boolean | number;
++    
++
++
++
++
++
++
++
++
++
++
+     /**
+      * While animating, round to the nearest multiple of this number.
+      * The `from` and `to` values are never rounded, as well as any value
+diff --git a/react-haru.mjs b/react-haru.mjs
+index 3ec00dc..b82ea6d 100644
+--- a/react-haru.mjs
++++ b/react-haru.mjs
+@@ -2225,8 +2225,8 @@ function makeConfig(
+       defaultConfig = {
+         ...defaultConfig
+       };
+-      if (configProp.decay) {
+-        defaultConfig.duration = void 0;
++      if (false) {
++
+       } else {
+         const isTensionConfig = is.defined(
+           configProp.tension
+@@ -2245,7 +2245,7 @@ function makeConfig(
+           configProp.mass
+         )) {
+           defaultConfig.duration = void 0;
+-          defaultConfig.decay = void 0;
++
+         }
+         if (isTensionConfig) {
+           defaultConfig.frequency = void 0;
+@@ -3134,18 +3134,18 @@ class SpringValue extends FrameValue {
+           ) * (to - from);
+           velocity = (position - node2.lastPosition) / dt;
+           finished = p == 1;
+-        } else if (config.decay) {
+-          const decay = config.decay === true 
+-            ? 0.998 
+-            : config.decay;
+-          const e = Math.exp(
+-            -(1 - decay) * elapsed
+-          );
+-          position = from + v0 / (1 - decay) * (1 - e);
+-          finished = Math.abs(
+-            node2.lastPosition - position
+-          ) < 0.1;
+-          velocity = v0 * e;
++        } else if (false) {
++
++
++
++
++
++
++
++
++
++
++
+         } else {
+           velocity = node2.lastVelocity 
+             ?? v0;
+@@ -3293,12 +3293,12 @@ class SpringValue extends FrameValue {
+       raf.batchedUpdates(
+         () => {
+         this._onStart();
+-        if (!config.decay) {
++
+           this._set(
+             to, 
+             false
+           );
+-        }
++
+         this._stop();
+       }
+       );
+@@ -3684,9 +3684,9 @@ class SpringValue extends FrameValue {
+     let finished = !node 
+       || is.undefined(
+       to
+-    ) 
+-      && is.undefined(
+-      anim.config.decay
++
++      
++      
+     );
+     if (finished) {
+       return resolve(
+-- 
+2.19.2
